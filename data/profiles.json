@@ -1,0 +1,178 @@
+{
+  "seed": 42,
+  "total_agents": 1000,
+  "store_open_minute": 0,
+  "store_close_minute": 720,
+  "minute_zero_clock_time": "10:00",
+  "profiles": {
+    "mission_mom": {
+      "label": "Mission-driven mom",
+      "weight": 0.30,
+      "description": "Family group of 2-4 including 1-2 kids. Diwali-outfit-for-self-and-kids mission. Mostly arrives morning to beat the evening crowd.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 3,
+        "scale": 30,
+        "shift": 30,
+        "min": 0,
+        "max": 720,
+        "note": "Mode ~11am, mean ~12pm. Drives the morning peak (11am-1pm)."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 8,
+        "shift": 25,
+        "min": 15,
+        "max": 180,
+        "note": "Mode ~57 min, mean ~57 min. Efficient but multiple try-ons."
+      },
+      "group_size_dist": [
+        {"value": 2, "weight": 0.20},
+        {"value": 3, "weight": 0.50},
+        {"value": 4, "weight": 0.30}
+      ],
+      "primary_zones": ["womens_ethnic", "kids"],
+      "secondary_zones": ["womens_fa", "infants"],
+      "queue_tolerance_min": {"reduce_at": 10, "abandon_at": 20},
+      "basket_size_target": {"min": 4, "max": 7},
+      "intent_strength": 0.85
+    },
+    "young_woman": {
+      "label": "Browse-and-buy young woman",
+      "weight": 0.20,
+      "description": "Solo or with a friend. Heavy trial-room use, longer dwell. Responds to power wall freshness. Zudio-poacher segment.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 5,
+        "scale": 50,
+        "shift": 150,
+        "min": 0,
+        "max": 720,
+        "note": "Mode ~3pm, mean ~4:40pm. Afternoon/early-evening."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 8,
+        "shift": 22,
+        "min": 15,
+        "max": 120,
+        "note": "Mode ~38 min, mean ~54 min. Trial-heavy."
+      },
+      "group_size_dist": [
+        {"value": 1, "weight": 0.55},
+        {"value": 2, "weight": 0.45}
+      ],
+      "primary_zones": ["womens_ethnic", "womens_western"],
+      "secondary_zones": ["womens_fa", "power_wall"],
+      "queue_tolerance_min": {"reduce_at": 15, "abandon_at": 25},
+      "basket_size_target": {"min": 2, "max": 4},
+      "intent_strength": 0.70
+    },
+    "family_weekend": {
+      "label": "Family weekend shopper",
+      "weight": 0.25,
+      "description": "Group of 4-6, multi-generational, Diwali-and-wedding-season mode. Largest basket, highest absolute spend. AC-sensitive.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 60,
+        "shift": 300,
+        "min": 0,
+        "max": 720,
+        "note": "Mode ~5pm, mean ~7pm. Drives the evening peak."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 5,
+        "scale": 10,
+        "shift": 35,
+        "min": 20,
+        "max": 180,
+        "note": "Mode ~65 min, mean ~85 min. Big group, slow."
+      },
+      "group_size_dist": [
+        {"value": 4, "weight": 0.35},
+        {"value": 5, "weight": 0.35},
+        {"value": 6, "weight": 0.30}
+      ],
+      "primary_zones": ["womens_ethnic", "mens_formal_ethnic", "kids"],
+      "secondary_zones": ["womens_fa", "mens_fa", "infants", "womens_western", "mens_casual"],
+      "queue_tolerance_min": {"reduce_at": 20, "abandon_at": 30},
+      "basket_size_target": {"min": 6, "max": 10},
+      "intent_strength": 0.90,
+      "ac_sensitive": true
+    },
+    "quick_trip_male": {
+      "label": "Quick-trip men's wear",
+      "weight": 0.10,
+      "description": "Solo male, often dropped off by family. Minimal trial. Queue-intolerant.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 80,
+        "shift": 280,
+        "min": 0,
+        "max": 720,
+        "note": "Mode ~5:20pm, mean ~8pm. Evening, post-work."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 2,
+        "scale": 4,
+        "shift": 6,
+        "min": 5,
+        "max": 45,
+        "note": "Mode ~6 min (very impatient), mean ~14 min."
+      },
+      "group_size_dist": [
+        {"value": 1, "weight": 1.0}
+      ],
+      "primary_zones": ["mens_casual", "mens_formal_ethnic"],
+      "secondary_zones": ["mens_fa"],
+      "queue_tolerance_min": {"reduce_at": 5, "abandon_at": 8},
+      "basket_size_target": {"min": 1, "max": 2},
+      "intent_strength": 0.95
+    },
+    "browser": {
+      "label": "Browser, no purchase intent",
+      "weight": 0.15,
+      "description": "Walks 1-2 zones, walks out. Influenced by power wall. ~3-5% convert opportunistically under Mahabachat.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 20,
+        "scale": 18,
+        "shift": -50,
+        "min": 0,
+        "max": 720,
+        "note": "Spread across day with slight afternoon bias. Wider df = more spread."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 2,
+        "scale": 4,
+        "shift": 3,
+        "min": 2,
+        "max": 30,
+        "note": "Mode ~3 min, mean ~11 min. Many walk out under 5 min."
+      },
+      "group_size_dist": [
+        {"value": 1, "weight": 0.60},
+        {"value": 2, "weight": 0.40}
+      ],
+      "primary_zones": ["power_wall"],
+      "secondary_zones": ["womens_ethnic", "mens_casual"],
+      "queue_tolerance_min": {"reduce_at": 3, "abandon_at": 5},
+      "basket_size_target": {"min": 0, "max": 1},
+      "intent_strength": 0.10
+    }
+  },
+  "notes_on_chi_square": "Each arrival/dwell distribution is sampled as `chi2(df) * scale + shift`, then clipped to [min, max]. Chi-square with df=k has mode max(0, k-2) and mean k. So mode in minutes ≈ (k-2)*scale + shift and mean ≈ k*scale + shift. Adjust df to control spread (higher df = wider tail), scale to compress/stretch, shift to anchor.",
+  "qualitative_check": {
+    "morning_peak_11am_1pm_arrivals": "mostly mission_mom + a few young_woman, browser tail",
+    "lunch_dip_2pm_4pm": "tails only, no profile centered here",
+    "evening_peak_5pm_9pm": "family_weekend + young_woman + quick_trip_male + browser tail",
+    "late_evening_9pm_10pm": "tail of family_weekend + quick_trip_male"
+  }
+}

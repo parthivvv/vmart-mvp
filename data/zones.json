@@ -1,0 +1,120 @@
+{
+  "store": "V-Mart Unlimited, Bangalore (Tier-1)",
+  "floor_layout": "Single floor. Entry on the front wall, billing on the way out near the front. Power wall splits left (women's flow) and right (men's flow). Kids/infants at the back, accessible from both sides.",
+  "zones": [
+    {
+      "id": "power_wall",
+      "name": "Power wall & entry",
+      "display_order": 1,
+      "role": "entry",
+      "floor_pct": 8,
+      "fixtures": ["mannequins_womens_ethnic", "mannequins_mens_ethnic", "promo_island_lehenga", "promo_island_kurti", "mahabachat_banner"],
+      "neighbors": ["womens_ethnic", "mens_casual"],
+      "notes": "Refresh cadence: weekly (Monday) in baseline. Hero SKUs sit here. Influences arrival-intent strength."
+    },
+    {
+      "id": "womens_ethnic",
+      "name": "Women's ethnic",
+      "display_order": 2,
+      "role": "destination",
+      "floor_pct": 22,
+      "sub_zones": ["kurti", "kurti_set", "saree", "suit_set", "lehenga"],
+      "neighbors": ["power_wall", "womens_western", "womens_fa"],
+      "notes": "Largest revenue zone. L/XL kurti and saree blouses are the first sizes to stock out at peak."
+    },
+    {
+      "id": "womens_western",
+      "name": "Women's western",
+      "display_order": 3,
+      "role": "destination",
+      "floor_pct": 14,
+      "sub_zones": ["tops", "dresses", "bottoms", "co_ord", "nightwear", "innerwear"],
+      "neighbors": ["womens_ethnic", "womens_fa"]
+    },
+    {
+      "id": "womens_fa",
+      "name": "Women's footwear & accessories",
+      "display_order": 4,
+      "role": "destination",
+      "floor_pct": 8,
+      "sub_zones": ["footwear_flats", "footwear_heels", "footwear_ethnic", "bags", "jewellery", "dupattas"],
+      "neighbors": ["womens_western", "kids", "billing"],
+      "notes": "High margin (52-64%). In baseline it's treated as a destination — shoppers rarely cross over from ethnic. Lever 5 (cross-merch) targets this."
+    },
+    {
+      "id": "mens_casual",
+      "name": "Men's casual",
+      "display_order": 5,
+      "role": "destination",
+      "floor_pct": 10,
+      "sub_zones": ["tshirt", "shirt", "bottoms", "nightwear", "innerwear"],
+      "neighbors": ["power_wall", "mens_formal_ethnic"]
+    },
+    {
+      "id": "mens_formal_ethnic",
+      "name": "Men's formal & ethnic",
+      "display_order": 6,
+      "role": "destination",
+      "floor_pct": 10,
+      "sub_zones": ["formal_shirt", "formal_trousers", "kurta", "kurta_set"],
+      "neighbors": ["mens_casual", "mens_fa"],
+      "notes": "Diwali kurta sets concentrated here. Sherwani SKUs cross-sell with mojaris in mens_fa."
+    },
+    {
+      "id": "mens_fa",
+      "name": "Men's footwear & accessories",
+      "display_order": 7,
+      "role": "destination",
+      "floor_pct": 7,
+      "sub_zones": ["footwear_formal", "footwear_casual", "footwear_ethnic", "accessories"],
+      "neighbors": ["mens_formal_ethnic", "kids", "billing"]
+    },
+    {
+      "id": "kids",
+      "name": "Kids (boys + girls combined)",
+      "display_order": 8,
+      "role": "destination",
+      "floor_pct": 12,
+      "sub_zones": ["boys_4_8", "boys_8_14", "girls_4_8", "girls_8_14", "boys_ethnic", "girls_ethnic", "footwear", "nightwear"],
+      "neighbors": ["womens_fa", "mens_fa", "infants"],
+      "notes": "Kids ethnic spikes during Diwali. School-uniform-and-Diwali families arrive 11am-1pm."
+    },
+    {
+      "id": "infants",
+      "name": "Infants & newborn",
+      "display_order": 9,
+      "role": "destination",
+      "floor_pct": 5,
+      "sub_zones": ["infant_boys", "infant_girls", "newborn"],
+      "neighbors": ["kids"],
+      "notes": "Smallest zone. Staffed by 1 person in baseline — this is the staff member that should be reallocated under an optimized policy."
+    },
+    {
+      "id": "billing",
+      "name": "Billing & exit",
+      "display_order": 10,
+      "role": "transactional",
+      "floor_pct": 4,
+      "fixtures": ["counter_1", "counter_2", "counter_3", "counter_4", "counter_5", "counter_6", "impulse_fixture_bangles_earrings_makeup_sunglasses"],
+      "neighbors": ["womens_fa", "mens_fa"],
+      "notes": "6 counters. Baseline: 2 open 10am-6pm, 3 open 6pm-10pm. Single straight queue feeds all 6."
+    }
+  ],
+  "trial_rooms": {
+    "womens_bank": {"near_zone": "womens_ethnic", "cubicles": 7, "attendant": "one_for_whole_bank"},
+    "mens_bank": {"near_zone": "mens_casual", "cubicles": 3, "attendant": null},
+    "kids_bank": {"near_zone": "kids", "cubicles": 0, "attendant": null, "notes": "No dedicated kids cubicles in baseline."}
+  },
+  "baseline_cross_merch_friction": {
+    "saree_to_jutti": "high — opposite sides of store",
+    "kurti_to_leggings": "medium — different sub-zones within women's bank",
+    "kurta_to_mojari": "medium — adjacent but on separate racks",
+    "ethnic_to_dupatta": "high — dupatta sits in accessories, not at the ethnic rack",
+    "saree_to_blouse_piece": "low — usually rack-adjacent"
+  },
+  "ac_state": {
+    "10:00-21:00": "full",
+    "21:00-22:00": "reduced",
+    "notes": "Reduced AC late evening to save cost — affects dwell and family-group exit speed."
+  }
+}
