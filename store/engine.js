@@ -4,6 +4,32 @@
  * Pure logic, no DOM. Render layer reads sim.activeAgents, sim.counters, etc.
  * ─────────────────────────────────────────────────────────────────────────── */
 
+// ── DEFAULT BASELINE POLICY ─────────────────────────────────────────────────
+// Fallback when neither a policy is passed to Sim() nor window.POLICY_BASELINE
+// is defined. Matches the structure (and values) of data/policies/baseline.json
+// so behaviour is identical with or without the data bundle.
+const DEFAULT_BASELINE = {
+  id: 'baseline_fallback',
+  lever_1_billing: {
+    model: 'reactive',
+    always_open: [1],
+    always_closed: [4, 5, 6],
+    reactive_rules: [
+      { counter: 2, trigger_queue_min: 15, staffing_delay_min_range: [5, 10] },
+      { counter: 3, trigger_queue_min: 20, staffing_delay_min_range: [5, 10] },
+    ],
+  },
+  lever_2_floor_staffing: {
+    break_pattern: 'clustered',
+    mid_shift_reallocation: false,
+  },
+  lever_3_trial_rooms: {
+    cubicle_split: { womens_bank: 7, mens_bank: 3, kids_bank: 0 },
+    attendant_present: false,
+    item_cap_enforced: false,
+  },
+};
+
 // Persona display colors (kept in sync with profile IDs from data/profiles.json)
 const PERSONA_COLOR = {
   mission_mom:    { body:'#D67BAA', skin:'#F4C9A0', hair:'#3A2418', label:'Mission mom' },
@@ -319,10 +345,16 @@ class Agent {
 
 // ─────────────────────────── Sim ───────────────────────────
 class Sim {
-  constructor() {
+  // policy: optional object matching data/policies/*.json schema.
+  // If omitted, falls back to window.POLICY_BASELINE, else hardcoded defaults.
+  // This is the adapter Manit specified in manit-notes/08.
+  constructor(policy = null) {
     const A = window.AGENTS;
     const Z = window.ZONES;
     const SF = window.STAFF;
+
+    this.policy = policy || window.POLICY_BASELINE || DEFAULT_BASELINE;
+    const P = this.policy;
 
     this.agents = A.agents.map(a => new Agent(a));
     this.activeAgents = [];
@@ -331,18 +363,47 @@ class Sim {
     this.zonesMeta = {};
     Z.zones.forEach(z => { this.zonesMeta[z.id] = z; });
 
-    // Trial banks
-    this.trial_cubicles = TRIAL_CUBICLES.map((c, i) => ({
-      ...c, idx:i, busy:null, finishAt:0,
-    }));
+    // ── LEVER 3: trial rooms ─────────────────────────────────
+    // Cubicle split + attendant + item-cap come from policy.
+    const trialL = P.lever_3_trial_rooms || {};
+    const split = trialL.cubicle_split || { womens_bank:7, mens_bank:3, kids_bank:0 };
+    // Build cubicles based on split, keeping visual positions from TRIAL_CUBICLES list
+    this.trial_cubicles = TRIAL_CUBICLES.slice(0, (split.womens_bank + split.mens_bank))
+      .map((c, i) => ({
+        ...c,
+        idx: i,
+        bank: i < split.womens_bank ? 'w' : 'm',
+        busy: null,
+        finishAt: 0,
+      }));
     this.trial_queue_w = [];
     this.trial_queue_m = [];
-    this.trial_attendant_present = false; // baseline: false (T01 is doing floor relief)
+    this.trial_attendant_present = !!trialL.attendant_present;       // baseline: false
+    this.trial_item_cap_enforced  = !!trialL.item_cap_enforced;      // baseline: false
+    this.trial_item_cap           = trialL.item_cap_count || 4;
+    // With attendant + cap enforced, brief says cubicle turnover speeds up ~25%
+    this.trial_service_mul        = (this.trial_attendant_present && this.trial_item_cap_enforced) ? 0.75 : 1.0;
 
-    // Billing counters
-    this.counters = COUNTER_POS.map((p, i) => ({
-      ...p, idx:i, open: i === 0, busy:null, finishAt:0, openedAt: i === 0 ? 0 : null,
+    // ── LEVER 1: billing schedule ────────────────────────────
+    const billL = P.lever_1_billing || {};
+    const alwaysOpen   = billL.always_open || [1];
+    const alwaysClosed = billL.always_closed || [];
+    this.billing_mode = billL.model || 'reactive';
+    this.counters = COUNTER_POS.map((p, i) => {
+      const cid = i + 1;
+      const isOpen = alwaysOpen.includes(cid);
+      return { ...p, idx:i, cid, open:isOpen, busy:null, finishAt:0, openedAt: isOpen ? 0 : null };
+    });
+    // Reactive opening rules (baseline) — list of { counter, trigger_queue_min, staffing_delay_min_range }
+    this.billing_reactive_rules = (billL.reactive_rules || []).map(r => ({
+      ...r,
+      _staffing_delay_min: r.staffing_delay_min_range
+        ? r.staffing_delay_min_range[0] + Math.random() * (r.staffing_delay_min_range[1] - r.staffing_delay_min_range[0])
+        : 8,
+      _triggered_at: null,
     }));
+    // Scheduled opening (optimized) — { slot: [counter_ids] } or { hh_mm: [counter_ids] }
+    this.billing_schedule = billL.schedule || null;  // { "17:00": [2], "18:00": [3] }
     this.billing_queue = [];
 
     // Staff (visualisation only — fixed positions, lunch/dinner breaks toggle visibility)
@@ -413,6 +474,7 @@ class Sim {
 
   _tickStaff(dt) {
     for (const s of this.staff) {
+      this._applyMidShiftReallocation(s);
       const isBilling = (s.role === 'billing' || (s.zone && s.zone.startsWith('billing')));
       const isManager = (s.role === 'manager' || s.role === 'assistant_manager' || s.role === 'security');
 
@@ -521,13 +583,65 @@ class Sim {
   }
 
   staffOnBreak(staff) {
-    // baseline: lunch ~13:00-15:00 cluster, dinner ~19:00-20:30
+    // ── LEVER 2: break pattern ──────────────────────────────
+    // Clustered (baseline): take breaks at the exact times in staff.json
+    //   (5 off simultaneously 13:00-15:00, 4 off 19:00-20:30 — drags peak).
+    // Staggered (optimized): shift each staff member's break to a unique
+    //   slot inside the same window, max 2 off concurrently.
     if (!staff.lunch_break || !staff.dinner_break) return false;
+    const pattern = this.policy?.lever_2_floor_staffing?.break_pattern || 'clustered';
+
+    if (pattern === 'staggered') {
+      // Deterministic stagger: each staff gets a unique offset based on id hash
+      // Lunch window 12:30–15:00 (150 min), dinner 18:30–21:00 (150 min).
+      // Cap concurrent absences at 2 by spacing offsets by 15 min.
+      const idNum = parseInt(String(staff.id).replace(/\D/g, '')) || 0;
+      const lunchStart = 150 + (idNum * 15) % 150;   // 150-min window starts at sim min 150 (=12:30)
+      const lunchEnd   = lunchStart + 30;
+      const dinnerStart = 510 + (idNum * 15) % 150;
+      const dinnerEnd   = dinnerStart + 30;
+      if (this.simMin >= lunchStart && this.simMin < lunchEnd)   return 'lunch';
+      if (this.simMin >= dinnerStart && this.simMin < dinnerEnd) return 'dinner';
+      return false;
+    }
+
+    // Clustered (baseline)
     const [ls, le] = staff.lunch_break.split('-').map(t => this.parseClock(t));
     const [ds, de] = staff.dinner_break.split('-').map(t => this.parseClock(t));
     if (this.simMin >= ls && this.simMin < le) return 'lunch';
     if (this.simMin >= ds && this.simMin < de) return 'dinner';
     return false;
+  }
+
+  // ── LEVER 2: mid-shift reallocation ────────────────────────
+  // Called from _tickStaff. When the policy allows mid-shift moves and the
+  // sim time crosses a reallocation point, this physically shifts a staff
+  // member's home zone (so future patrols and help-targeting move with them).
+  _applyMidShiftReallocation(staff) {
+    const cfg = this.policy?.lever_2_floor_staffing;
+    if (!cfg || !cfg.mid_shift_reallocation || !cfg.reallocations) return;
+    if (staff._reallocated) return;
+    for (const reloc of cfg.reallocations) {
+      const tMin = this.parseClock(reloc.at);
+      if (this.simMin < tMin) continue;
+      if (reloc.from_zone === staff.zone || reloc.staff_id === staff.id) {
+        staff.zone = reloc.to_zone;
+        const zonePos = {
+          power_wall: [810, 940], womens_ethnic: [310, 460], womens_western: [310, 800],
+          womens_fa: [380, 925], mens_casual: [830, 530], mens_formal_ethnic: [1100, 460],
+          mens_fa: [1100, 790], kids: [1350, 460], infants: [1560, 690],
+          billing: [1090, 950], floor: [690, 540],
+        };
+        const p = zonePos[staff.zone] || zonePos.floor;
+        staff.home_x = p[0] + (Math.random() - 0.5) * 18;
+        staff.home_y = p[1] + (Math.random() - 0.5) * 12;
+        staff._target_x = staff.home_x;
+        staff._target_y = staff.home_y;
+        staff._reallocated = true;
+        this.emit('staff_reallocation', null, staff.name + ' → ' + staff.zone);
+        return;
+      }
+    }
   }
 
   emit(type, agent, detail) {
@@ -917,10 +1031,10 @@ class Sim {
       const q = c.bank === 'w' ? this.trial_queue_w : this.trial_queue_m;
       if (q.length === 0) continue;
       const a = q.shift();
-      // baseline: cubicle turnover 4-7 normal, 8-12 at peak
-      // peak ≈ 6:00-9:00 PM (sim min 480-660)
+      // LEVER 3 effect: with attendant + item cap, turnover ~25% faster
       const isPeak = this.simMin >= 480 && this.simMin <= 660;
-      const dwell = isPeak ? (8 + Math.random() * 4) : (4 + Math.random() * 3);
+      let dwell = isPeak ? (8 + Math.random() * 4) : (4 + Math.random() * 3);
+      dwell *= this.trial_service_mul;
       c.busy = a;
       c.finishAt = this.simMin + dwell;
       a.state = 'trial';
@@ -933,16 +1047,39 @@ class Sim {
   }
 
   _tickBilling(dt) {
-    // Reactively open counters per baseline policy
-    if (this.billing_queue.length >= 15 && !this.counters[1].open) {
-      this.counters[1].open = true;
-      this.counters[1].openedAt = this.simMin;
-      this.emit('counter_open', null, 'C2 opened (queue ≥ 15)');
+    // ── LEVER 1: billing schedule resolution ─────────────────
+    // Policy can specify reactive rules (baseline) or scheduled opens (optimized).
+    // Both are honoured; an optimized policy can use either or both.
+    //
+    // Reactive: when queue ≥ trigger, mark _triggered_at; after staffing-delay,
+    // counter actually opens. Matches baseline brief: "5-10 min staffing delay".
+    for (const r of this.billing_reactive_rules) {
+      const c = this.counters[r.counter - 1];
+      if (!c || c.open) continue;
+      if (r._triggered_at === null && this.billing_queue.length >= r.trigger_queue_min) {
+        r._triggered_at = this.simMin;
+      } else if (r._triggered_at !== null && this.simMin - r._triggered_at >= r._staffing_delay_min) {
+        c.open = true;
+        c.openedAt = this.simMin;
+        this.emit('counter_open', null, 'C' + r.counter + ' opened (reactive · queue ≥ ' + r.trigger_queue_min + ')');
+      }
     }
-    if (this.billing_queue.length >= 20 && !this.counters[2].open) {
-      this.counters[2].open = true;
-      this.counters[2].openedAt = this.simMin;
-      this.emit('counter_open', null, 'C3 opened (queue ≥ 20)');
+    // Scheduled: open counter at fixed clock time (optimized policy).
+    if (this.billing_schedule) {
+      for (const hhmm in this.billing_schedule) {
+        const targetMin = this.parseClock(hhmm);
+        if (this.simMin >= targetMin) {
+          const counters = this.billing_schedule[hhmm];
+          for (const cid of counters) {
+            const c = this.counters[cid - 1];
+            if (c && !c.open) {
+              c.open = true;
+              c.openedAt = this.simMin;
+              this.emit('counter_open', null, 'C' + cid + ' opened (scheduled · ' + hhmm + ')');
+            }
+          }
+        }
+      }
     }
 
     // Assign queue head to free open counter

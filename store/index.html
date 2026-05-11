@@ -96,6 +96,36 @@
   .chip.alert .v { color: var(--red); }
   .chip.good { background: rgba(61,220,132,0.12); border-color: rgba(61,220,132,0.40); }
   .chip.good .v { color: var(--green); }
+  .policy-toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-left: 4px;
+    padding-left: 8px;
+    border-left: 1px solid rgba(250,242,216,0.18);
+    height: 30px;
+  }
+  .policy-toggle .pt-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-right: 4px;
+    font-weight: 700;
+  }
+  .policy-toggle .pt-btn {
+    background: rgba(250,242,216,0.04);
+    color: var(--ink-mid);
+    border: 1px solid rgba(250,242,216,0.15);
+    padding: 4px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .policy-toggle .pt-btn:hover { color: var(--ink); border-color: rgba(250,242,216,0.40); }
+  .policy-toggle .pt-btn.active {
+    background: var(--red); color: white; border-color: var(--red);
+  }
 
   /* ─── STAGE (canvas) ──────────────────────────── */
   .stage {
@@ -1187,6 +1217,11 @@
     <div class="chip alert"><span class="lbl">Bill Q</span><span class="v" id="m-billq">0</span></div>
     <div class="chip alert"><span class="lbl">Trial Q</span><span class="v" id="m-trialq">0</span></div>
     <div class="chip alert"><span class="lbl">Walk-outs</span><span class="v" id="m-walk">0</span></div>
+    <div class="policy-toggle" title="Switch the operating policy. Same agents, same seed.">
+      <span class="pt-lbl">Policy</span>
+      <button class="pt-btn active" data-policy="baseline">Baseline</button>
+      <button class="pt-btn" data-policy="optimized_v1">Optimized v1</button>
+    </div>
   </div>
 </div>
 
@@ -1343,6 +1378,28 @@
       e.target.classList.toggle('active', renderer.showPaths);
     });
 
+    // Policy toggle — swaps the operating policy and resets the sim
+    document.querySelectorAll('.policy-toggle .pt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.dataset.policy;
+        const newPolicy = pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1 : window.POLICY_BASELINE;
+        document.querySelectorAll('.policy-toggle .pt-btn').forEach(b => b.classList.toggle('active', b === btn));
+        // Reset sim with the new policy
+        window.sim = new Sim(newPolicy);
+        window.renderer.sim = window.sim;
+        window.renderer.selected = null;
+        window.renderer._heatLast = -1;
+        window.renderer._lastEventCount = 0;
+        lastEventCount = 0;
+        insightsShown = false;
+        updateInspector(null);
+        document.getElementById('events').innerHTML = '';
+        document.getElementById('insights').classList.remove('show');
+        running = false;
+        document.getElementById('btn-play').textContent = '▶ START';
+      });
+    });
+
     // Persona filter chips
     document.querySelectorAll('.pchip').forEach(c => {
       c.addEventListener('click', () => {
@@ -1370,10 +1427,17 @@
       });
     });
     document.getElementById('btn-reset').addEventListener('click', () => {
-      window.sim = new Sim();
+      // Honour the active policy toggle when resetting
+      const activeBtn = document.querySelector('.policy-toggle .pt-btn.active');
+      const pid = activeBtn ? activeBtn.dataset.policy : 'baseline';
+      const policy = pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1 : window.POLICY_BASELINE;
+      window.sim = new Sim(policy);
       window.renderer.sim = window.sim;
       window.renderer.selected = null;
       window.renderer._heatLast = -1;
+      window.renderer._lastEventCount = 0;
+      lastEventCount = 0;
+      insightsShown = false;
       updateInspector(null);
       document.getElementById('events').innerHTML = '';
       document.getElementById('insights').classList.remove('show');
