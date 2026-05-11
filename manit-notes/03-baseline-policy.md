@@ -2,43 +2,51 @@
 
 The exact "before" config the simulator runs first. This is what the Bangalore store manager actually does today. We have to be faithful to it — the lift only counts if the baseline is realistic.
 
-## Staffing (fixed all day)
+## Staffing (10 floor staff, fixed all day)
 
 | Zone | Floor staff |
 |------|-------------|
 | Power wall & entry | 1 |
-| Women's ethnic | 3 |
-| Women's western | 2 |
+| Women's ethnic | 2 |
+| Women's western | 1 |
 | Women's footwear & accessories | 1 |
 | Men's casual | 1 |
 | Men's formal & ethnic | 1 |
 | Men's footwear & accessories | 1 |
-| Kids (boys + girls) | 2 |
+| Kids (boys + girls) | 1 |
 | Infants | 1 |
-| Floating | 1 |
-| **Total** | **14 FTE** |
+| **Total** | **10 FTE** |
 
-**Break clustering** (the constraint that creates the upside):
-- Lunch breaks 1pm–3pm → 5 staff off at any moment in window
-- Dinner breaks 7pm–8:30pm → 4 staff off (during apparel peak)
+Plus 1 trial-room attendant (T01) on the roster but **not at the trial rooms** in baseline — acts as floor relief.
+
+**Break clustering** (the constraint that creates the upside, across 11 floor-side bodies):
+- Lunch breaks 1pm–3pm → peak 5 staff off at 1:30–2pm
+- Dinner breaks 7pm–8:30pm → peak 4 staff off at 7:30–8pm (during apparel peak)
 - **No mid-shift reallocation.** A staff member assigned to infants at 10am is still in infants at 8pm.
 
-## Billing
+## Billing — 1 counter open by default
 
-- 6 counters total. Single straight queue feeds all.
-- 10am–6pm: 2 counters staffed
-- 6pm–10pm: 3 counters staffed
-- 4th–6th counters opened only when manager visually judges queue too long (we'll model this as: trigger when queue ≥ 15, with a 5–10 min reaction delay before counter actually opens)
+- 6 counters exist. Single straight queue feeds all.
+- 4 billing staff total:
+  - **B01 + B02 anchor counter 1** all day (B01 morning 10–18, B02 evening 14–22, overlap is handoff)
+  - **B03 standby** — opens counter 2 when manager calls (queue ≥ 15, 5–10 min staffing delay)
+  - **B04 standby** — opens counter 3 when needed
+- Counters 4–6: would require pulling a billing-cross-trained floor staff. Manager rarely makes this call in baseline.
 - ~2–3 min per memo on Diwali (larger BOGO baskets)
 - No mobile POS, no queue-busters, no signage
 
-## Trial rooms
+This is the source of huge queues at peak: **only 1 counter is open by default**, and additional counters open reactively *after* the queue is already long.
 
-- 7 women's, 3 men's, 0 kids — fixed all day
-- One attendant manages the entire women's bank
+## Trial rooms — unmanned
+
+- 7 women's, 3 men's, 0 kids cubicles — fixed all day
+- **No one stationed at the entrance.** Shoppers self-queue.
+- T01 (trial-room attendant by role) exists but in baseline is doing floor relief, not at trial rooms
 - No item limit enforcement
 - Cubicle turnover: 4–7 min normal, 8–12 min at peak
 - Trial→purchase conversion baseline: 50–60%
+
+(See [07-staff-agents.md](07-staff-agents.md) for the full 18-person roster and roles.)
 
 ## Power wall & merchandising
 

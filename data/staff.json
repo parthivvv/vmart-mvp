@@ -1,0 +1,536 @@
+{
+  "seed": 99,
+  "n_staff": 18,
+  "summary": {
+    "floor": 10,
+    "trial_room": 1,
+    "billing": 4,
+    "managers": 2,
+    "security": 1,
+    "movable_in_optimized": 15,
+    "fixed_in_optimized": 3
+  },
+  "floor_staff": [
+    {
+      "id": "F01",
+      "name": "Amit Reddy",
+      "age": 34,
+      "gender": "M",
+      "ethnicity": "telugu",
+      "neighborhood": "Whitefield Junction",
+      "role": "floor",
+      "zone": "power_wall",
+      "experience_years": 3,
+      "languages": [
+        "kannada",
+        "hindi",
+        "telugu"
+      ],
+      "skills": [
+        "visual_merchandising",
+        "customer_routing"
+      ],
+      "billing_cross_trained": false,
+      "shift": "10:00-22:00",
+      "lunch_break": "14:00-14:30",
+      "dinner_break": "20:00-20:30",
+      "service_speed_multiplier": 1.04,
+      "backstory": "Amit Reddy (34, from Whitefield Junction). 3 years at V-Mart. Speaks kannada, hindi, telugu. Assigned to power wall for the day."
+    },
+    {
+      "id": "F02",
+      "name": "Lakshmi Bhat",
+      "age": 26,
+      "gender": "F",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Hoodi",
+      "role": "floor",
+      "zone": "womens_ethnic",
+      "experience_years": 6,
+      "languages": [
+        "kannada",
+        "hindi",
+        "tamil"
+      ],
+      "skills": [
+        "womens_ethnic_expert",
+        "size_advisor",
+        "billing_cross_trained",
+        "queue_management"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:30-14:00",
+      "dinner_break": "19:00-19:30",
+      "service_speed_multiplier": 1.24,
+      "backstory": "Lakshmi Bhat (26, from Hoodi). 6 years at V-Mart. Speaks kannada, hindi, tamil. Assigned to womens ethnic for the day."
+    },
+    {
+      "id": "F03",
+      "name": "Saranya Reddy",
+      "age": 23,
+      "gender": "F",
+      "ethnicity": "telugu",
+      "neighborhood": "Banashankari",
+      "role": "floor",
+      "zone": "womens_ethnic",
+      "experience_years": 1,
+      "languages": [
+        "kannada",
+        "hindi",
+        "telugu"
+      ],
+      "skills": [
+        "womens_ethnic_expert",
+        "size_advisor",
+        "billing_cross_trained"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:00-13:30",
+      "dinner_break": "19:00-19:30",
+      "service_speed_multiplier": 0.89,
+      "backstory": "Saranya Reddy (23, from Banashankari). 1 year at V-Mart. Speaks kannada, hindi, telugu. Assigned to womens ethnic for the day."
+    },
+    {
+      "id": "F04",
+      "name": "Lakshmi Bhat",
+      "age": 30,
+      "gender": "F",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Banaswadi",
+      "role": "floor",
+      "zone": "womens_western",
+      "experience_years": 3,
+      "languages": [
+        "kannada",
+        "hindi"
+      ],
+      "skills": [
+        "western_styling",
+        "size_advisor",
+        "billing_cross_trained"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "14:00-14:30",
+      "dinner_break": "19:30-20:00",
+      "service_speed_multiplier": 1.05,
+      "backstory": "Lakshmi Bhat (30, from Banaswadi). 3 years at V-Mart. Speaks kannada, hindi. Assigned to womens western for the day."
+    },
+    {
+      "id": "F05",
+      "name": "Ramesh Kumar",
+      "age": 21,
+      "gender": "M",
+      "ethnicity": "kannadiga",
+      "neighborhood": "RT Nagar",
+      "role": "floor",
+      "zone": "womens_fa",
+      "experience_years": 2,
+      "languages": [
+        "kannada",
+        "telugu"
+      ],
+      "skills": [
+        "impulse_upsell",
+        "queue_management",
+        "billing_cross_trained"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:30-14:00",
+      "dinner_break": "20:00-20:30",
+      "service_speed_multiplier": 1.0,
+      "backstory": "Ramesh Kumar (21, from RT Nagar). 2 years at V-Mart. Speaks kannada, telugu. Assigned to womens fa for the day."
+    },
+    {
+      "id": "F06",
+      "name": "Pavithra Bhandari",
+      "age": 30,
+      "gender": "F",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Vijayanagar",
+      "role": "floor",
+      "zone": "mens_casual",
+      "experience_years": 8,
+      "languages": [
+        "kannada",
+        "english"
+      ],
+      "skills": [
+        "size_advisor",
+        "billing_cross_trained",
+        "replenishment_capable"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:00-13:30",
+      "dinner_break": "19:30-20:00",
+      "service_speed_multiplier": 1.17,
+      "backstory": "Pavithra Bhandari (30, from Vijayanagar). 8 years at V-Mart. Speaks kannada, english. Assigned to mens casual for the day."
+    },
+    {
+      "id": "F07",
+      "name": "Gowtham Bhat",
+      "age": 32,
+      "gender": "M",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Bommanahalli",
+      "role": "floor",
+      "zone": "mens_formal_ethnic",
+      "experience_years": 7,
+      "languages": [
+        "kannada",
+        "hindi",
+        "english",
+        "tamil"
+      ],
+      "skills": [
+        "mens_ethnic_expert"
+      ],
+      "billing_cross_trained": false,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:30-14:00",
+      "dinner_break": "20:00-20:30",
+      "service_speed_multiplier": 1.16,
+      "backstory": "Gowtham Bhat (32, from Bommanahalli). 7 years at V-Mart. Speaks kannada, hindi, english, tamil. Assigned to mens formal ethnic for the day."
+    },
+    {
+      "id": "F08",
+      "name": "Ramesh Naidu",
+      "age": 23,
+      "gender": "M",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Rajajinagar",
+      "role": "floor",
+      "zone": "mens_fa",
+      "experience_years": 4,
+      "languages": [
+        "kannada"
+      ],
+      "skills": [
+        "footwear_advisor",
+        "billing_cross_trained"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:30-14:00",
+      "dinner_break": "19:00-19:30",
+      "service_speed_multiplier": 1.1,
+      "backstory": "Ramesh Naidu (23, from Rajajinagar). 4 years at V-Mart. Speaks kannada. Assigned to mens fa for the day."
+    },
+    {
+      "id": "F09",
+      "name": "Shashank Naidu",
+      "age": 22,
+      "gender": "M",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Mahadevapura",
+      "role": "floor",
+      "zone": "kids",
+      "experience_years": 3,
+      "languages": [
+        "kannada"
+      ],
+      "skills": [
+        "kids_friendly"
+      ],
+      "billing_cross_trained": false,
+      "shift": "10:00-22:00",
+      "lunch_break": "14:30-15:00",
+      "dinner_break": "19:30-20:00",
+      "service_speed_multiplier": 1.01,
+      "backstory": "Shashank Naidu (22, from Mahadevapura). 3 years at V-Mart. Speaks kannada. Assigned to kids for the day."
+    },
+    {
+      "id": "F10",
+      "name": "Harish Holla",
+      "age": 25,
+      "gender": "M",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Kammanahalli",
+      "role": "floor",
+      "zone": "infants",
+      "experience_years": 5,
+      "languages": [
+        "kannada"
+      ],
+      "skills": [
+        "kids_friendly",
+        "replenishment_capable",
+        "billing_cross_trained",
+        "queue_management"
+      ],
+      "billing_cross_trained": true,
+      "shift": "10:00-22:00",
+      "lunch_break": "13:30-14:00",
+      "dinner_break": "19:30-20:00",
+      "service_speed_multiplier": 1.18,
+      "backstory": "Harish Holla (25, from Kammanahalli). 5 years at V-Mart. Speaks kannada. Assigned to infants for the day."
+    }
+  ],
+  "trial_room_staff": [
+    {
+      "id": "T01",
+      "name": "Lavanya Goud",
+      "age": 31,
+      "gender": "F",
+      "ethnicity": "telugu",
+      "neighborhood": "Magadi Road",
+      "role": "trial_room",
+      "default_role": "trial_room_attendant",
+      "baseline_assignment": "floor_relief",
+      "experience_years": 7,
+      "languages": [
+        "kannada",
+        "telugu"
+      ],
+      "skills": [
+        "trial_room_attendant",
+        "queue_management",
+        "size_advisor"
+      ],
+      "shift": "10:00-22:00",
+      "lunch_break": "14:00-14:30",
+      "dinner_break": "20:00-20:30",
+      "service_speed_multiplier": 1.12,
+      "backstory": "Lavanya Goud (31, from Magadi Road). 7 years at V-Mart. Trial-room attendant by designation, but in baseline policy isn't stationed at the trial rooms \u2014 drifts between zones as floor relief. Lever 3 in optimized policy puts them actually at the women's trial bank with item-count enforcement."
+    }
+  ],
+  "billing_staff": [
+    {
+      "id": "B01",
+      "name": "Anitha Naidu",
+      "age": 27,
+      "gender": "F",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Peenya",
+      "role": "billing",
+      "shift": "10:00-18:00",
+      "shift_label": "morning_anchor",
+      "baseline_role": "active",
+      "deployed_counter": 1,
+      "standby_counter": null,
+      "experience_years": 5,
+      "languages": [
+        "kannada",
+        "english"
+      ],
+      "skills": [
+        "billing_proficient",
+        "upsell_at_counter"
+      ],
+      "throughput_min_per_memo": 2.34,
+      "backstory": "Anitha Naidu (27, Peenya). 5 years on billing at V-Mart. Morning anchor role (10:00-18:00). Speaks kannada, english. Anchors counter 1 in baseline."
+    },
+    {
+      "id": "B02",
+      "name": "Kiran Goud",
+      "age": 22,
+      "gender": "M",
+      "ethnicity": "telugu",
+      "neighborhood": "Mahadevapura",
+      "role": "billing",
+      "shift": "14:00-22:00",
+      "shift_label": "evening_anchor",
+      "baseline_role": "active",
+      "deployed_counter": 1,
+      "standby_counter": null,
+      "experience_years": 1,
+      "languages": [
+        "kannada",
+        "hindi",
+        "tamil",
+        "telugu"
+      ],
+      "skills": [
+        "billing_proficient"
+      ],
+      "throughput_min_per_memo": 2.35,
+      "backstory": "Kiran Goud (22, Mahadevapura). 1 year on billing at V-Mart. Evening anchor role (14:00-22:00). Speaks kannada, hindi, tamil, telugu. Anchors counter 1 in baseline."
+    },
+    {
+      "id": "B03",
+      "name": "Aisha Reddy",
+      "age": 34,
+      "gender": "F",
+      "ethnicity": "telugu",
+      "neighborhood": "Banashankari",
+      "role": "billing",
+      "shift": "12:00-22:00",
+      "shift_label": "reactive_1",
+      "baseline_role": "standby",
+      "deployed_counter": null,
+      "standby_counter": 2,
+      "experience_years": 4,
+      "languages": [
+        "kannada",
+        "hindi",
+        "english",
+        "telugu"
+      ],
+      "skills": [
+        "billing_proficient",
+        "upsell_at_counter"
+      ],
+      "throughput_min_per_memo": 2.62,
+      "backstory": "Aisha Reddy (34, Banashankari). 4 years on billing at V-Mart. Reactive 1 role (12:00-22:00). Speaks kannada, hindi, english, telugu. On standby in baseline; deployed to counter 2 only when store manager opens it (queue ~15)."
+    },
+    {
+      "id": "B04",
+      "name": "Amit Hussain",
+      "age": 27,
+      "gender": "M",
+      "ethnicity": "other",
+      "neighborhood": "Marathahalli",
+      "role": "billing",
+      "shift": "14:00-22:00",
+      "shift_label": "reactive_2",
+      "baseline_role": "standby",
+      "deployed_counter": null,
+      "standby_counter": 3,
+      "experience_years": 3,
+      "languages": [
+        "kannada",
+        "hindi",
+        "english"
+      ],
+      "skills": [
+        "billing_proficient",
+        "upsell_at_counter"
+      ],
+      "throughput_min_per_memo": 2.58,
+      "backstory": "Amit Hussain (27, Marathahalli). 3 years on billing at V-Mart. Reactive 2 role (14:00-22:00). Speaks kannada, hindi, english. On standby in baseline; deployed to counter 3 only when store manager opens it (queue ~15)."
+    }
+  ],
+  "managers": [
+    {
+      "id": "M01",
+      "name": "Ravi Murthy",
+      "age": 48,
+      "gender": "M",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Basavanagudi",
+      "role": "store_manager",
+      "experience_years": 14,
+      "languages": [
+        "kannada",
+        "hindi",
+        "english",
+        "tamil"
+      ],
+      "skills": [
+        "floor_management",
+        "billing_oversight",
+        "vendor_negotiation",
+        "staff_management"
+      ],
+      "shift": "10:00-22:00",
+      "fixed_in_optimized": true,
+      "decision_responsibilities": [
+        "counter_opening",
+        "staff_escalations",
+        "stockout_response",
+        "cash_reconciliation"
+      ],
+      "baseline_decision_pattern": "Walks floor every 25-30 min. Opens additional billing counter when queue reaches ~15 shoppers (5-10 min staffing delay). Stationed near billing 17:00-21:00.",
+      "baseline_schedule": {
+        "10:00-11:00": "open store, confirm positions",
+        "11:00-13:00": "ad-hoc issues (customer complaints, stockout queries)",
+        "13:00-15:00": "monitor lunch rotation",
+        "15:00-17:00": "walk floor, eyeball queues",
+        "17:00-21:00": "stationed near billing, opens counters reactively",
+        "21:00-22:00": "closing routine, cash reconciliation"
+      },
+      "decision_quality_score": 0.78,
+      "backstory": "Ravi Murthy (48, Basavanagudi). 14 years at V-Mart, last 4 as store manager at this branch. Started as floor staff at the Mysuru store in 2010. Runs the store on intuition built over a decade of festive seasons \u2014 good, but not optimal."
+    },
+    {
+      "id": "M02",
+      "name": "Deepa Hegde",
+      "age": 33,
+      "gender": "F",
+      "ethnicity": "kannadiga",
+      "neighborhood": "Malleswaram",
+      "role": "assistant_manager",
+      "experience_years": 7,
+      "languages": [
+        "kannada",
+        "hindi",
+        "english"
+      ],
+      "skills": [
+        "floor_management",
+        "trial_room_oversight",
+        "complaint_resolution"
+      ],
+      "shift": "10:00-22:00",
+      "fixed_in_optimized": true,
+      "decision_responsibilities": [
+        "trial_room_disputes",
+        "ad_hoc_floor_issues",
+        "lunch_rotation_oversight"
+      ],
+      "baseline_decision_pattern": "Roves the floor. Handles customer escalations. Manages lunch break rotation 13:00-15:00.",
+      "decision_quality_score": 0.72,
+      "backstory": "Deepa Hegde (33, Malleswaram). 7 years at V-Mart, promoted to assistant manager 18 months ago. Background in retail visual merchandising. Better at customer-facing escalations than the store manager."
+    }
+  ],
+  "security": [
+    {
+      "id": "S01",
+      "name": "Sundar Naidu",
+      "age": 42,
+      "gender": "M",
+      "ethnicity": "telugu",
+      "neighborhood": "Peenya",
+      "role": "security",
+      "position": "entry_exit",
+      "shift": "10:00-22:00",
+      "fixed_in_optimized": true,
+      "languages": [
+        "kannada",
+        "hindi",
+        "telugu"
+      ],
+      "backstory": "Ex-army, 12 years in retail security. Stationed at the main entrance, also handles exit tag-check."
+    }
+  ],
+  "baseline_break_clusters": {
+    "lunch_window": "13:00-15:00",
+    "lunch_peak_off": 5,
+    "lunch_peak_slot": "13:30-14:00",
+    "dinner_window": "19:00-20:30",
+    "dinner_peak_off": 4,
+    "dinner_peak_slot": "19:30-20:00",
+    "note": "Lever 2 in optimized policy de-clusters these. Brief specifies these clusters as the source of revenue leak at peak."
+  },
+  "baseline_billing": {
+    "counters_total": 6,
+    "always_open": [
+      1
+    ],
+    "reactive_counters": [
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "reactive_trigger": "queue >= 15 shoppers, 5-10 min staffing delay",
+    "fixed_anchor_staff": [
+      "B01",
+      "B02"
+    ],
+    "standby_staff": [
+      "B03",
+      "B04"
+    ],
+    "note": "Baseline has only 1 billing counter open by default. Manager calls in B03/B04 when queue grows."
+  },
+  "baseline_trial_rooms": {
+    "attendant_stationed": false,
+    "note": "T01 exists as a trial-room attendant by role, but in baseline policy is NOT at the trial rooms (per brief). They act as floor relief."
+  }
+}

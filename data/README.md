@@ -10,12 +10,14 @@ Static inputs that drive the sim. Same data used by baseline and optimized runs.
 | [zones.json](zones.json) | ✅ built | 9 floor zones with adjacency, sub-zones, fixtures, trial-room banks, AC schedule |
 | [profiles.json](profiles.json) | ✅ built | 5 shopper profiles with chi-square arrival/dwell params, group size dist, queue tolerances, basket targets |
 | [agents.json](agents.json) | ✅ built | 1,000 generated shoppers for Diwali Saturday. Each has profile, name, age, ethnicity, neighborhood, group, arrival/dwell, backstory |
+| [staff.json](staff.json) | ✅ built | 18-person store roster: 10 floor, 1 trial-room, 4 billing, 2 managers, 1 security. Skills, lunch/dinner breaks, baseline assignments. See [../manit-notes/07-staff-agents.md](../manit-notes/07-staff-agents.md). |
 
 ## How to rebuild
 
 ```bash
 python3 data/_build/build_skus.py     # → data/skus.json
 python3 data/_build/build_agents.py   # → data/agents.json  (uses data/profiles.json)
+python3 data/_build/build_staff.py    # → data/staff.json
 ```
 
 Both are deterministic via `SEED = 42`. Same seed → same 1,000 agents in the same arrival order.

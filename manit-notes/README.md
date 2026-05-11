@@ -15,6 +15,7 @@ Parthiv is on the store UI ([index.html](../index.html), 360 tour). I'm on shopp
 | 04 | [04-simulation-engine.md](04-simulation-engine.md) | Tick model, scheduler, how a day runs |
 | 05 | [05-reward-and-metrics.md](05-reward-and-metrics.md) | Revenue + the supporting KPIs |
 | 06 | [06-open-questions.md](06-open-questions.md) | Decisions still owed — language, format, sync points with Parthiv |
+| 07 | [07-staff-agents.md](07-staff-agents.md) | The 18-person staff roster — floor, trial-room, billing, managers, security |
 | -- | [checklist.md](checklist.md) | Running todo across my workstream |
 
 ## Code layout (proposed)
