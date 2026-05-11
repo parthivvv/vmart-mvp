@@ -139,29 +139,31 @@ function pickOutfit(profile, rng) {
 
 function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
 
-// Realistic item-price distribution (post-discount, BOGO-adjusted) — matches the
-// SKU catalog in data/skus.json. Zone-conditioned so women's-ethnic skews higher
-// than basics like innerwear.
+// Realistic item-price distribution (POST-discount, BOGO+30%-off REALIZED price).
+// Calibrated against data/skus.json: kurti ₹329, polo ₹409, tee ₹239, saree
+// ₹489-819, suit ₹614-737, lehenga ₹1,199-1,799, mojari ₹479, dupatta ₹163,
+// onesie ₹319, kids tee ₹239, infant ₹319. Average per item ~₹250 once you
+// account for BOGO-2 (every 3rd item free in ethnic) pulling avg paid down.
 function generateItemPrice(zone) {
   const r = Math.random();
   const zoneMul = {
-    womens_ethnic: 1.20, // saree/lehenga skew higher
-    womens_western: 0.90,
-    womens_fa: 0.45,     // accessories cheaper
-    mens_casual: 0.85,
-    mens_formal_ethnic: 1.10, // sherwani/kurta-set
-    mens_fa: 0.65,
-    kids: 0.55,
-    infants: 0.42,
-    power_wall: 0.95,
-    billing: 0.30,       // impulse only
-  }[zone] || 0.80;
+    womens_ethnic: 0.95,
+    womens_western: 0.70,
+    womens_fa: 0.32,     // accessories: dupatta ₹163, bangles ₹99, hair ₹74
+    mens_casual: 0.65,
+    mens_formal_ethnic: 0.80,
+    mens_fa: 0.48,
+    kids: 0.40,
+    infants: 0.36,
+    power_wall: 0.75,
+    billing: 0.22,       // impulse: bangles ₹99, lipstick, candy
+  }[zone] || 0.55;
 
   let base;
-  if (r < 0.45)      base = 120 + Math.random() * 200;   // 120-320 basics
-  else if (r < 0.78) base = 280 + Math.random() * 240;   // 280-520 mid
-  else if (r < 0.95) base = 480 + Math.random() * 520;   // 480-1000 mid-premium
-  else               base = 900 + Math.random() * 1500;  // 900-2400 hero
+  if (r < 0.55)      base = 100 + Math.random() * 180;   // 100-280 basics (55%)
+  else if (r < 0.85) base = 250 + Math.random() * 250;   // 250-500 mid (30%)
+  else if (r < 0.97) base = 450 + Math.random() * 450;   // 450-900 premium (12%)
+  else               base = 850 + Math.random() * 1200;  // 850-2050 hero (3%)
   return Math.round(base * zoneMul);
 }
 
@@ -492,8 +494,9 @@ class Sim {
         s._help_until = this.simMin + 0.6 + Math.random() * 1.2; // 0.6-1.8 sim min interaction
         s._target_x = target.x + (Math.random() - 0.5) * 10;
         s._target_y = target.y + 10;
-        // Staff assistance boosts basket build
-        if (target.basket.length < target.basket_size_target && Math.random() < 0.55) {
+        // Staff assistance occasionally surfaces an item the shopper picks up.
+        // Lower than before — staff help is one of many factors, not a guarantee.
+        if (target.basket.length < target.basket_size_target && Math.random() < 0.22) {
           target.basket.push({
             zone: target.current_zone,
             value: generateItemPrice(target.current_zone),
@@ -731,9 +734,12 @@ class Sim {
     }
     if (a.state === 'browsing') {
       a.dwell_remaining -= dt;
-      // Basket builds probabilistically — calibrated to hit avg 3-5 items per converter
+      // Basket-build is probabilistic and INTENT-SCALED. Calibrated so that the
+      // distribution of basket sizes lands close to: 30% size 0 (walkout),
+      // 25% size 1, 25% size 2-3, 15% size 4-5, 5% size 6+. Combined with
+      // post-discount item prices, ATV calibrates to ~₹800-₹1,000.
       if (a.basket.length < a.basket_size_target &&
-          Math.random() < dt * 0.38 * a.intent_strength) {
+          Math.random() < dt * 0.11 * a.intent_strength) {
         a.basket.push({
           zone: a.current_zone,
           value: generateItemPrice(a.current_zone),
@@ -843,12 +849,14 @@ class Sim {
   _zoneDecision(a) {
     a.zone_idx++;
     const remaining = a.zone_plan.length - a.zone_idx;
-    // Browsers churn faster; intentful shoppers complete their plans.
-    const continueProb = a.profile === 'browser' ? 0.32
-                      : a.profile === 'quick_trip_male' ? 0.55
-                      : a.profile === 'mission_mom' ? 0.90
-                      : a.profile === 'young_woman' ? 0.82
-                      : 0.92; // family weekend
+    // Tuned so total conversion lands near spec's 36-42% band:
+    //   - browsers churn fast (most leave by zone 2)
+    //   - intentful shoppers complete most of their plan but not always all
+    const continueProb = a.profile === 'browser' ? 0.28
+                      : a.profile === 'quick_trip_male' ? 0.42
+                      : a.profile === 'mission_mom' ? 0.72
+                      : a.profile === 'young_woman' ? 0.62
+                      : 0.78; // family weekend
     if (remaining > 0 && Math.random() < continueProb) {
       const next = a.zone_plan[a.zone_idx];
       a.current_zone = next;
