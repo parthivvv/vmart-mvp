@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>V-Mart Unlimited · Bangalore · Diwali Saturday simulation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:          #14110D;
+    --panel:       #1F1A14;
+    --panel-l:     #2A231B;
+    --line:        #3A2F22;
+    --line-l:      #58473A;
+    --ink:         #FAF2D8;
+    --ink-mid:     rgba(250,242,216,0.72);
+    --ink-dim:     rgba(250,242,216,0.45);
+    --red:         #E11D26;
+    --red-d:       #951820;
+    --green:       #3DDC84;
+    --gold:        #FFD966;
+    --p-mom:       #D67BAA;
+    --p-young:     #A567C9;
+    --p-family:    #E5A93C;
+    --p-mens:      #4F87BD;
+    --p-browser:   #898989;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--ink); }
+  body {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    display: grid;
+    grid-template-rows: 56px 1fr 76px;
+    grid-template-columns: 1fr 360px;
+    grid-template-areas:
+      "top top"
+      "stage side"
+      "bottom bottom";
+  }
+
+  /* ─── TOP BAR ─────────────────────────────────── */
+  .top {
+    grid-area: top;
+    background: linear-gradient(180deg, #221C15 0%, #1A1611 100%);
+    border-bottom: 2px solid var(--red);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 18px;
+    z-index: 50;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 32px; height: 32px;
+    background: var(--red); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Press Start 2P', monospace; font-size: 14px;
+    border-radius: 3px;
+    box-shadow: 0 2px 0 #6B0E14;
+  }
+  .brand .t {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px; letter-spacing: 0.08em;
+    line-height: 1.0;
+  }
+  .brand .s {
+    font-size: 10px; color: var(--ink-dim);
+    letter-spacing: 0.18em; text-transform: uppercase;
+    margin-top: 4px; font-weight: 600;
+  }
+
+  .metrics {
+    display: flex; gap: 8px;
+  }
+  .chip {
+    background: rgba(250,242,216,0.06);
+    border: 1px solid rgba(250,242,216,0.12);
+    padding: 5px 11px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.0;
+    min-width: 86px;
+  }
+  .chip .lbl {
+    display: block;
+    color: var(--ink-dim);
+    font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .chip .v { color: var(--ink); font-weight: 700; }
+  .chip.alert { background: rgba(225,29,38,0.18); border-color: rgba(225,29,38,0.50); }
+  .chip.alert .v { color: var(--red); }
+  .chip.good { background: rgba(61,220,132,0.12); border-color: rgba(61,220,132,0.40); }
+  .chip.good .v { color: var(--green); }
+
+  /* ─── STAGE (canvas) ──────────────────────────── */
+  .stage {
+    grid-area: stage;
+    position: relative;
+    background: #131009;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #map {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    image-rendering: pixelated;
+    cursor: crosshair;
+    display: block;
+  }
+  .stage-controls {
+    position: absolute; top: 14px; right: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+    z-index: 10;
+  }
+  .stage-controls button {
+    background: rgba(20,16,12,0.85);
+    color: var(--ink);
+    border: 1px solid rgba(250,242,216,0.20);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 6px 10px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+    transition: background 0.15s;
+  }
+  .stage-controls button:hover { background: rgba(225,29,38,0.30); }
+  .stage-controls button.active { background: rgba(225,29,38,0.45); border-color: var(--red); }
+
+  /* Density bars at bottom-left of stage */
+  .zone-density {
+    position: absolute; left: 14px; bottom: 14px;
+    background: rgba(20,16,12,0.85);
+    border: 1px solid rgba(250,242,216,0.15);
+    padding: 9px 12px;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    min-width: 260px;
+  }
+  .zone-density h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 6px;
+  }
+  .zd-row { display: grid; grid-template-columns: 100px 1fr 28px; gap: 6px; align-items: center; font-size: 10px; margin: 3px 0; }
+  .zd-row .nm { color: var(--ink-mid); }
+  .zd-row .bar { background: rgba(250,242,216,0.06); height: 4px; position: relative; }
+  .zd-row .bar > div { height: 100%; background: var(--red); transition: width 0.3s; }
+  .zd-row .ct { font-family: 'JetBrains Mono', monospace; color: var(--ink); text-align: right; font-weight: 700; }
+
+  /* ─── SIDE PANEL (inspector + events) ─────────── */
+  .side {
+    grid-area: side;
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .side-section {
+    border-bottom: 1px solid var(--line);
+    padding: 12px 16px;
+  }
+  .side-section h4 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px; letter-spacing: 0.08em;
+    color: var(--red);
+    margin-bottom: 8px;
+  }
+
+  /* Inspector */
+  #inspector .empty {
+    color: var(--ink-dim);
+    font-size: 12px;
+    font-style: italic;
+    padding: 14px 0;
+    text-align: center;
+  }
+  .insp-head {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 8px;
+  }
+  .insp-avatar {
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 14px;
+    border: 2px solid rgba(250,242,216,0.15);
+  }
+  .insp-name {
+    font-size: 14px; font-weight: 700;
+  }
+  .insp-meta {
+    font-size: 11px; color: var(--ink-dim); margin-top: 1px;
+  }
+  .insp-state {
+    background: rgba(225,29,38,0.20);
+    color: var(--red);
+    padding: 3px 8px;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+  .insp-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+    padding: 4px 0;
+    font-size: 11px;
+    border-bottom: 1px dashed rgba(250,242,216,0.10);
+  }
+  .insp-row .k { color: var(--ink-dim); }
+  .insp-row .v { color: var(--ink); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .insp-story {
+    margin-top: 10px;
+    padding: 9px 11px;
+    background: rgba(255,217,102,0.08);
+    border-left: 3px solid var(--gold);
+    font-size: 11px;
+    color: var(--ink-mid);
+    line-height: 1.45;
+    font-style: italic;
+  }
+  .insp-basket {
+    margin-top: 9px;
+    background: var(--panel-l);
+    padding: 8px 10px;
+    border-radius: 2px;
+  }
+  .insp-basket-head {
+    display: flex; justify-content: space-between;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .insp-basket-list {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-mid);
+  }
+  .insp-basket-list div { padding: 1px 0; }
+
+  /* Events feed */
+  #events {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .ev {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 6px;
+    padding: 6px 0;
+    font-size: 11px;
+    border-bottom: 1px solid rgba(250,242,216,0.04);
+  }
+  .ev .tm { color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .ev .msg { color: var(--ink); }
+  .ev .nm { color: var(--gold); font-weight: 600; }
+  .ev.purchase .msg { color: var(--green); }
+  .ev.abandon_trial .msg, .ev.abandon_bill .msg { color: #FF9899; }
+  .ev.walk_out .msg { color: #FF9899; }
+  .ev.counter_open .msg { color: var(--gold); font-weight: 700; }
+  .ev.arrive { opacity: 0.55; }
+
+  /* ─── BOTTOM (timeline + speed) ──────────────── */
+  .bottom {
+    grid-area: bottom;
+    background: linear-gradient(180deg, #1A1611 0%, #14110D 100%);
+    border-top: 2px solid var(--red);
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 16px;
+    padding: 8px 18px 10px;
+    align-items: center;
+  }
+  .timeline-wrap {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .timeline-bar {
+    position: relative;
+    height: 36px;
+    background: rgba(250,242,216,0.04);
+    border: 1px solid rgba(250,242,216,0.10);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .tl-arrivals {
+    position: absolute; left:0; bottom:0; right:0;
+    height: 100%;
+    display: flex; align-items: flex-end;
+    pointer-events: none;
+  }
+  .tl-arrivals .bar {
+    flex: 1;
+    margin: 0 0.5px;
+    background: linear-gradient(0deg, #4A2F1C 0%, #946A47 70%, #B98E5A 100%);
+    opacity: 0.45;
+  }
+  .tl-progress {
+    position: absolute; left:0; top:0; bottom:0;
+    background: rgba(225,29,38,0.18);
+    pointer-events: none;
+  }
+  .tl-cursor {
+    position: absolute; top:-2px; bottom:-2px;
+    width: 2px;
+    background: var(--red);
+    box-shadow: 0 0 8px var(--red);
+    pointer-events: none;
+  }
+  .tl-labels {
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-dim);
+    padding: 0 2px;
+  }
+  .controls-cluster {
+    display: flex; align-items: center; gap: 8px;
+    justify-content: flex-end;
+  }
+  .btn {
+    background: rgba(250,242,216,0.06);
+    color: var(--ink);
+    border: 1px solid rgba(250,242,216,0.15);
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: rgba(225,29,38,0.25); }
+  .btn.primary { background: var(--red); border-color: var(--red); font-weight: 700; color: white; }
+  .btn.primary:hover { background: #C5101A; }
+  .btn.active { background: rgba(225,29,38,0.55); border-color: var(--red); color: white; }
+  .speed-group {
+    display: flex; border: 1px solid rgba(250,242,216,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .speed-group .btn { border: none; border-right: 1px solid rgba(250,242,216,0.10); padding: 6px 8px; }
+  .speed-group .btn:last-child { border-right: none; }
+
+  /* Persona legend */
+  .legend-mini {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin-top: 4px;
+    font-size: 10px;
+    color: var(--ink-mid);
+  }
+  .legend-mini .swatch {
+    display: inline-block;
+    width: 10px; height: 10px; border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 4px;
+  }
+
+  /* Loading overlay */
+  #loading {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.10em;
+  }
+  #loading .l-inner { text-align: center; }
+  #loading .l-dot {
+    display: inline-block; width: 8px; height: 8px; background: var(--red);
+    border-radius: 50%; margin-right: 8px;
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse { 0%,100% {opacity:0.3} 50% {opacity:1} }
+
+  /* Insights popup (after run completion) */
+  .insights {
+    position: fixed; inset: 0;
+    background: rgba(20,16,12,0.92);
+    display: none;
+    align-items: center; justify-content: center;
+    z-index: 150;
+    padding: 24px;
+  }
+  .insights.show { display: flex; }
+  .insights-box {
+    background: var(--panel);
+    border: 2px solid var(--red);
+    border-radius: 4px;
+    padding: 22px 26px;
+    max-width: 720px;
+    width: 100%;
+  }
+  .insights-box h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--red);
+    margin-bottom: 14px;
+  }
+  .insights-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .insights-kpi {
+    background: var(--panel-l);
+    padding: 12px 14px;
+    border-left: 3px solid var(--gold);
+  }
+  .insights-kpi .lbl { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.10em; text-transform: uppercase; }
+  .insights-kpi .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+  .insights-kpi.alert { border-left-color: var(--red); }
+  .insights-list {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.5;
+  }
+  .insights-list li { padding: 4px 0; padding-left: 18px; position: relative; }
+  .insights-list li::before { content: '▶'; position: absolute; left: 0; color: var(--red); }
+  .insights-list li b { color: var(--ink); }
+  .insights-close {
+    margin-top: 18px;
+    padding: 8px 18px;
+    background: var(--red); color: white;
+    border: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="l-inner">
+    <div><span class="l-dot"></span>BOOTING SIMULATION ENGINE...</div>
+    <div style="margin-top: 12px; font-size: 10px;">loading 1,000 shopper agents · 18 staff · 9 zones · 100 SKUs</div>
+  </div>
+</div>
+
+<!-- ═════════════ TOP BAR ═════════════ -->
+<div class="top">
+  <div class="brand">
+    <span class="logo">V</span>
+    <div>
+      <div class="t">UNLIMITED · BANGALORE</div>
+      <div class="s">Diwali Saturday simulation · baseline policy · 1,000 agents</div>
+    </div>
+  </div>
+  <div class="metrics" id="topMetrics">
+    <div class="chip"><span class="lbl">Clock</span><span class="v" id="m-clock">10:00</span></div>
+    <div class="chip"><span class="lbl">Footfall</span><span class="v" id="m-foot">0</span></div>
+    <div class="chip"><span class="lbl">In store</span><span class="v" id="m-instore">0</span></div>
+    <div class="chip"><span class="lbl">Revenue</span><span class="v" id="m-rev">₹0</span></div>
+    <div class="chip"><span class="lbl">Memos</span><span class="v" id="m-memo">0</span></div>
+    <div class="chip"><span class="lbl">Conv.</span><span class="v" id="m-conv">—</span></div>
+    <div class="chip alert"><span class="lbl">Bill Q</span><span class="v" id="m-billq">0</span></div>
+    <div class="chip alert"><span class="lbl">Trial Q</span><span class="v" id="m-trialq">0</span></div>
+    <div class="chip alert"><span class="lbl">Walk-outs</span><span class="v" id="m-walk">0</span></div>
+  </div>
+</div>
+
+<!-- ═════════════ STAGE ═════════════ -->
+<div class="stage">
+  <canvas id="map"></canvas>
+
+  <div class="stage-controls">
+    <button id="btn-heat">▣ HEATMAP</button>
+    <button id="btn-staff" class="active">▣ STAFF</button>
+    <button id="btn-queue" class="active">▣ QUEUES</button>
+    <button id="btn-paths">▣ AGENT PATH</button>
+  </div>
+
+  <div class="zone-density" id="zoneDensity">
+    <h5>▶ Zone density · live</h5>
+  </div>
+</div>
+
+<!-- ═════════════ SIDE ═════════════ -->
+<div class="side">
+  <div class="side-section">
+    <h4>▶ INSPECTOR · click any shopper</h4>
+    <div id="inspector"><div class="empty">No shopper selected.<br/>Click a sprite on the map to inspect.</div></div>
+  </div>
+  <div class="side-section" style="flex: 1; display: flex; flex-direction: column;">
+    <h4>▶ LIVE EVENTS · last 60</h4>
+    <div id="events"></div>
+  </div>
+</div>
+
+<!-- ═════════════ BOTTOM ═════════════ -->
+<div class="bottom">
+  <div class="timeline-wrap">
+    <div class="timeline-bar" id="timeline">
+      <div class="tl-arrivals" id="tlArrivals"></div>
+      <div class="tl-progress" id="tlProgress" style="width: 0%;"></div>
+      <div class="tl-cursor" id="tlCursor" style="left: 0%;"></div>
+    </div>
+    <div class="tl-labels">
+      <span>10 AM</span><span>12 PM</span><span>2 PM</span><span>4 PM</span>
+      <span>5 PM</span><span>6 PM</span><span>7 PM</span><span>8 PM</span><span>9 PM</span><span>10 PM</span>
+    </div>
+  </div>
+
+  <div class="controls-cluster">
+    <div class="legend-mini">
+      <span><span class="swatch" style="background:var(--p-mom)"></span>mom</span>
+      <span><span class="swatch" style="background:var(--p-young)"></span>young</span>
+      <span><span class="swatch" style="background:var(--p-family)"></span>family</span>
+      <span><span class="swatch" style="background:var(--p-mens)"></span>men's</span>
+      <span><span class="swatch" style="background:var(--p-browser)"></span>browser</span>
+    </div>
+    <button id="btn-play" class="btn primary">▶ START</button>
+    <div class="speed-group">
+      <button class="btn speed" data-speed="1">1×</button>
+      <button class="btn speed active" data-speed="5">5×</button>
+      <button class="btn speed" data-speed="15">15×</button>
+      <button class="btn speed" data-speed="60">60×</button>
+      <button class="btn speed" data-speed="180">180×</button>
+    </div>
+    <button id="btn-reset" class="btn">↺ RESET</button>
+  </div>
+</div>
+
+<!-- INSIGHTS popup (shown when sim ends) -->
+<div class="insights" id="insights">
+  <div class="insights-box">
+    <h2>▶ DAY COMPLETE · BASELINE POLICY</h2>
+    <div class="insights-row" id="insightsKpis"></div>
+    <ul class="insights-list" id="insightsList"></ul>
+    <button class="insights-close" id="closeInsights">CLOSE</button>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="data-bundle.js"></script>
+<script src="engine.js"></script>
+<script src="render.js"></script>
+<script>
+(function () {
+  // ── boot ─────────────────────────────────────────
+  function boot() {
+    window.sim = new Sim();
+    window.renderer = new Renderer(document.getElementById('map'), window.sim);
+
+    // Build zone density list (using zone IDs from data)
+    const zd = document.getElementById('zoneDensity');
+    const zoneOrder = ['power_wall','womens_ethnic','womens_western','womens_fa','mens_casual','mens_formal_ethnic','mens_fa','kids','infants'];
+    const zoneNames = {
+      power_wall: 'Power wall',
+      womens_ethnic: "Women's ethnic",
+      womens_western: "Women's western",
+      womens_fa: "Women's F&A",
+      mens_casual: "Men's casual",
+      mens_formal_ethnic: "Men's formal",
+      mens_fa: "Men's F&A",
+      kids: 'Kids',
+      infants: 'Infants',
+    };
+    zoneOrder.forEach(z => {
+      const row = document.createElement('div');
+      row.className = 'zd-row';
+      row.innerHTML = `<span class="nm">${zoneNames[z]}</span><div class="bar"><div id="zd-${z}" style="width: 0%;"></div></div><span class="ct" id="zc-${z}">0</span>`;
+      zd.appendChild(row);
+    });
+
+    // Build arrival histogram from agents.json
+    const buckets = window.AGENTS.arrivals_by_slot || [];
+    const max = Math.max(...buckets, 1);
+    const tla = document.getElementById('tlArrivals');
+    buckets.forEach(v => {
+      const b = document.createElement('div');
+      b.className = 'bar';
+      b.style.height = ((v / max) * 100) + '%';
+      tla.appendChild(b);
+    });
+
+    // Renderer click → inspector
+    renderer.onSelect = (a) => updateInspector(a);
+
+    // UI controls
+    document.getElementById('btn-heat').addEventListener('click', e => {
+      renderer.showHeatmap = !renderer.showHeatmap;
+      e.target.classList.toggle('active', renderer.showHeatmap);
+    });
+    document.getElementById('btn-staff').addEventListener('click', e => {
+      renderer.showStaff = !renderer.showStaff;
+      e.target.classList.toggle('active', renderer.showStaff);
+    });
+    document.getElementById('btn-queue').addEventListener('click', e => {
+      renderer.showQueues = !renderer.showQueues;
+      e.target.classList.toggle('active', renderer.showQueues);
+    });
+    document.getElementById('btn-paths').addEventListener('click', e => {
+      renderer.showPaths = !renderer.showPaths;
+      e.target.classList.toggle('active', renderer.showPaths);
+    });
+    document.getElementById('btn-play').addEventListener('click', () => {
+      running = !running;
+      const btn = document.getElementById('btn-play');
+      btn.textContent = running ? '⏸ PAUSE' : '▶ RESUME';
+    });
+    document.querySelectorAll('.speed').forEach(b => {
+      b.addEventListener('click', () => {
+        document.querySelectorAll('.speed').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        speedMul = parseFloat(b.dataset.speed);
+      });
+    });
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      window.sim = new Sim();
+      window.renderer.sim = window.sim;
+      window.renderer.selected = null;
+      window.renderer._heatLast = -1;
+      updateInspector(null);
+      document.getElementById('events').innerHTML = '';
+      document.getElementById('insights').classList.remove('show');
+      running = false;
+      document.getElementById('btn-play').textContent = '▶ START';
+    });
+    document.getElementById('closeInsights').addEventListener('click', () => {
+      document.getElementById('insights').classList.remove('show');
+    });
+    document.getElementById('timeline').addEventListener('click', e => {
+      const r = e.currentTarget.getBoundingClientRect();
+      const f = (e.clientX - r.left) / r.width;
+      const targetMin = f * 720;
+      if (targetMin < sim.simMin) {
+        // can't rewind in v1 — reset and fast-forward
+        const oldSpeed = speedMul;
+        const oldRunning = running;
+        // reset
+        window.sim = new Sim();
+        window.renderer.sim = window.sim;
+        renderer.selected = null;
+        updateInspector(null);
+        document.getElementById('events').innerHTML = '';
+        // fast forward
+        running = true;
+        speedMul = 600;
+        const interval = setInterval(() => {
+          if (sim.simMin >= targetMin) {
+            clearInterval(interval);
+            speedMul = oldSpeed;
+            running = oldRunning;
+          }
+        }, 100);
+      } else {
+        // fast-forward via temporary high speed
+        running = true;
+        speedMul = 600;
+        const interval = setInterval(() => {
+          if (sim.simMin >= targetMin) {
+            clearInterval(interval);
+            speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
+          }
+        }, 100);
+      }
+    });
+
+    // Animation loop
+    let last = performance.now();
+    function frame(now) {
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      if (running) {
+        const dtSim = dt * speedMul;
+        sim.tick(dtSim);
+      }
+      renderer.draw();
+      updateHud();
+      updateZoneDensity();
+      updateEventsFeed();
+      // Done?
+      if (sim.simMin >= sim.totalMin && sim.activeAgents.length === 0 && !insightsShown) {
+        insightsShown = true;
+        running = false;
+        document.getElementById('btn-play').textContent = '▶ COMPLETE';
+        showInsights();
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // Hide loading
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 200);
+  }
+
+  // ── HUD update ────────────────────────────────────
+  function updateHud() {
+    const m = Math.floor(sim.simMin);
+    const h = Math.floor(m / 60) + 10;
+    const mm = m % 60;
+    const hh12 = ((h - 1) % 12) + 1;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    document.getElementById('m-clock').textContent = `${hh12}:${String(mm).padStart(2,'0')} ${ampm}`;
+    const k = sim.kpis();
+    document.getElementById('m-foot').textContent = k.footfall;
+    document.getElementById('m-instore').textContent = sim.activeAgents.length;
+    document.getElementById('m-rev').textContent = '₹' + (k.revenue / 100000).toFixed(2) + 'L';
+    document.getElementById('m-memo').textContent = k.memos;
+    document.getElementById('m-conv').textContent = k.memos === 0 ? '—' : Math.round(k.conversion * 100) + '%';
+    document.getElementById('m-billq').textContent = k.bill_q;
+    document.getElementById('m-trialq').textContent = k.trial_q;
+    document.getElementById('m-walk').textContent = k.walkouts;
+
+    document.getElementById('tlProgress').style.width = (sim.simMin / sim.totalMin * 100) + '%';
+    document.getElementById('tlCursor').style.left = (sim.simMin / sim.totalMin * 100) + '%';
+
+    // Update inspector live if a shopper is selected
+    if (renderer.selected) updateInspector(renderer.selected);
+  }
+
+  function updateZoneDensity() {
+    const dens = sim.metrics.zone_density;
+    let max = 1;
+    for (const k in dens) if (dens[k] > max) max = dens[k];
+    for (const k in dens) {
+      const bar = document.getElementById('zd-' + k);
+      const ct = document.getElementById('zc-' + k);
+      if (bar) bar.style.width = ((dens[k] / max) * 100) + '%';
+      if (ct) ct.textContent = dens[k];
+    }
+  }
+
+  function updateInspector(a) {
+    const ins = document.getElementById('inspector');
+    if (!a) {
+      ins.innerHTML = '<div class="empty">No shopper selected.<br/>Click a sprite on the map to inspect.</div>';
+      return;
+    }
+    const initials = a.name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+    const minutesIn = (sim.simMin - (a.entered_at || sim.simMin)).toFixed(1);
+    const basketHtml = a.basket.length === 0 ? '<div style="color:var(--ink-dim);">empty</div>' :
+      a.basket.map(b => `<div>· ${b.zone || 'item'} — ₹${Math.round(b.value)}</div>`).join('');
+    ins.innerHTML = `
+      <div class="insp-head">
+        <div class="insp-avatar" style="background:${a.color}">${initials}</div>
+        <div>
+          <div class="insp-name">${a.name}</div>
+          <div class="insp-meta">${a.persona.label} · age ${a.age} · ${a.neighborhood}</div>
+        </div>
+        <span class="insp-state">${a.state.replace(/_/g, ' ')}</span>
+      </div>
+      <div class="insp-row"><span class="k">Group size</span><span class="v">${a.group_size}</span></div>
+      <div class="insp-row"><span class="k">Arrived</span><span class="v">${a.arrival_time}</span></div>
+      <div class="insp-row"><span class="k">Minutes in</span><span class="v">${minutesIn}</span></div>
+      <div class="insp-row"><span class="k">Current zone</span><span class="v">${a.current_zone || '—'}</span></div>
+      <div class="insp-row"><span class="k">Queue wait</span><span class="v">${a.queue_wait.toFixed(1)} m</span></div>
+      <div class="insp-row"><span class="k">Patience (reduce/abandon)</span><span class="v">${a.queue_tolerance_min.reduce_at}m / ${a.queue_tolerance_min.abandon_at}m</span></div>
+      <div class="insp-row"><span class="k">Intent strength</span><span class="v">${(a.intent_strength * 100).toFixed(0)}%</span></div>
+      <div class="insp-basket">
+        <div class="insp-basket-head"><span>Basket · ${a.basket.length} item${a.basket.length === 1 ? '' : 's'}</span><span>₹${Math.round(a.basket_value)}</span></div>
+        <div class="insp-basket-list">${basketHtml}</div>
+      </div>
+      <div class="insp-story">${a.backstory}</div>
+    `;
+  }
+
+  function updateEventsFeed() {
+    const ef = document.getElementById('events');
+    const evs = sim.events;
+    if (evs.length === lastEventCount) return;
+    lastEventCount = evs.length;
+    // Render the latest 60
+    const slice = evs.slice(-60).reverse();
+    ef.innerHTML = slice.map(e => {
+      const m = Math.floor(e.simMin);
+      const h = Math.floor(m / 60) + 10;
+      const mm = m % 60;
+      const hh12 = ((h - 1) % 12) + 1;
+      const t = `${hh12}:${String(mm).padStart(2,'0')}`;
+      const labels = {
+        arrive: 'arrived',
+        start_trial: 'in trial',
+        purchase: 'purchased',
+        abandon_trial: 'abandoned · trial wait',
+        abandon_bill: 'abandoned · bill wait',
+        walk_out: 'walked out',
+        tried_no_buy: 'tried, didn\'t buy',
+        counter_open: 'counter opened',
+      };
+      const nm = e.agentName ? `<span class="nm">${e.agentName}</span> ` : '';
+      return `<div class="ev ${e.type}"><span class="tm">${t}</span><span class="msg">${nm}${labels[e.type] || e.type} ${e.detail ? '· ' + e.detail : ''}</span></div>`;
+    }).join('');
+  }
+
+  function showInsights() {
+    const k = sim.kpis();
+    const kpisHtml = `
+      <div class="insights-kpi"><div class="lbl">Revenue</div><div class="v">₹${(k.revenue/100000).toFixed(2)}L</div></div>
+      <div class="insights-kpi"><div class="lbl">Memos</div><div class="v">${k.memos}</div></div>
+      <div class="insights-kpi"><div class="lbl">Conversion</div><div class="v">${Math.round(k.conversion*100)}%</div></div>
+      <div class="insights-kpi"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div></div>
+      <div class="insights-kpi alert"><div class="lbl">Walk-outs</div><div class="v">${k.walkouts}</div></div>
+      <div class="insights-kpi alert"><div class="lbl">Peak bill wait</div><div class="v">${Math.max(...sim.metrics.bill_waits, 0).toFixed(1)} m</div></div>
+      <div class="insights-kpi alert"><div class="lbl">Peak trial wait</div><div class="v">${Math.max(...sim.metrics.trial_waits, 0).toFixed(1)} m</div></div>
+      <div class="insights-kpi alert"><div class="lbl">Abandon %</div><div class="v">${(k.abandon_pct * 100).toFixed(1)}%</div></div>
+    `;
+    document.getElementById('insightsKpis').innerHTML = kpisHtml;
+    document.getElementById('insightsList').innerHTML = `
+      <li><b>1 counter open by default</b> created the queue spike at 6–9 PM. Counter 2/3 opened reactively after queue ≥15.</li>
+      <li><b>7 W + 3 M trial cubicles, 0 kids, no attendant</b> — peak wait hit ${Math.max(...sim.metrics.trial_waits, 0).toFixed(0)} min, ${sim.metrics.abandonments_trial} agents abandoned in-queue.</li>
+      <li><b>1 staff in empty infants zone</b> all day — meanwhile women's ethnic peaked at 6 PM with no flex relief.</li>
+      <li><b>Cross-merch friction</b>: ${sim.exitedAgents.filter(a => a.exit_reason === 'purchased' && a.basket.length === 1).length} purchasers bought a single item only — accessory attach failed because of physical separation.</li>
+      <li><b>Browser walkouts</b>: ${sim.metrics.no_purchase_walkouts} shoppers left within their dwell window without buying. Power wall didn't trigger conversion.</li>
+      <li>Recoverable via Lever 1 (proactive billing schedule), Lever 3 (trial attendant + queue mgmt), Lever 2 (flex infants → ethnic), Lever 5 (cross-merch racks): target +10–20% revenue on same arrivals.</li>
+    `;
+    document.getElementById('insights').classList.add('show');
+  }
+
+  // ── globals ──────────────────────────────────────
+  let running = false;
+  let speedMul = 5;
+  let insightsShown = false;
+  let lastEventCount = 0;
+
+  // Wait for canvas to be sized before boot
+  window.addEventListener('load', () => setTimeout(boot, 60));
+})();
+</script>
+
+</body>
+</html>
