@@ -34,8 +34,8 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     display: grid;
-    grid-template-rows: 56px 1fr 76px;
-    grid-template-columns: 1fr 360px;
+    grid-template-rows: 44px 1fr 56px;
+    grid-template-columns: 1fr 300px;
     grid-template-areas:
       "top top"
       "stage side"
@@ -48,47 +48,47 @@
     background: linear-gradient(180deg, #221C15 0%, #1A1611 100%);
     border-bottom: 2px solid var(--red);
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 18px;
+    padding: 0 12px;
     z-index: 50;
   }
-  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 9px; }
   .logo {
-    width: 32px; height: 32px;
+    width: 24px; height: 24px;
     background: var(--red); color: white;
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Press Start 2P', monospace; font-size: 14px;
-    border-radius: 3px;
+    font-family: 'Press Start 2P', monospace; font-size: 11px;
+    border-radius: 2px;
     box-shadow: 0 2px 0 #6B0E14;
   }
   .brand .t {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px; letter-spacing: 0.08em;
+    font-size: 9px; letter-spacing: 0.07em;
     line-height: 1.0;
   }
   .brand .s {
-    font-size: 10px; color: var(--ink-dim);
-    letter-spacing: 0.18em; text-transform: uppercase;
-    margin-top: 4px; font-weight: 600;
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    margin-top: 3px; font-weight: 600;
   }
 
   .metrics {
-    display: flex; gap: 8px;
+    display: flex; gap: 5px;
   }
   .chip {
     background: rgba(250,242,216,0.06);
     border: 1px solid rgba(250,242,216,0.12);
-    padding: 5px 11px;
+    padding: 3px 8px;
     border-radius: 2px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.0;
-    min-width: 86px;
+    min-width: 64px;
   }
   .chip .lbl {
     display: block;
     color: var(--ink-dim);
-    font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase;
-    margin-bottom: 4px;
+    font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 3px;
     font-weight: 700;
   }
   .chip .v { color: var(--ink); font-weight: 700; }
@@ -103,31 +103,26 @@
     position: relative;
     background: #131009;
     overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-    padding: 6px;
   }
   #map {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    aspect-ratio: 1800 / 1140;
+    width: 100%;
+    height: 100%;
     image-rendering: pixelated;
     cursor: crosshair;
     display: block;
   }
   .stage-controls {
-    position: absolute; top: 14px; right: 14px;
-    display: flex; flex-direction: column; gap: 6px;
+    position: absolute; top: 10px; right: 10px;
+    display: flex; gap: 4px;
     z-index: 10;
   }
   .stage-controls button {
-    background: rgba(20,16,12,0.85);
+    background: rgba(20,16,12,0.78);
     color: var(--ink);
-    border: 1px solid rgba(250,242,216,0.20);
+    border: 1px solid rgba(250,242,216,0.18);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 6px 10px;
+    font-size: 9px;
+    padding: 4px 8px;
     cursor: pointer;
     letter-spacing: 0.04em;
     backdrop-filter: blur(8px);
@@ -136,22 +131,8 @@
   .stage-controls button:hover { background: rgba(225,29,38,0.30); }
   .stage-controls button.active { background: rgba(225,29,38,0.45); border-color: var(--red); }
 
-  /* Density bars at bottom-left of stage */
-  .zone-density {
-    position: absolute; left: 14px; bottom: 14px;
-    background: rgba(20,16,12,0.85);
-    border: 1px solid rgba(250,242,216,0.15);
-    padding: 9px 12px;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-    min-width: 260px;
-  }
-  .zone-density h5 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--red); margin-bottom: 6px;
-  }
-  .zd-row { display: grid; grid-template-columns: 100px 1fr 28px; gap: 6px; align-items: center; font-size: 10px; margin: 3px 0; }
+  /* Zone density rows (lives in the side panel) */
+  .zd-row { display: grid; grid-template-columns: 92px 1fr 26px; gap: 6px; align-items: center; font-size: 10.5px; margin: 2px 0; }
   .zd-row .nm { color: var(--ink-mid); }
   .zd-row .bar { background: rgba(250,242,216,0.06); height: 4px; position: relative; }
   .zd-row .bar > div { height: 100%; background: var(--red); transition: width 0.3s; }
@@ -278,18 +259,19 @@
     grid-area: bottom;
     background: linear-gradient(180deg, #1A1611 0%, #14110D 100%);
     border-top: 2px solid var(--red);
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 16px;
-    padding: 8px 18px 10px;
+    display: flex;
     align-items: center;
+    gap: 12px;
+    padding: 6px 14px;
   }
   .timeline-wrap {
-    display: flex; flex-direction: column; gap: 4px;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0;
   }
   .timeline-bar {
     position: relative;
-    height: 36px;
+    height: 22px;
     background: rgba(250,242,216,0.04);
     border: 1px solid rgba(250,242,216,0.10);
     cursor: pointer;
@@ -322,27 +304,28 @@
   .tl-labels {
     display: flex; justify-content: space-between;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-size: 8px;
     color: var(--ink-dim);
     padding: 0 2px;
   }
   .controls-cluster {
-    display: flex; align-items: center; gap: 8px;
-    justify-content: flex-end;
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
   }
   .btn {
     background: rgba(250,242,216,0.06);
     color: var(--ink);
     border: 1px solid rgba(250,242,216,0.15);
-    padding: 6px 10px;
+    padding: 4px 8px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     cursor: pointer;
     letter-spacing: 0.04em;
     transition: background 0.15s;
+    white-space: nowrap;
   }
   .btn:hover { background: rgba(225,29,38,0.25); }
-  .btn.primary { background: var(--red); border-color: var(--red); font-weight: 700; color: white; }
+  .btn.primary { background: var(--red); border-color: var(--red); font-weight: 700; color: white; min-width: 70px; text-align: center; }
   .btn.primary:hover { background: #C5101A; }
   .btn.active { background: rgba(225,29,38,0.55); border-color: var(--red); color: white; }
   .speed-group {
@@ -350,34 +333,38 @@
     border-radius: 2px;
     overflow: hidden;
   }
-  .speed-group .btn { border: none; border-right: 1px solid rgba(250,242,216,0.10); padding: 6px 8px; }
+  .speed-group .btn { border: none; border-right: 1px solid rgba(250,242,216,0.10); padding: 4px 7px; }
   .speed-group .btn:last-child { border-right: none; }
 
-  /* Persona legend / filter chips */
-  .legend-mini {
-    display: flex; gap: 6px; flex-wrap: wrap;
-    font-size: 10px;
-    color: var(--ink-mid);
+  /* Persona filter — compact dot row */
+  .persona-filter {
+    display: flex; gap: 4px;
+    align-items: center;
+    padding: 0 4px;
+    border-left: 1px solid rgba(250,242,216,0.10);
+    border-right: 1px solid rgba(250,242,216,0.10);
+    height: 24px;
   }
-  .legend-mini .pchip {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 7px;
-    border: 1px solid rgba(250,242,216,0.15);
-    border-radius: 2px;
+  .persona-filter .pchip {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(250,242,216,0.20);
+    background: var(--p-mom);
     cursor: pointer;
-    background: rgba(250,242,216,0.04);
-    transition: background 0.15s, border-color 0.15s;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.04em;
-    user-select: none;
+    padding: 0;
+    transition: transform 0.12s, border-color 0.12s;
   }
-  .legend-mini .pchip:hover { background: rgba(250,242,216,0.10); }
-  .legend-mini .pchip.active { background: rgba(225,29,38,0.20); border-color: var(--red); color: white; }
-  .legend-mini .pchip .swatch {
-    display: inline-block;
-    width: 9px; height: 9px; border-radius: 50%;
-    vertical-align: middle;
+  .persona-filter .pchip:hover { transform: scale(1.18); border-color: rgba(250,242,216,0.55); }
+  .persona-filter .pchip.active {
+    border-color: white;
+    box-shadow: 0 0 0 2px var(--red);
+    transform: scale(1.10);
   }
+  .persona-filter .pchip[data-persona="mission_mom"]    { background: var(--p-mom); }
+  .persona-filter .pchip[data-persona="young_woman"]    { background: var(--p-young); }
+  .persona-filter .pchip[data-persona="family_weekend"] { background: var(--p-family); }
+  .persona-filter .pchip[data-persona="quick_trip_male"]{ background: var(--p-mens); }
+  .persona-filter .pchip[data-persona="browser"]        { background: var(--p-browser); }
 
   /* Loading overlay */
   #loading {
@@ -499,15 +486,12 @@
   <canvas id="map"></canvas>
 
   <div class="stage-controls">
-    <button id="btn-heat">▣ HEATMAP</button>
-    <button id="btn-staff" class="active">▣ STAFF</button>
-    <button id="btn-queue" class="active">▣ QUEUES</button>
-    <button id="btn-paths">▣ AGENT PATH</button>
+    <button id="btn-heat" title="Heatmap overlay">HEATMAP</button>
+    <button id="btn-staff" class="active" title="Show staff sprites">STAFF</button>
+    <button id="btn-queue" class="active" title="Highlight queue floor zones">QUEUES</button>
+    <button id="btn-paths" title="Show selected agent's path">PATH</button>
   </div>
 
-  <div class="zone-density" id="zoneDensity">
-    <h5>▶ Zone density · live</h5>
-  </div>
 </div>
 
 <!-- ═════════════ SIDE ═════════════ -->
@@ -516,8 +500,11 @@
     <h4>▶ INSPECTOR · click any shopper</h4>
     <div id="inspector"><div class="empty">No shopper selected.<br/>Click a sprite on the map to inspect.</div></div>
   </div>
+  <div class="side-section" id="zoneDensity">
+    <h4>▶ ZONE DENSITY · live</h4>
+  </div>
   <div class="side-section" style="flex: 1; display: flex; flex-direction: column;">
-    <h4>▶ LIVE EVENTS · last 60</h4>
+    <h4>▶ LIVE EVENTS</h4>
     <div id="events"></div>
   </div>
 </div>
@@ -538,12 +525,12 @@
   </div>
 
   <div class="controls-cluster">
-    <div class="legend-mini" id="personaChips">
-      <span class="pchip" data-persona="mission_mom"><span class="swatch" style="background:var(--p-mom)"></span>mom</span>
-      <span class="pchip" data-persona="young_woman"><span class="swatch" style="background:var(--p-young)"></span>young</span>
-      <span class="pchip" data-persona="family_weekend"><span class="swatch" style="background:var(--p-family)"></span>family</span>
-      <span class="pchip" data-persona="quick_trip_male"><span class="swatch" style="background:var(--p-mens)"></span>men's</span>
-      <span class="pchip" data-persona="browser"><span class="swatch" style="background:var(--p-browser)"></span>browser</span>
+    <div class="persona-filter" id="personaChips" title="Click a persona to highlight only that cohort">
+      <button class="pchip" data-persona="mission_mom"    title="Mission mom · 30%"></button>
+      <button class="pchip" data-persona="young_woman"    title="Browse young woman · 20%"></button>
+      <button class="pchip" data-persona="family_weekend" title="Family weekend · 25%"></button>
+      <button class="pchip" data-persona="quick_trip_male"title="Quick-trip male · 10%"></button>
+      <button class="pchip" data-persona="browser"        title="Browser · 15%"></button>
     </div>
     <button id="btn-play" class="btn primary">▶ START</button>
     <div class="speed-group">
@@ -551,9 +538,8 @@
       <button class="btn speed active" data-speed="5">5×</button>
       <button class="btn speed" data-speed="15">15×</button>
       <button class="btn speed" data-speed="60">60×</button>
-      <button class="btn speed" data-speed="180">180×</button>
     </div>
-    <button id="btn-reset" class="btn">↺ RESET</button>
+    <button id="btn-reset" class="btn">↺</button>
   </div>
 </div>
 

@@ -48,6 +48,13 @@ class Renderer {
     this.canvas.height = rect.height * this.dpr;
     this.cssW = rect.width;
     this.cssH = rect.height;
+    // COVER fit — fill the stage, crop slightly if aspect doesn't match.
+    // Grass/trees at edges are decorative; cropping them is fine.
+    const scaleX = this.cssW / W;
+    const scaleY = this.cssH / H;
+    this.scale = Math.max(scaleX, scaleY);
+    this.offsetX = (this.cssW - W * this.scale) / 2;
+    this.offsetY = (this.cssH - H * this.scale) / 2;
   }
 
   // ─── coordinate transforms ───────────────────────────────
@@ -56,9 +63,13 @@ class Renderer {
   }
   _fromMouse(evt) {
     const r = this.canvas.getBoundingClientRect();
-    const mx = (evt.clientX - r.left) / r.width * W;
-    const my = (evt.clientY - r.top) / r.height * H;
-    return { x:mx, y:my };
+    const cssX = (evt.clientX - r.left);
+    const cssY = (evt.clientY - r.top);
+    // Reverse the cover-fit transform
+    return {
+      x: (cssX - this.offsetX) / this.scale,
+      y: (cssY - this.offsetY) / this.scale,
+    };
   }
 
   // ─── static background render ────────────────────────────
@@ -547,15 +558,14 @@ class Renderer {
   // ─── per-frame dynamic render ───────────────────────────
   draw() {
     const ctx = this.ctx;
-    const scale = this.cssW / W;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    // Blit background
-    ctx.drawImage(this.bg, 0, 0, this.bg.width, this.bg.height, 0, 0, this.cssW, this.cssH);
-
-    // Set up logical coord space
-    ctx.scale(scale, scale);
+    // Apply cover-fit transform — letterbox/pillarbox absorbed by overflow:hidden
+    ctx.translate(this.offsetX, this.offsetY);
+    ctx.scale(this.scale, this.scale);
+    // Blit background at logical W × H
+    ctx.drawImage(this.bg, 0, 0, this.bg.width, this.bg.height, 0, 0, W, H);
 
     // Heatmap overlay
     if (this.showHeatmap) this._drawHeatmap(ctx);
