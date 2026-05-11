@@ -16,6 +16,8 @@ Parthiv is on the store UI ([index.html](../index.html), 360 tour). I'm on shopp
 | 05 | [05-reward-and-metrics.md](05-reward-and-metrics.md) | Revenue + the supporting KPIs |
 | 06 | [06-open-questions.md](06-open-questions.md) | Decisions still owed — language, format, sync points with Parthiv |
 | 07 | [07-staff-agents.md](07-staff-agents.md) | The 18-person staff roster — floor, trial-room, billing, managers, security |
+| 08 | [08-policies-and-guardrails.md](08-policies-and-guardrails.md) | Policy abstraction (5 levers), env-vs-agent separation, the no-hacking rules |
+| 09 | [09-optimization-plan.md](09-optimization-plan.md) | How we get from baseline to optimized_v1 — diagnostic + sensitivity tests, not auto-search |
 | -- | [checklist.md](checklist.md) | Running todo across my workstream |
 
 ## Code layout (proposed)

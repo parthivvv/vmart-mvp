@@ -1,0 +1,166 @@
+{
+  "id": "baseline",
+  "name": "Baseline — V-Mart Diwali Saturday",
+  "version": "1.0",
+  "description": "What the store actually does today. The 'before' configuration. Sourced from the brief's baseline policy bullets and Manit's clarifications (staff = 18, 1 fixed billing, trial unmanned).",
+  "source_docs": [
+    "manit-notes/03-baseline-policy.md",
+    "manit-notes/07-staff-agents.md",
+    "manit-notes/08-policies-and-guardrails.md"
+  ],
+  "compliance": {
+    "guard_rail_checked": true,
+    "forbidden_keys_present": false,
+    "notes": "No agent-decision overrides. All knobs are environmental."
+  },
+
+  "lever_1_billing": {
+    "model": "reactive",
+    "counters_total": 6,
+    "always_open": [1],
+    "always_closed": [4, 5, 6],
+    "reactive_rules": [
+      {
+        "counter": 2,
+        "trigger_queue_min": 15,
+        "staffing_delay_min_range": [5, 10],
+        "staff_source": "B03 standby"
+      },
+      {
+        "counter": 3,
+        "trigger_queue_min": 20,
+        "staffing_delay_min_range": [5, 10],
+        "staff_source": "B04 standby"
+      }
+    ],
+    "schedule_per_slot": null,
+    "queue_model": "single_straight_queue_feeds_all_open_counters",
+    "notes": "Manager observes queue every 25-30 min and opens counters reactively. By the time he calls, the queue is already 15-20 deep — damage already done."
+  },
+
+  "lever_2_floor_staffing": {
+    "model": "fixed_all_day",
+    "movable_floor_budget": 10,
+    "assignments": {
+      "power_wall": 1,
+      "womens_ethnic": 2,
+      "womens_western": 1,
+      "womens_fa": 1,
+      "mens_casual": 1,
+      "mens_formal_ethnic": 1,
+      "mens_fa": 1,
+      "kids": 1,
+      "infants": 1
+    },
+    "mid_shift_reallocation": false,
+    "break_pattern": "clustered",
+    "break_clusters": {
+      "lunch_window": "13:00-15:00",
+      "lunch_peak_slot": "13:30-14:00",
+      "lunch_peak_off_count": 5,
+      "dinner_window": "19:00-20:30",
+      "dinner_peak_slot": "19:30-20:00",
+      "dinner_peak_off_count": 4
+    },
+    "cross_train_to_billing_at_peak": false,
+    "t01_role": "floor_relief",
+    "fixed_roles_locked": ["store_manager", "assistant_manager", "security"],
+    "notes": "Per the brief: 'Staff allocations are fixed at store open and don't change through the 12-hour day.' A staff member assigned to infants at 10am is still in infants at 8pm even if infants is empty."
+  },
+
+  "lever_3_trial_rooms": {
+    "cubicle_split": {
+      "womens_bank": 7,
+      "mens_bank": 3,
+      "kids_bank": 0
+    },
+    "attendant_present": false,
+    "item_cap_enforced": false,
+    "item_cap_count": 4,
+    "queue_manager_zone": null,
+    "service_time_normal_min_range": [4, 7],
+    "service_time_peak_min_range": [8, 12],
+    "trial_to_purchase_conversion_range": [0.50, 0.60],
+    "notes": "Per the brief: 'One attendant manages the entire women's bank. No item limit per entry.' Manit's clarification: in baseline T01 (trial-room attendant by role) is NOT stationed — they do floor relief. So no attendant, no item cap. Items-in-cubicle limit (4) is weakly enforced — staff only intervene if visibly egregious."
+  },
+
+  "lever_4_merchandising": {
+    "power_wall": {
+      "refresh_cadence": "weekly_monday_only",
+      "intra_day_refresh": false,
+      "featured_skus": null,
+      "festive_concentration_pct": 50,
+      "festive_concentration_note": "Mannequins are dressed in ethnic festive (saree, kurta) but racks behind carry mixed SKUs — not exclusively festive. ~50% festive, ~50% non-festive."
+    },
+    "promo_islands": {
+      "curation": "excess_inventory",
+      "content_skus_note": "Center-aisle B2G1 tables stock excess inventory from earlier in the season — clearance lehengas, last-season kurtis. Not curated impulse items.",
+      "refresh_during_day": false
+    },
+    "impulse_fixture_near_billing": {
+      "refresh_during_day": false,
+      "static_sub_categories": ["bangles", "earrings", "makeup_proxy", "sunglasses"],
+      "notes": "Bangles, earrings, makeup, sunglasses near checkout. Assortment is static, not refreshed during the day."
+    },
+    "campaign": {
+      "targeting": "single_for_all",
+      "slogan": "Diwali Dhamaka Flat 30% off + Buy 2 Get 1 Free on ethnic wear",
+      "mechanics": [
+        "flat_30_off_apparel_pre_tagged",
+        "flat_30_to_60_off_kids_and_winter",
+        "b2g1_ethnic"
+      ],
+      "segmented_by_profile": false,
+      "notes": "One campaign for everyone — migrant Hindi-belt shoppers, local Kannadigas, young women, family groups all see the same offer. No phone/loyalty capture. No personalized offers."
+    },
+    "signage": {
+      "mahabachat_banners_at_entry_and_billing": true,
+      "zone_specific_festive_callouts": false
+    }
+  },
+
+  "lever_5_cross_merch_and_replenishment": {
+    "outfit_bundle_fixtures": false,
+    "cross_zone_adjacencies": [],
+    "accessories_treatment": "destination_zone",
+    "accessories_co_located_with_ethnic": false,
+    "footwear_apparel_co_location": false,
+    "footwear_placement_note": "Footwear is on the opposite side of the store from apparel. A shopper who buys a saree must cross the store to find matching juttis or heels. Most don't bother — attach rate stays low.",
+    "department_blocking": {
+      "kurti_zone": "womens_ethnic",
+      "leggings_zone": "womens_western",
+      "dupatta_zone": "womens_fa",
+      "note": "Departments are blocked. An outfit-building shopper traverses three zones."
+    },
+
+    "replenishment_schedule": ["10:00", "16:00"],
+    "mid_peak_replenishment": false,
+    "stockout_response": "passive",
+    "stockout_response_note": "Staff check the stockroom only if a customer specifically asks. No proactive replenishment based on visible fixture gaps. L/XL in women's ethnic stocks out first at peak and stays out until 16:00 top-up.",
+    "size_curve_volatile_skus_zone": "womens_ethnic"
+  },
+
+  "do_not_touch": {
+    "trial_probability_per_profile": "fixed in store/engine.js TRIAL_PROB (mom 0.55, young 0.78, family 0.45, male 0.18, browser 0.04)",
+    "intent_strength_base": "fixed per profile in data/profiles.json",
+    "queue_tolerance_per_profile": "fixed in data/profiles.json (reduce_at, abandon_at)",
+    "arrival_curve": "fixed in data/agents.json (per-agent arrival_minute, drawn from per-profile chi-square)",
+    "group_size_distribution": "fixed in data/profiles.json",
+    "purchase_probability_post_trial": "fixed in engine (50-60% baseline per brief)",
+    "service_speed_per_staff": "fixed in data/staff.json (derived from experience_years)",
+    "rng_seed": "fixed — same seed across baseline and optimized runs for honest A/B"
+  },
+
+  "expected_baseline_kpis_1000_agents": {
+    "footfall": 1000,
+    "revenue_inr_lakh_range": [2.8, 3.6],
+    "memos_range": [350, 450],
+    "conversion_pct_range": [36, 42],
+    "avg_ticket_inr_range": [700, 900],
+    "peak_billing_wait_min_range": [18, 28],
+    "peak_trial_wait_min_range": [12, 18],
+    "basket_abandonment_pct_range": [8, 14],
+    "walkout_pct_range": [12, 20],
+    "source": "Brief's expected baseline outcome (pp. 11), scaled from 6,500-8,000 footfall down to 1,000 (~7×)."
+  }
+}
