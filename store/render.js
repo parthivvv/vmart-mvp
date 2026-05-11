@@ -660,26 +660,107 @@ class Renderer {
   }
 
   _drawShopper(ctx, a, selected, hover) {
-    const persona = a.persona;
+    const app = a.appearance || { outfit:'casual_m', shirt:a.persona.body, pants:'#1F1611',
+      skin:a.persona.skin, hair:a.persona.hair, hairStyle:'med' };
+    const bob = (a.state === 'walking') ? Math.sin(a.walk_phase) * 0.5 : 0;
+
     // shadow
     ctx.fillStyle = 'rgba(0,0,0,0.30)';
     ctx.beginPath();
     ctx.ellipse(a.x, a.y + 6.5, 3.8, 1.3, 0, 0, Math.PI * 2);
     ctx.fill();
-    // body
-    ctx.fillStyle = persona.body;
-    ctx.fillRect(a.x - 3, a.y - 1, 6, 8);
-    ctx.fillRect(a.x - 4.5, a.y - 0.5, 1.5, 5);
-    ctx.fillRect(a.x + 3, a.y - 0.5, 1.5, 5);
-    // head bob if walking
-    const bob = (a.state === 'walking') ? Math.sin(a.walk_phase) * 0.5 : 0;
-    ctx.fillStyle = persona.skin;
+
+    // Outfit-specific body rendering
+    if (app.outfit === 'ethnic_f') {
+      // Kurti top + flared skirt/saree drape
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 3, a.y - 1, 6, 5);              // top
+      ctx.fillStyle = app.pants;
+      // flared lower (wider trapezoid feel)
+      ctx.fillRect(a.x - 3.5, a.y + 4, 7, 4);            // skirt
+      // arms
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 4.3, a.y - 0.5, 1.3, 4);
+      ctx.fillRect(a.x + 3, a.y - 0.5, 1.3, 4);
+      // dupatta drape (diagonal across torso)
+      if (app.hasDupatta) {
+        ctx.fillStyle = app.dupattaColor;
+        ctx.fillRect(a.x - 2.5, a.y - 0.5, 5, 0.8);     // shoulder drape
+        ctx.fillRect(a.x + 1.5, a.y + 0.3, 1.5, 3);    // hanging end
+      }
+    } else if (app.outfit === 'western_f') {
+      // Shirt + jeans/leggings
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 3, a.y - 1, 6, 5);
+      ctx.fillStyle = app.pants;
+      ctx.fillRect(a.x - 2.5, a.y + 4, 5, 4);
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 4.3, a.y - 0.5, 1.3, 4);
+      ctx.fillRect(a.x + 3, a.y - 0.5, 1.3, 4);
+    } else if (app.outfit === 'formal_m') {
+      // Shirt + dark trousers
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 3, a.y - 1, 6, 5);
+      // belt
+      ctx.fillStyle = '#1F1611';
+      ctx.fillRect(a.x - 3, a.y + 4, 6, 0.6);
+      ctx.fillStyle = app.pants;
+      ctx.fillRect(a.x - 2.5, a.y + 4.6, 5, 3.4);
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 4.3, a.y - 0.5, 1.3, 4);
+      ctx.fillRect(a.x + 3, a.y - 0.5, 1.3, 4);
+    } else {
+      // casual_m: t-shirt + jeans
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 3, a.y - 1, 6, 4.5);
+      ctx.fillStyle = app.pants;
+      ctx.fillRect(a.x - 2.8, a.y + 3.5, 5.6, 4);
+      ctx.fillStyle = app.shirt;
+      ctx.fillRect(a.x - 4.3, a.y - 0.5, 1.3, 3.5);
+      ctx.fillRect(a.x + 3, a.y - 0.5, 1.3, 3.5);
+    }
+
+    // shopping bag (if applicable) — only show when not in queue
+    if (app.hasBag && (a.state === 'walking' || a.state === 'browsing')) {
+      ctx.fillStyle = app.bagColor;
+      ctx.fillRect(a.x + 4.2, a.y + 1, 1.6, 3);
+    }
+
+    // head
+    ctx.fillStyle = app.skin;
     ctx.beginPath();
     ctx.arc(a.x, a.y - 3.5 + bob, 2.6, 0, Math.PI * 2);
     ctx.fill();
-    // hair
-    ctx.fillStyle = persona.hair;
-    ctx.fillRect(a.x - 2.6, a.y - 6.5 + bob, 5.2, 2.6);
+
+    // hair (varies by style)
+    ctx.fillStyle = app.hair;
+    if (app.hairStyle === 'long' && app.outfit !== 'casual_m' && app.outfit !== 'formal_m') {
+      // long hair (women): drapes down to shoulders
+      ctx.fillRect(a.x - 2.8, a.y - 6.5 + bob, 5.6, 3);  // top
+      ctx.fillRect(a.x - 3, a.y - 4 + bob, 1, 4);        // left strand
+      ctx.fillRect(a.x + 2, a.y - 4 + bob, 1, 4);        // right strand
+    } else if (app.hairStyle === 'med') {
+      ctx.fillRect(a.x - 2.7, a.y - 6.5 + bob, 5.4, 3);
+    } else if (app.hairStyle === 'tied') {
+      ctx.fillRect(a.x - 2.6, a.y - 6.4 + bob, 5.2, 2.6);
+      // bun
+      ctx.beginPath();
+      ctx.arc(a.x, a.y - 7.5 + bob, 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // short
+      ctx.fillRect(a.x - 2.4, a.y - 6.2 + bob, 4.8, 2.2);
+    }
+
+    // glasses (rare)
+    if (app.hasGlasses) {
+      ctx.strokeStyle = '#1A1410';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.arc(a.x - 1.1, a.y - 3.3 + bob, 0.9, 0, Math.PI * 2);
+      ctx.arc(a.x + 1.1, a.y - 3.3 + bob, 0.9, 0, Math.PI * 2);
+      ctx.stroke();
+    }
 
     if (selected) {
       ctx.strokeStyle = '#E11D26';
@@ -693,11 +774,6 @@ class Renderer {
       ctx.beginPath();
       ctx.arc(a.x, a.y, 9, 0, Math.PI * 2);
       ctx.stroke();
-    }
-
-    // Bubble: state-specific
-    if (selected || (hover && !this.sim.events.length)) {
-      // suppress to avoid clutter
     }
   }
 

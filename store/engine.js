@@ -26,12 +26,54 @@ const TRIAL_PROB = {
 const ENTRY_OUT       = { x:1100, y:1080 };
 const ENTRY_DOOR      = { x:1100, y:1010 };
 const ENTRY_VESTIBULE = { x:1100, y: 970 };
-const AISLE_S         = { x: 690, y: 940 };
-const AISLE_MID       = { x: 690, y: 540 };
-const AISLE_N         = { x: 690, y: 250 };
-const AISLE_E_MID     = { x: 880, y: 540 };
-const TRIAL_HEAD_W    = { x: 690, y: 220 };
-const TRIAL_HEAD_M    = { x: 830, y: 220 };
+
+// ═══ AISLE NETWORK — agents only walk along these corridors ═══
+// Three horizontal aisles (south, middle, north) × five vertical aisles
+const AISLE = {
+  // South aisle (just inside the entry, runs east-west across south of store)
+  S_FW: { x: 250, y: 870 }, // far west
+  S_W:  { x: 400, y: 870 },
+  S_C:  { x: 670, y: 870 }, // center
+  S_E:  { x: 870, y: 870 },
+  S_CE: { x:1100, y: 870 }, // entry vertical
+  S_K:  { x:1310, y: 870 },
+  S_FE: { x:1450, y: 870 },
+
+  // Middle aisle (between row of zones at y=400-700 and y=700-900)
+  M_FW: { x: 250, y: 540 },
+  M_W:  { x: 400, y: 700 }, // between ethnic and western
+  M_C:  { x: 670, y: 540 },
+  M_E:  { x: 870, y: 540 },
+  M_CE: { x:1100, y: 540 },
+  M_K:  { x:1310, y: 540 },
+  M_FE: { x:1450, y: 540 },
+
+  // North aisle (between back-nook items and main zones)
+  N_FW: { x: 250, y: 210 },
+  N_W:  { x: 400, y: 210 },
+  N_C:  { x: 670, y: 210 },
+  N_E:  { x: 870, y: 210 },
+  N_CE: { x:1100, y: 210 },
+  N_K:  { x:1310, y: 210 },
+  N_FE: { x:1500, y: 210 },
+};
+
+// Aisle entry-point per zone — used by Manhattan router as "exit" from aisle
+const ZONE_AISLE_ENTRY = {
+  power_wall:         'S_C',
+  womens_ethnic:      'M_W',
+  womens_western:     'S_W',
+  womens_fa:          'S_FW',
+  mens_casual:        'M_E',
+  mens_formal_ethnic: 'M_CE',
+  mens_fa:            'S_CE',
+  kids:               'M_K',
+  infants:            'M_FE',
+  billing:            'S_CE',
+};
+
+const TRIAL_HEAD_W    = AISLE.N_C;  // trial bank approached from north-center aisle
+const TRIAL_HEAD_M    = AISLE.N_E;
 
 // Zone targets — center coord and a few jitter offsets so agents in same zone don't stack
 const ZONE_TARGETS = {
@@ -55,6 +97,58 @@ const COUNTER_POS = [
   { x:1510, y:920 },   // C5 shut
   { x:1615, y:920 },   // C6 shut
 ];
+
+// ═══ APPEARANCE — per-agent visual variety ═══
+// Cycled by agent index so each unique agent looks distinct (deterministic)
+const SKIN_TONES   = ['#F4C9A0','#E8BD90','#D9A878','#C8956E','#B7855C','#E0AE85','#F0C895'];
+const HAIR_COLORS  = ['#1A1410','#2A1810','#3A2418','#5A3A20','#1F1108','#48311E','#241410'];
+const HAIR_STYLES  = ['short','med','long','tied'];
+const DUPATTA_COLS = ['#FFD966','#E54B6A','#A567C9','#5BA66A','#D04C3E','#3F88C5','#F19A50','#E6BC4C'];
+const BAG_COLORS   = ['#3D2418','#5A3A20','#7A4528','#A02038','#241410'];
+
+// Per-persona shirt/outfit palette (kept varied within plausible range)
+const SHIRT_PALETTES = {
+  mission_mom:    ['#D67BAA','#E54B6A','#C8409A','#A23E78','#DC6890','#B22E5A','#FF98A8','#E89BB8','#C26389','#984A6D'],
+  young_woman:    ['#A567C9','#7E4FBD','#9A3FBC','#D67BAA','#5A3D9B','#FF9CDB','#3F88C5','#B96FE2','#7A4A9D','#D89AE0'],
+  family_weekend: ['#E5A93C','#D08F2C','#B97824','#E54B6A','#9C7438','#D04C3E','#A56500','#D87138','#B85420','#C97A30'],
+  quick_trip_male:['#4F87BD','#3D6A98','#2C4D6E','#5D7FA3','#7A4528','#465B7A','#365070','#2A3F5A','#5C7488','#3A6080'],
+  browser:        ['#898989','#A8A8A8','#6E6E6E','#897F75','#A89880','#5A554E','#9F9489','#7A6F65','#8B8378','#6A6055'],
+};
+const PANTS_PALETTES = {
+  mission_mom:    ['#3A2A1E','#1F1611','#2C2C2C','#5A3A20','#7A5538'],
+  young_woman:    ['#1F1611','#2D3B8F','#3D2418','#2C2C2C','#475472'],
+  family_weekend: ['#3A2A1E','#1F1611','#5A3A20','#2C2C2C','#7A5538'],
+  quick_trip_male:['#1F1611','#2C2C2C','#3D2A1A','#475472','#2D3B8F'],
+  browser:        ['#3A2A1E','#1F1611','#2C2C2C','#3D2418','#5A3A20'],
+};
+
+// Outfit type: ethnic_f / western_f / casual_m / formal_m / mixed
+function pickOutfit(profile, rng) {
+  if (profile === 'quick_trip_male') return rng() < 0.45 ? 'formal_m' : 'casual_m';
+  if (profile === 'mission_mom')     return rng() < 0.78 ? 'ethnic_f' : 'western_f';
+  if (profile === 'young_woman')     return rng() < 0.42 ? 'ethnic_f' : 'western_f';
+  if (profile === 'family_weekend')  {
+    const r = rng();
+    if (r < 0.55) return 'ethnic_f';
+    if (r < 0.75) return 'casual_m';
+    return 'western_f';
+  }
+  // browser
+  return rng() < 0.5 ? 'western_f' : 'casual_m';
+}
+
+function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
+function rngFromId(id) {
+  // Deterministic per-agent RNG from id like "A0042"
+  const n = parseInt(String(id).replace(/\D/g, '')) || 1;
+  let t = n * 2654435761 >>> 0;
+  return function() {
+    t |= 0; t = t + 0x6D2B79F5 | 0;
+    let r = Math.imul(t ^ t >>> 15, 1 | t);
+    r = r + Math.imul(r ^ r >>> 7, 61 | r) ^ r;
+    return ((r ^ r >>> 14) >>> 0) / 4294967296;
+  };
+}
 
 // Trial cubicle visual positions (matches the SVG store-model fixtures)
 // Original SVG: trial bank starts at (530, 110), each cubicle 36px wide, divider after 7th
@@ -128,6 +222,24 @@ class Agent {
     this.persona = PERSONA_COLOR[this.profile];
     this.color = this.persona.body;
     this.walk_phase = Math.random() * Math.PI * 2;
+
+    // Per-agent appearance (deterministic by id so the same shopper always looks identical)
+    const rng = rngFromId(data.id);
+    const outfit = pickOutfit(data.profile, rng);
+    this.appearance = {
+      outfit,
+      shirt:    pick(SHIRT_PALETTES[data.profile], rng),
+      pants:    pick(PANTS_PALETTES[data.profile], rng),
+      skin:     pick(SKIN_TONES, rng),
+      hair:     pick(HAIR_COLORS, rng),
+      hairStyle:pick(HAIR_STYLES, rng),
+      hasDupatta: outfit === 'ethnic_f' && rng() < 0.65,
+      dupattaColor: pick(DUPATTA_COLS, rng),
+      hasBag: rng() < (data.profile === 'browser' ? 0.20 : 0.42),
+      bagColor: pick(BAG_COLORS, rng),
+      hasGlasses: rng() < 0.15,
+      facingTimer: 0,
+    };
   }
 
   setPath(points, finalState) {
@@ -321,14 +433,132 @@ class Sim {
   _spawn(a) {
     a.entered_at = this.simMin;
     this.metrics.footfall++;
-    // Walk in: outside → door → vestibule → first zone
+    // Spread entry positions across the 120-px-wide door so agents don't stack
+    const doorOffset = (Math.random() - 0.5) * 100; // ±50 px along door
+    a.x = ENTRY_OUT.x + doorOffset + (Math.random() - 0.5) * 16;
+    a.y = ENTRY_OUT.y + Math.random() * 30;
+
     const firstZone = a.zone_plan[0];
     const target = this._pickZoneTarget(firstZone);
     a.current_zone = firstZone;
-    a.setPath([ENTRY_DOOR, ENTRY_VESTIBULE, target], 'browsing');
+
+    // Build full Manhattan path through aisles
+    const path = this._routeManhattan(
+      { x: ENTRY_OUT.x + doorOffset, y: ENTRY_OUT.y },
+      firstZone,
+      target,
+      true /* fromOutside */
+    );
+    a.setPath(path, 'browsing');
     a.dwell_remaining = a.zone_dwell_share * (0.7 + Math.random() * 0.6);
     this.activeAgents.push(a);
     this.emit('arrive', a, 'entered store');
+  }
+
+  // Build a Manhattan path from current pos → zone target, going via aisles.
+  // Adds a small jitter to each waypoint so paths through the same corridor
+  // don't visually overlap.
+  _routeManhattan(fromXY, toZoneId, finalTarget, fromOutside) {
+    const path = [];
+    // Step 0: if outside, enter through door
+    if (fromOutside) {
+      path.push({ x: fromXY.x, y: 1015 });          // through doorway
+      path.push({ x: fromXY.x, y: 985 });           // vestibule
+    }
+    // Step 1: pick the agent's "current aisle X" — depending on where they are now
+    const fromAisleKey = this._nearestAisleX(fromXY.x);
+    const fromAisleX = AISLE['S_' + fromAisleKey].x;
+    // Step 2: get to the south aisle Y if not already there
+    const onAnyAisle = this._isOnAisleY(fromXY.y);
+    if (!onAnyAisle) {
+      // come out of zone onto nearest aisle Y
+      const aisleY = this._nearestAisleY(fromXY.y);
+      path.push({ x: fromXY.x, y: aisleY });
+    }
+    // Step 3: horizontal travel along the chosen aisle to the target zone's aisle column
+    const tgtAisleKey = ZONE_AISLE_ENTRY[toZoneId] || 'S_C';
+    const tgtAisle = AISLE[tgtAisleKey];
+    // Use south aisle for horizontal travel (the main racetrack)
+    path.push({ x: fromAisleX, y: 870 });          // get on south aisle
+    // jitter
+    const jitter = (Math.random() - 0.5) * 12;
+    path.push({ x: tgtAisle.x + jitter, y: 870 }); // travel along south aisle
+    // Step 4: vertical travel up the target aisle
+    if (tgtAisle.y !== 870) {
+      path.push({ x: tgtAisle.x + jitter, y: tgtAisle.y });
+    }
+    // Step 5: walk to the actual browse target inside the zone
+    path.push({ x: finalTarget.x, y: finalTarget.y });
+    return path;
+  }
+
+  // Routing to TRIAL — agents go via center aisle to north
+  _routeToTrialPath(fromXY, bank) {
+    const path = [];
+    const fromAisleX = AISLE['S_' + this._nearestAisleX(fromXY.x)].x;
+    const aisleY = this._nearestAisleY(fromXY.y);
+    if (!this._isOnAisleY(fromXY.y)) {
+      path.push({ x: fromXY.x, y: aisleY });
+    }
+    // Travel via south aisle then up center
+    path.push({ x: fromAisleX, y: 870 });
+    const j = (Math.random() - 0.5) * 12;
+    const colX = bank === 'w' ? 670 : 870;
+    path.push({ x: colX + j, y: 870 });
+    path.push({ x: colX + j, y: 540 });
+    path.push({ x: colX + j, y: 210 });
+    return path;
+  }
+
+  // Routing to BILLING — agents go via south aisle to the queue tail
+  _routeToBillingPath(fromXY, tailPos) {
+    const path = [];
+    const fromAisleX = AISLE['S_' + this._nearestAisleX(fromXY.x)].x;
+    if (!this._isOnAisleY(fromXY.y)) {
+      path.push({ x: fromXY.x, y: this._nearestAisleY(fromXY.y) });
+    }
+    path.push({ x: fromAisleX, y: 870 });
+    path.push({ x: tailPos.x, y: 870 });
+    path.push({ x: tailPos.x, y: tailPos.y });
+    return path;
+  }
+
+  _routeToExitPath(fromXY) {
+    const path = [];
+    const fromAisleX = AISLE['S_' + this._nearestAisleX(fromXY.x)].x;
+    if (!this._isOnAisleY(fromXY.y)) {
+      path.push({ x: fromXY.x, y: this._nearestAisleY(fromXY.y) });
+    }
+    path.push({ x: fromAisleX, y: 870 });
+    path.push({ x: ENTRY_DOOR.x + (Math.random() - 0.5) * 60, y: 870 });
+    path.push({ x: ENTRY_DOOR.x, y: 985 });
+    path.push({ x: ENTRY_DOOR.x, y: 1015 });
+    path.push({ x: ENTRY_OUT.x + (Math.random() - 0.5) * 100, y: ENTRY_OUT.y });
+    return path;
+  }
+
+  _nearestAisleX(x) {
+    // Vertical aisle columns at x = 250, 400, 670, 870, 1100, 1310, 1500
+    const cols = [['FW',250],['W',400],['C',670],['E',870],['CE',1100],['K',1310],['FE',1500]];
+    let best = cols[0]; let bestD = Math.abs(x - cols[0][1]);
+    for (const c of cols) {
+      const d = Math.abs(x - c[1]);
+      if (d < bestD) { bestD = d; best = c; }
+    }
+    return best[0];
+  }
+  _nearestAisleY(y) {
+    // Horizontal aisle bands at y=210, 540, 870
+    const ys = [210, 540, 870];
+    let best = ys[0]; let bestD = Math.abs(y - ys[0]);
+    for (const ay of ys) {
+      const d = Math.abs(y - ay);
+      if (d < bestD) { bestD = d; best = ay; }
+    }
+    return best;
+  }
+  _isOnAisleY(y) {
+    return Math.abs(y - 210) < 30 || Math.abs(y - 540) < 30 || Math.abs(y - 870) < 30;
   }
 
   _pickZoneTarget(zoneId) {
@@ -448,8 +678,7 @@ class Sim {
         a.exited_at = this.simMin;
         a.exit_reason = 'purchased';
         this.emit('purchase', a, '₹' + Math.round(a.basket_value));
-        // walk to exit
-        a.setPath([ENTRY_VESTIBULE, ENTRY_DOOR, ENTRY_OUT], 'departed');
+        a.setPath(this._routeToExitPath({ x:a.x, y:a.y }), 'departed');
       }
       return;
     }
@@ -458,18 +687,18 @@ class Sim {
   _zoneDecision(a) {
     a.zone_idx++;
     const remaining = a.zone_plan.length - a.zone_idx;
-    // Continue to next zone with probability based on profile + how many we've done
     const continueProb = a.profile === 'browser' ? 0.40
                       : a.profile === 'quick_trip_male' ? 0.30
                       : a.profile === 'mission_mom' ? 0.75
                       : a.profile === 'young_woman' ? 0.62
-                      : 0.80; // family
+                      : 0.80;
     if (remaining > 0 && Math.random() < continueProb) {
       const next = a.zone_plan[a.zone_idx];
       a.current_zone = next;
       const target = this._pickZoneTarget(next);
       a.dwell_remaining = a.zone_dwell_share * (0.7 + Math.random() * 0.6);
-      a.setPath([target], 'browsing');
+      const path = this._routeManhattan({x:a.x, y:a.y}, next, target, false);
+      a.setPath(path, 'browsing');
       return;
     }
     // Decide: trial → bill → exit
@@ -486,14 +715,13 @@ class Sim {
   }
 
   _routeToTrial(a) {
-    // Pick bank by gendered intent (rough: male → 'm', else 'w'; quick_trip_male always 'm')
     const bank = a.profile === 'quick_trip_male' ? 'm' :
                  (a.profile === 'family_weekend' && Math.random() < 0.30) ? 'm' : 'w';
     a._trial_bank = bank;
-    const head = bank === 'w' ? TRIAL_HEAD_W : TRIAL_HEAD_M;
     a.queue_wait = 0;
     a._reduced = false;
-    a.setPath([AISLE_MID, head], 'trial_queue');
+    const path = this._routeToTrialPath({ x:a.x, y:a.y }, bank);
+    a.setPath(path, 'trial_queue');
     if (bank === 'w') this.trial_queue_w.push(a);
     else this.trial_queue_m.push(a);
   }
@@ -501,9 +729,8 @@ class Sim {
   _routeToBilling(a) {
     a.queue_wait = 0;
     a._reduced = false;
-    // Path: current → aisle south → billing queue tail
     const tail = billingQueuePosition(this.billing_queue.length);
-    a.setPath([AISLE_S, tail], 'bill_queue');
+    a.setPath(this._routeToBillingPath({ x:a.x, y:a.y }, tail), 'bill_queue');
     this.billing_queue.push(a);
   }
 
@@ -511,7 +738,7 @@ class Sim {
     a.exit_reason = reason;
     a.exited_at = this.simMin;
     if (reason === 'no_purchase') this.metrics.walkouts++;
-    a.setPath([ENTRY_VESTIBULE, ENTRY_DOOR, ENTRY_OUT], 'walked_out');
+    a.setPath(this._routeToExitPath({ x:a.x, y:a.y }), 'walked_out');
   }
 
   _tickTrial(dt) {
