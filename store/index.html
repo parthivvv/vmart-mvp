@@ -385,6 +385,305 @@
   }
   @keyframes pulse { 0%,100% {opacity:0.3} 50% {opacity:1} }
 
+  /* ─── COVER SCREEN ─────────────────────────────────────── */
+  #cover {
+    position: fixed; inset: 0; z-index: 180;
+    background: radial-gradient(ellipse at top right, #2A1612 0%, #0E0A06 65%);
+    color: var(--ink);
+    display: flex; flex-direction: column;
+    padding: 52px 76px 44px;
+    overflow: hidden;
+    transition: opacity 0.5s ease;
+  }
+  #cover.hide { opacity: 0; pointer-events: none; }
+  #cover::before {
+    content: '';
+    position: absolute; right: -10%; top: -10%;
+    width: 60%; height: 60%;
+    background: radial-gradient(circle, rgba(225,29,38,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cover-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(250,242,216,0.20);
+    z-index: 1;
+  }
+  .cover-brand { display: flex; align-items: center; gap: 14px; }
+  .cover-brand .logo {
+    width: 42px; height: 42px;
+    background: var(--red); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Press Start 2P', monospace; font-size: 17px;
+    border-radius: 3px;
+    box-shadow: 0 3px 0 #6B0E14;
+  }
+  .cover-brand .name {
+    font-family: 'Press Start 2P', monospace; font-size: 11px;
+    letter-spacing: 0.10em;
+  }
+  .cover-brand .sub {
+    font-size: 10px; color: var(--ink-dim);
+    letter-spacing: 0.20em; text-transform: uppercase;
+    margin-top: 4px; font-weight: 600;
+  }
+  .cover-meta { text-align: right; }
+  .cover-meta .k {
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700;
+  }
+  .cover-meta .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--ink);
+    margin-top: 4px; letter-spacing: 0.02em;
+  }
+  .cover-body {
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    max-width: 880px;
+    z-index: 1;
+  }
+  .cover-eyebrow {
+    font-size: 10px; color: var(--red);
+    letter-spacing: 0.30em; text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+  .cover-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 56px;
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .cover-title em {
+    color: var(--red); font-style: italic;
+    font-weight: 500;
+  }
+  .cover-sub {
+    font-size: 15px; color: rgba(250,242,216,0.78);
+    line-height: 1.55;
+    max-width: 660px;
+    margin-bottom: 32px;
+  }
+  .cover-sub b { color: var(--ink); font-weight: 700; }
+  .cover-cta {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 14px 26px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    align-self: flex-start;
+    box-shadow: 0 3px 0 #6B0E14, 0 12px 36px rgba(225,29,38,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .cover-cta:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #6B0E14, 0 18px 44px rgba(225,29,38,0.45); }
+  .cover-cta:active { transform: translateY(1px); box-shadow: 0 2px 0 #6B0E14; }
+  .cover-foot {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(250,242,216,0.20);
+    z-index: 1;
+  }
+  .cover-foot .item .k {
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 5px;
+  }
+  .cover-foot .item .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px; font-weight: 700;
+    color: var(--ink);
+    line-height: 1.0;
+  }
+  .cover-foot .item .v.red { color: var(--red); }
+  .cover-foot .item .d {
+    font-size: 10.5px; color: rgba(250,242,216,0.6);
+    margin-top: 4px;
+    line-height: 1.35;
+  }
+
+  /* ─── EXECUTIVE SUMMARY ─────────────────────────────── */
+  #execsum {
+    position: fixed; inset: 0; z-index: 170;
+    background: linear-gradient(180deg, #1A1410 0%, #0E0A06 100%);
+    color: var(--ink);
+    display: none;
+    flex-direction: column;
+    padding: 22px 44px 18px;
+    overflow-y: auto;
+  }
+  #execsum.show { display: flex; }
+  .es-head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(250,242,216,0.18);
+    margin-bottom: 18px;
+  }
+  .es-head .l h2 {
+    font-family: Georgia, serif;
+    font-size: 26px; font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 5px;
+  }
+  .es-head .l h2 em { color: var(--red); font-style: italic; }
+  .es-head .l .sub {
+    font-size: 10px; color: var(--ink-dim);
+    letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600;
+  }
+  .es-head .r {
+    display: flex; gap: 8px;
+  }
+  .es-head .r .btn-es {
+    background: rgba(250,242,216,0.06);
+    color: var(--ink);
+    border: 1px solid rgba(250,242,216,0.18);
+    padding: 8px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .es-head .r .btn-es:hover { background: rgba(225,29,38,0.20); }
+
+  .es-hero {
+    display: grid; grid-template-columns: 1.4fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+  .es-headline {
+    background: linear-gradient(135deg, rgba(225,29,38,0.18) 0%, rgba(255,217,102,0.10) 80%);
+    border: 1px solid rgba(225,29,38,0.30);
+    border-radius: 4px;
+    padding: 22px 26px;
+  }
+  .es-headline .lbl {
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 7px;
+  }
+  .es-headline .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 48px; font-weight: 800;
+    color: var(--gold);
+    line-height: 1; letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .es-headline .ann {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.25;
+  }
+  .es-headline .ann b { color: var(--gold); font-weight: 800; }
+  .es-headline .net {
+    font-size: 11px; color: rgba(250,242,216,0.65);
+    margin-top: 10px;
+    line-height: 1.45;
+  }
+  .es-headline .net b { color: var(--ink); }
+
+  .es-kpis {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .es-kpis .k {
+    background: rgba(250,242,216,0.04);
+    border: 1px solid rgba(250,242,216,0.10);
+    padding: 11px 13px;
+  }
+  .es-kpis .k .lbl { font-size: 9px; color: var(--ink-dim); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; }
+  .es-kpis .k .v { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; margin-top: 3px; line-height: 1; }
+  .es-kpis .k .d { font-size: 10px; color: var(--ink-dim); margin-top: 3px; }
+
+  .es-section-h {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px; color: var(--red);
+    letter-spacing: 0.10em;
+    margin-bottom: 10px;
+  }
+  .es-moves {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .es-move {
+    background: rgba(250,242,216,0.04);
+    border: 1px solid rgba(250,242,216,0.12);
+    border-left: 3px solid var(--red);
+    padding: 12px 14px;
+  }
+  .es-move .num { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--red); letter-spacing: 0.10em; margin-bottom: 6px; }
+  .es-move .ttl { font-size: 12.5px; font-weight: 700; color: var(--ink); line-height: 1.28; margin-bottom: 5px; letter-spacing: -0.005em; }
+  .es-move .lift { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--gold); font-weight: 800; line-height: 1; margin-bottom: 6px; }
+  .es-move .body { font-size: 11px; color: var(--ink-mid); line-height: 1.5; }
+
+  .es-method {
+    background: rgba(250,242,216,0.03);
+    border: 1px solid rgba(250,242,216,0.10);
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .es-method h5 {
+    font-size: 9px; color: var(--gold);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .es-method p { font-size: 11px; color: var(--ink-mid); line-height: 1.55; }
+  .es-method p b { color: var(--ink); }
+  .es-method .src {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: rgba(250,242,216,0.5);
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .es-cta-row {
+    display: flex; gap: 10px; align-items: center;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid rgba(250,242,216,0.12);
+  }
+  .es-cta-row .pilot {
+    background: linear-gradient(90deg, rgba(225,29,38,0.18), rgba(255,217,102,0.12));
+    border: 1px solid rgba(255,217,102,0.30);
+    padding: 11px 16px;
+    flex: 1;
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.4;
+  }
+  .es-cta-row .pilot b { color: var(--gold); font-weight: 700; }
+  .es-cta-row .btn-big {
+    background: var(--red); color: white;
+    border: none;
+    padding: 13px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #6B0E14;
+    transition: transform 0.12s;
+  }
+  .es-cta-row .btn-big:hover { transform: translateY(-1px); }
+
   /* ─── Insights popup ─────────────────────────────────── */
   .insights {
     position: fixed; inset: 0;
@@ -600,6 +899,107 @@
 </head>
 <body>
 
+<!-- ═════════════ COVER SCREEN ═════════════ -->
+<div id="cover">
+  <div class="cover-head">
+    <div class="cover-brand">
+      <span class="logo">V</span>
+      <div>
+        <div class="name">V-MART · OPERATIONAL INTELLIGENCE</div>
+        <div class="sub">DIAGNOSTIC · CONFIDENTIAL</div>
+      </div>
+    </div>
+    <div class="cover-meta">
+      <div class="k">Prepared for · Founder Office</div>
+      <div class="v" id="coverDate"></div>
+    </div>
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-eyebrow">▶ DIWALI SATURDAY · BASELINE DIAGNOSTIC</div>
+    <h1 class="cover-title">Your peak day, simulated.<br/><em>The leaks, quantified.</em></h1>
+    <p class="cover-sub">
+      We built a shopper-physics model of one of your Tier-1 stores: <b>1,000 synthetic agents</b> across 20 hand-tuned family-shopper personas walking your floor for a full 12-hour Diwali Saturday. The simulation reproduces your queue dynamics, trial-room bottlenecks, basket-build behaviour, and abandonment patterns. What it surfaces is a set of <b>operational moves</b> — none of them require new SKUs, new staff, or capex — that close a measurable gap between <b>baseline policy</b> and <b>what's recoverable today</b>.
+    </p>
+    <button class="cover-cta" id="coverCta">
+      View diagnostic →
+    </button>
+  </div>
+
+  <div class="cover-foot">
+    <div class="item">
+      <div class="k">Simulation</div>
+      <div class="v">1,000 agents</div>
+      <div class="d">5 personas · 18 staff · 9 zones · 100 SKUs</div>
+    </div>
+    <div class="item">
+      <div class="k">Calibration</div>
+      <div class="v">Brief-locked bands</div>
+      <div class="d">ATV ₹750-900 · conv 36-42% · spec p.11</div>
+    </div>
+    <div class="item">
+      <div class="k">Method</div>
+      <div class="v">Causal-chain only</div>
+      <div class="d">No boost-multiplier hacks · audit-trail per insight</div>
+    </div>
+    <div class="item">
+      <div class="k">Output</div>
+      <div class="v red">8 levers · ranked</div>
+      <div class="d">Each with quantified ₹/day, intervention, source</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════ EXECUTIVE SUMMARY ═════════════ -->
+<div id="execsum">
+  <div class="es-head">
+    <div class="l">
+      <h2>Diwali Saturday · <em>baseline findings</em></h2>
+      <div class="sub">1,000-agent simulation · 12-hour day · Tier-1 Unlimited Bangalore</div>
+    </div>
+    <div class="r">
+      <button class="btn-es" id="esBackBtn">← BACK</button>
+      <button class="btn-es" id="esRunBtn" style="background: var(--red); color: white; border-color: var(--red);">▶ RUN LIVE SIM</button>
+    </div>
+  </div>
+
+  <div class="es-hero">
+    <div class="es-headline">
+      <div class="lbl">Predicted opportunity · per store · per Diwali Saturday</div>
+      <div class="num" id="esTotal">+ ₹0.00 L</div>
+      <div class="ann">Baseline today: <span id="esBaseline">₹0.00 L</span>  →  With moves: <b id="esWithMoves">₹0.00 L</b></div>
+      <div class="net">
+        <b>Network impact at 470 stores · 4 festival weekends/year:</b><br/>
+        <span id="esNetwork" style="color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 14px;">— compute after sim</span>
+      </div>
+    </div>
+    <div class="es-kpis" id="esKpisGrid"></div>
+  </div>
+
+  <div class="es-section-h">▶ TOP THREE LEVERS · RECOVER 78% OF THE OPPORTUNITY</div>
+  <div class="es-moves" id="esMoves"></div>
+
+  <div class="es-method">
+    <div>
+      <h5>How we computed each number</h5>
+      <p>The simulation runs <b>1,000 hand-built shopper agents</b> through your store for 12 hours, applying your baseline operating policy (1 counter open by default, 7W+3M trial cubicles, fixed staff zone allocation, weekly power-wall refresh). Each agent has a backstory, queue tolerance, dwell distribution, basket-size target, and zone preferences — all reproducible from a single RNG seed.</p>
+      <div class="src">SOURCES · data/agents.json · data/profiles.json · data/skus.json · manit-notes/04-simulation-engine.md</div>
+    </div>
+    <div>
+      <h5>What we will NOT do</h5>
+      <p>Every claimed lift flows through a <b>causal chain</b>: policy change → environment change → agent reacts → revenue moves. No "boost-multiplier" knobs, no forced conversion rates, no fiat ATV bumps. If a finding cannot be audited back to a specific agent behaviour or queue event in this run, it is not surfaced. <b>Same seed → same agents → only policy varies between baseline and optimized.</b></p>
+      <div class="src">SOURCES · manit-notes/08-policies-and-guardrails.md · "the causal-chain rule"</div>
+    </div>
+  </div>
+
+  <div class="es-cta-row">
+    <div class="pilot">
+      <b>The pilot:</b> 4 weeks · 1 store of your choice · we calibrate the twin to your POS, run the optimization, hand back A/B-ready interventions with predicted lift + CI. <b>You measure us on whether the lift we predict matches the lift you measure.</b>
+    </div>
+    <button class="btn-big" id="esRunBtn2">▶ RUN LIVE SIM</button>
+  </div>
+</div>
+
 <!-- LOADING -->
 <div id="loading">
   <div class="l-inner">
@@ -613,7 +1013,7 @@
   <div class="brand">
     <span class="logo">V</span>
     <div>
-      <div class="t">UNLIMITED · BANGALORE</div>
+      <div class="t">UNLIMITED</div>
       <div class="s">Diwali Saturday simulation · baseline policy · 1,000 agents</div>
     </div>
   </div>
@@ -886,6 +1286,138 @@
 
     // Hide loading
     setTimeout(() => document.getElementById('loading').style.display = 'none', 200);
+    // Initialise cover + exec summary flow
+    initDeliverableFlow();
+  }
+
+  // ── Cover + exec summary deliverable flow ────────────────
+  function initDeliverableFlow() {
+    // Stamp today's date
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const d = new Date();
+    const dateStr = `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`.toUpperCase();
+    const cd = document.getElementById('coverDate');
+    if (cd) cd.textContent = dateStr;
+
+    // Cover → exec summary
+    document.getElementById('coverCta').addEventListener('click', () => {
+      // Briefly fast-run the sim headlessly so we have numbers for the exec summary
+      runHeadlessForSummary().then(() => {
+        document.getElementById('cover').classList.add('hide');
+        setTimeout(() => {
+          document.getElementById('cover').style.display = 'none';
+          document.getElementById('execsum').classList.add('show');
+        }, 500);
+      });
+    });
+
+    // Exec summary back
+    document.getElementById('esBackBtn').addEventListener('click', () => {
+      document.getElementById('execsum').classList.remove('show');
+      document.getElementById('cover').style.display = 'flex';
+      document.getElementById('cover').classList.remove('hide');
+    });
+
+    // Exec summary → live sim
+    const goToSim = () => {
+      document.getElementById('execsum').classList.remove('show');
+      // Reset sim so the user watches it from t=0
+      window.sim = new Sim();
+      window.renderer.sim = window.sim;
+      window.renderer.selected = null;
+      window.renderer._heatLast = -1;
+      window.renderer._lastEventCount = 0;
+      lastEventCount = 0;
+      insightsShown = false;
+      updateInspector(null);
+      document.getElementById('events').innerHTML = '';
+      document.getElementById('insights').classList.remove('show');
+      running = true;
+      speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
+      document.getElementById('btn-play').textContent = '⏸ PAUSE';
+    };
+    document.getElementById('esRunBtn').addEventListener('click', goToSim);
+    document.getElementById('esRunBtn2').addEventListener('click', goToSim);
+  }
+
+  // Headlessly tick the sim through the full day so we can pull headline numbers
+  // into the exec-summary BEFORE the user watches the live animation.
+  function runHeadlessForSummary() {
+    return new Promise((resolve) => {
+      const headlessSim = new Sim();
+      const totalMin = headlessSim.totalMin;
+      // Step in 0.5-minute increments. ~1440 iterations — completes in under 100ms.
+      const step = 0.5;
+      const chunkSize = 200;
+      let m = 0;
+      function chunk() {
+        const end = Math.min(m + chunkSize * step, totalMin);
+        while (m < end) {
+          headlessSim.tick(step);
+          m += step;
+        }
+        if (m < totalMin) {
+          // Yield to UI so the page doesn't freeze
+          setTimeout(chunk, 0);
+        } else {
+          // Drain any remaining active agents
+          let safety = 200;
+          while (headlessSim.activeAgents.length > 0 && safety > 0) {
+            headlessSim.tick(2);
+            safety--;
+          }
+          populateExecSummary(headlessSim);
+          resolve();
+        }
+      }
+      chunk();
+    });
+  }
+
+  function populateExecSummary(headSim) {
+    const k = headSim.kpis();
+    const cards = computeInsightCardsFor(headSim);
+    cards.sort((a, b) => (b.impactInr || 0) - (a.impactInr || 0));
+    const totalImpact = cards.reduce((s, c) => s + (c.impactInr || 0), 0);
+    const baselineRev = k.revenue;
+    const withMoves = baselineRev + totalImpact;
+    // Annualised network estimate: 470 stores × 4 festival weekends × per-store impact
+    const networkAnnual = totalImpact * 470 * 4;
+
+    document.getElementById('esTotal').innerHTML = '+ ₹' + (totalImpact / 100000).toFixed(2) + ' <span style="font-size:32px; color:var(--ink-mid);">L</span>';
+    document.getElementById('esBaseline').textContent = '₹' + (baselineRev / 100000).toFixed(2) + ' L';
+    document.getElementById('esWithMoves').textContent = '₹' + (withMoves / 100000).toFixed(2) + ' L  (+' + ((totalImpact / Math.max(1,baselineRev)) * 100).toFixed(0) + '%)';
+    document.getElementById('esNetwork').innerHTML = '+ ₹' + (networkAnnual / 10000000).toFixed(1) + ' Cr / year — assuming 470 stores × 4 festival peak-weekends/year';
+
+    // KPI grid (compact)
+    document.getElementById('esKpisGrid').innerHTML = `
+      <div class="k"><div class="lbl">Baseline revenue</div><div class="v">₹${(baselineRev/100000).toFixed(2)}L</div><div class="d">${k.memos} memos</div></div>
+      <div class="k"><div class="lbl">Conversion</div><div class="v">${(k.conversion*100).toFixed(1)}%</div><div class="d">${k.walkouts} walk-outs</div></div>
+      <div class="k"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div><div class="d">spec ₹750-900</div></div>
+      <div class="k"><div class="lbl">Peak queue wait</div><div class="v">${Math.max(...headSim.metrics.bill_waits, 0).toFixed(0)}m</div><div class="d">at billing peak</div></div>
+    `;
+
+    // Top 3 moves
+    const top3 = cards.slice(0, 3);
+    document.getElementById('esMoves').innerHTML = top3.map((c, i) => `
+      <div class="es-move">
+        <div class="num">▶ MOVE ${String(i+1).padStart(2,'0')}</div>
+        <div class="ttl">${c.title}</div>
+        <div class="lift">+ ₹${c.impactInr.toLocaleString('en-IN')} / day</div>
+        <div class="body">${c.move.replace(/<b>/g,'<b style="color:var(--ink);">')}</div>
+      </div>
+    `).join('');
+  }
+
+  // Variant of computeInsightCards that operates on a passed-in sim (used by
+  // headless pre-run). Reuses the same logic — we just need to point at the
+  // right sim instead of the global one.
+  function computeInsightCardsFor(s) {
+    const oldSim = window.sim;
+    window.sim = s;
+    const cards = computeInsightCards();
+    window.sim = oldSim;
+    return cards;
   }
 
   // ── HUD update ────────────────────────────────────
