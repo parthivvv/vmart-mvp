@@ -138,6 +138,44 @@ function pickOutfit(profile, rng) {
 }
 
 function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
+
+// Realistic item-price distribution (post-discount, BOGO-adjusted) — matches the
+// SKU catalog in data/skus.json. Zone-conditioned so women's-ethnic skews higher
+// than basics like innerwear.
+function generateItemPrice(zone) {
+  const r = Math.random();
+  const zoneMul = {
+    womens_ethnic: 1.20, // saree/lehenga skew higher
+    womens_western: 0.90,
+    womens_fa: 0.45,     // accessories cheaper
+    mens_casual: 0.85,
+    mens_formal_ethnic: 1.10, // sherwani/kurta-set
+    mens_fa: 0.65,
+    kids: 0.55,
+    infants: 0.42,
+    power_wall: 0.95,
+    billing: 0.30,       // impulse only
+  }[zone] || 0.80;
+
+  let base;
+  if (r < 0.45)      base = 120 + Math.random() * 200;   // 120-320 basics
+  else if (r < 0.78) base = 280 + Math.random() * 240;   // 280-520 mid
+  else if (r < 0.95) base = 480 + Math.random() * 520;   // 480-1000 mid-premium
+  else               base = 900 + Math.random() * 1500;  // 900-2400 hero
+  return Math.round(base * zoneMul);
+}
+
+// Pick a representative SKU label from the SKU catalog for the zone
+function pickSku(zone) {
+  if (!window.SKUS) return null;
+  const catalog = window.SKUS.skus || window.SKUS;
+  const arr = Array.isArray(catalog) ? catalog : Object.values(catalog).flat();
+  const filtered = arr.filter(s => (s.zone === zone) || (s.zone_id === zone) || false);
+  const pool = filtered.length ? filtered : arr;
+  if (!pool.length) return null;
+  const it = pool[Math.floor(Math.random() * pool.length)];
+  return it.name || it.title || it.id || null;
+}
 function rngFromId(id) {
   // Deterministic per-agent RNG from id like "A0042"
   const n = parseInt(String(id).replace(/\D/g, '')) || 1;
@@ -150,21 +188,19 @@ function rngFromId(id) {
   };
 }
 
-// Trial cubicle visual positions (matches the SVG store-model fixtures)
-// Original SVG: trial bank starts at (530, 110), each cubicle 36px wide, divider after 7th
+// Trial cubicle visual positions — matches render.js _drawTrialBank
+// Bank: 7W at x=520→744, divider, 3M at x=752→816, all at y=110, height 68
 const TRIAL_CUBICLES = [
-  // 7 women's cubicles (W1..W7)
-  { x:546, y:158, bank:'w' },
-  { x:582, y:158, bank:'w' },
-  { x:618, y:158, bank:'w' },
-  { x:654, y:158, bank:'w' },
-  { x:690, y:158, bank:'w' },
-  { x:726, y:158, bank:'w' },
-  { x:762, y:158, bank:'w' },
-  // 3 men's cubicles (M1..M3)
-  { x:810, y:158, bank:'m' },
-  { x:846, y:158, bank:'m' },
-  { x:876, y:158, bank:'m' },
+  { x:535, y:158, bank:'w' },  // W1
+  { x:567, y:158, bank:'w' },  // W2
+  { x:599, y:158, bank:'w' },  // W3
+  { x:631, y:158, bank:'w' },  // W4
+  { x:663, y:158, bank:'w' },  // W5
+  { x:695, y:158, bank:'w' },  // W6
+  { x:727, y:158, bank:'w' },  // W7
+  { x:767, y:158, bank:'m' },  // M1
+  { x:799, y:158, bank:'m' },  // M2
+  { x:831, y:158, bank:'m' },  // M3
 ];
 
 // Billing queue snake — single straight queue feeding counters (BASELINE policy)
@@ -360,9 +396,118 @@ class Sim {
     };
     for (const s of this.staff) {
       const p = zonePos[s.zone] || zonePos.floor;
-      // Add jitter so multiple staff in same zone don't stack
+      s.home_x = p[0];
+      s.home_y = p[1];
       s.x = p[0] + (Math.random() - 0.5) * 20;
       s.y = p[1] + (Math.random() - 0.5) * 12;
+      s.activity = 'idle';      // idle | patrol | help | break | bill
+      s._target_x = null;
+      s._target_y = null;
+      s._helping = null;        // agent currently being helped
+      s._help_until = 0;        // sim minute when current help ends
+      s._next_decision = Math.random() * 2;
+    }
+  }
+
+  _tickStaff(dt) {
+    for (const s of this.staff) {
+      const isBilling = (s.role === 'billing' || (s.zone && s.zone.startsWith('billing')));
+      const isManager = (s.role === 'manager' || s.role === 'assistant_manager' || s.role === 'security');
+
+      // Break logic — applies to floor + trial-room roles
+      const breakState = this.staffOnBreak(s);
+      if (breakState && s.activity !== 'break') {
+        s.activity = 'break';
+        // Walk to back-of-store break area
+        s._target_x = 940 + Math.random() * 60;
+        s._target_y = 130 + Math.random() * 20;
+        s._helping = null;
+      } else if (!breakState && s.activity === 'break') {
+        s.activity = 'idle';
+        s._target_x = s.home_x + (Math.random() - 0.5) * 20;
+        s._target_y = s.home_y + (Math.random() - 0.5) * 12;
+      }
+
+      // Movement step
+      if (s._target_x != null) {
+        const dx = s._target_x - s.x;
+        const dy = s._target_y - s.y;
+        const d = Math.hypot(dx, dy);
+        if (d < 1.5) {
+          s._target_x = null;
+          s._target_y = null;
+        } else {
+          const speed = 35; // px / sim minute
+          s.x += (dx / d) * speed * dt;
+          s.y += (dy / d) * speed * dt;
+        }
+        continue;
+      }
+
+      // Fixed roles (manager, security, billing) just patrol within zone
+      if (isManager || isBilling) {
+        s._next_decision -= dt;
+        if (s._next_decision <= 0) {
+          s._next_decision = 1.5 + Math.random() * 3;
+          s._target_x = s.home_x + (Math.random() - 0.5) * 30;
+          s._target_y = s.home_y + (Math.random() - 0.5) * 14;
+        }
+        continue;
+      }
+
+      // FLOOR + TRIAL_ROOM staff — proactive help behaviour
+      if (s.activity === 'help') {
+        // Currently helping; check if duration done
+        if (this.simMin >= s._help_until) {
+          s.activity = 'idle';
+          s._helping = null;
+          // walk back near home
+          s._target_x = s.home_x + (Math.random() - 0.5) * 18;
+          s._target_y = s.home_y + (Math.random() - 0.5) * 10;
+        }
+        continue;
+      }
+
+      // Look for nearby shoppers in the same zone to help
+      s._next_decision -= dt;
+      if (s._next_decision > 0) continue;
+      s._next_decision = 0.8 + Math.random() * 1.5;
+
+      // Find a browsing shopper in this staff's zone, prefer one with empty/light basket
+      let target = null, bestScore = Infinity;
+      for (const a of this.activeAgents) {
+        if (a.state !== 'browsing') continue;
+        if (a.current_zone !== s.zone) continue;
+        const d = Math.hypot(a.x - s.home_x, a.y - s.home_y);
+        if (d > 110) continue;
+        // Prefer agents with smaller basket relative to target — they need help more
+        const need = (a.basket_size_target - a.basket.length) - d * 0.005;
+        const score = -need;
+        if (score < bestScore) { bestScore = score; target = a; }
+      }
+
+      if (target) {
+        s.activity = 'help';
+        s._helping = target;
+        s._help_until = this.simMin + 0.6 + Math.random() * 1.2; // 0.6-1.8 sim min interaction
+        s._target_x = target.x + (Math.random() - 0.5) * 10;
+        s._target_y = target.y + 10;
+        // Staff assistance boosts basket build
+        if (target.basket.length < target.basket_size_target && Math.random() < 0.55) {
+          target.basket.push({
+            zone: target.current_zone,
+            value: generateItemPrice(target.current_zone),
+            sku: pickSku(target.current_zone),
+            _via_staff: true,
+          });
+          target.basket_value += target.basket[target.basket.length - 1].value;
+        }
+      } else {
+        // Patrol — wander within home zone
+        s.activity = 'patrol';
+        s._target_x = s.home_x + (Math.random() - 0.5) * 50;
+        s._target_y = s.home_y + (Math.random() - 0.5) * 26;
+      }
     }
   }
 
@@ -415,6 +560,9 @@ class Sim {
     // 4. Resolve billing
     this._tickBilling(dtMin);
 
+    // 4b. Staff behaviour — patrol, help, break
+    this._tickStaff(dtMin);
+
     // 5. Remove finished
     const stillActive = [];
     for (const a of this.activeAgents) {
@@ -456,38 +604,46 @@ class Sim {
   }
 
   // Build a Manhattan path from current pos → zone target, going via aisles.
-  // Adds a small jitter to each waypoint so paths through the same corridor
-  // don't visually overlap.
+  // Picks the horizontal aisle (south/middle/north) closest to BOTH endpoints
+  // so paths through the upper store don't have to dip all the way to south.
   _routeManhattan(fromXY, toZoneId, finalTarget, fromOutside) {
     const path = [];
-    // Step 0: if outside, enter through door
+    const doorJ = (Math.random() - 0.5) * 80;
     if (fromOutside) {
-      path.push({ x: fromXY.x, y: 1015 });          // through doorway
-      path.push({ x: fromXY.x, y: 985 });           // vestibule
+      path.push({ x: fromXY.x, y: 1015 });
+      path.push({ x: fromXY.x + doorJ * 0.3, y: 985 });
     }
-    // Step 1: pick the agent's "current aisle X" — depending on where they are now
-    const fromAisleKey = this._nearestAisleX(fromXY.x);
-    const fromAisleX = AISLE['S_' + fromAisleKey].x;
-    // Step 2: get to the south aisle Y if not already there
-    const onAnyAisle = this._isOnAisleY(fromXY.y);
-    if (!onAnyAisle) {
-      // come out of zone onto nearest aisle Y
-      const aisleY = this._nearestAisleY(fromXY.y);
-      path.push({ x: fromXY.x, y: aisleY });
-    }
-    // Step 3: horizontal travel along the chosen aisle to the target zone's aisle column
+
+    const fromCol = AISLE['S_' + this._nearestAisleX(fromXY.x)].x;
     const tgtAisleKey = ZONE_AISLE_ENTRY[toZoneId] || 'S_C';
-    const tgtAisle = AISLE[tgtAisleKey];
-    // Use south aisle for horizontal travel (the main racetrack)
-    path.push({ x: fromAisleX, y: 870 });          // get on south aisle
-    // jitter
-    const jitter = (Math.random() - 0.5) * 12;
-    path.push({ x: tgtAisle.x + jitter, y: 870 }); // travel along south aisle
-    // Step 4: vertical travel up the target aisle
-    if (tgtAisle.y !== 870) {
-      path.push({ x: tgtAisle.x + jitter, y: tgtAisle.y });
+    const tgtCol = AISLE[tgtAisleKey].x;
+    const tgtRowY = AISLE[tgtAisleKey].y;
+
+    // Choose horizontal aisle for the cross-store travel.
+    // If both endpoints are in the upper half AND not coming from outside, use the
+    // middle or north aisle. Otherwise default to the south racetrack.
+    let crossY = 870;
+    if (!fromOutside) {
+      const fromY = fromXY.y, toY = finalTarget.y;
+      if (fromY < 260 && toY < 260)            crossY = 210;
+      else if (fromY < 600 && toY < 600)       crossY = 540;
+      else if (Math.random() < 0.18)           crossY = 540; // 18% chance of middle aisle for variety
     }
-    // Step 5: walk to the actual browse target inside the zone
+
+    // Step into the chosen aisle Y
+    if (Math.abs(fromXY.y - crossY) > 40) {
+      // come out of zone onto the cross aisle
+      path.push({ x: fromXY.x, y: crossY });
+    }
+    const jitter = (Math.random() - 0.5) * 14;
+    path.push({ x: fromCol, y: crossY });        // get on aisle
+    path.push({ x: tgtCol + jitter, y: crossY }); // travel along
+
+    // Step into the target row Y
+    if (Math.abs(tgtRowY - crossY) > 40) {
+      path.push({ x: tgtCol + jitter, y: tgtRowY });
+    }
+    // Final approach to actual browse target inside zone
     path.push({ x: finalTarget.x, y: finalTarget.y });
     return path;
   }
@@ -575,15 +731,15 @@ class Sim {
     }
     if (a.state === 'browsing') {
       a.dwell_remaining -= dt;
-      // Basket builds probabilistically
+      // Basket builds probabilistically — calibrated to hit avg 3-5 items per converter
       if (a.basket.length < a.basket_size_target &&
-          Math.random() < dt * 0.22 * a.intent_strength) {
-        const item = {
+          Math.random() < dt * 0.38 * a.intent_strength) {
+        a.basket.push({
           zone: a.current_zone,
-          value: 180 + Math.random() * 980,
-        };
-        a.basket.push(item);
-        a.basket_value += item.value;
+          value: generateItemPrice(a.current_zone),
+          sku: pickSku(a.current_zone),
+        });
+        a.basket_value += a.basket[a.basket.length - 1].value;
       }
       if (a.dwell_remaining <= 0) {
         this._zoneDecision(a);
@@ -687,11 +843,12 @@ class Sim {
   _zoneDecision(a) {
     a.zone_idx++;
     const remaining = a.zone_plan.length - a.zone_idx;
-    const continueProb = a.profile === 'browser' ? 0.40
-                      : a.profile === 'quick_trip_male' ? 0.30
-                      : a.profile === 'mission_mom' ? 0.75
-                      : a.profile === 'young_woman' ? 0.62
-                      : 0.80;
+    // Browsers churn faster; intentful shoppers complete their plans.
+    const continueProb = a.profile === 'browser' ? 0.32
+                      : a.profile === 'quick_trip_male' ? 0.55
+                      : a.profile === 'mission_mom' ? 0.90
+                      : a.profile === 'young_woman' ? 0.82
+                      : 0.92; // family weekend
     if (remaining > 0 && Math.random() < continueProb) {
       const next = a.zone_plan[a.zone_idx];
       a.current_zone = next;

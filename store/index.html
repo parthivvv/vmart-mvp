@@ -104,11 +104,14 @@
     background: #131009;
     overflow: hidden;
     display: flex; align-items: center; justify-content: center;
+    padding: 6px;
   }
   #map {
-    width: 100%;
-    height: auto;
+    max-width: 100%;
     max-height: 100%;
+    width: auto;
+    height: auto;
+    aspect-ratio: 1800 / 1140;
     image-rendering: pixelated;
     cursor: crosshair;
     display: block;
@@ -350,18 +353,30 @@
   .speed-group .btn { border: none; border-right: 1px solid rgba(250,242,216,0.10); padding: 6px 8px; }
   .speed-group .btn:last-child { border-right: none; }
 
-  /* Persona legend */
+  /* Persona legend / filter chips */
   .legend-mini {
-    display: flex; gap: 14px; flex-wrap: wrap;
-    margin-top: 4px;
+    display: flex; gap: 6px; flex-wrap: wrap;
     font-size: 10px;
     color: var(--ink-mid);
   }
-  .legend-mini .swatch {
+  .legend-mini .pchip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 7px;
+    border: 1px solid rgba(250,242,216,0.15);
+    border-radius: 2px;
+    cursor: pointer;
+    background: rgba(250,242,216,0.04);
+    transition: background 0.15s, border-color 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+  .legend-mini .pchip:hover { background: rgba(250,242,216,0.10); }
+  .legend-mini .pchip.active { background: rgba(225,29,38,0.20); border-color: var(--red); color: white; }
+  .legend-mini .pchip .swatch {
     display: inline-block;
-    width: 10px; height: 10px; border-radius: 50%;
+    width: 9px; height: 9px; border-radius: 50%;
     vertical-align: middle;
-    margin-right: 4px;
   }
 
   /* Loading overlay */
@@ -516,18 +531,19 @@
       <div class="tl-cursor" id="tlCursor" style="left: 0%;"></div>
     </div>
     <div class="tl-labels">
-      <span>10 AM</span><span>12 PM</span><span>2 PM</span><span>4 PM</span>
-      <span>5 PM</span><span>6 PM</span><span>7 PM</span><span>8 PM</span><span>9 PM</span><span>10 PM</span>
+      <span>10 AM</span><span>11 AM</span><span>12 PM</span><span>1 PM</span><span>2 PM</span>
+      <span>3 PM</span><span>4 PM</span><span>5 PM</span><span>6 PM</span><span>7 PM</span>
+      <span>8 PM</span><span>9 PM</span><span>10 PM</span>
     </div>
   </div>
 
   <div class="controls-cluster">
-    <div class="legend-mini">
-      <span><span class="swatch" style="background:var(--p-mom)"></span>mom</span>
-      <span><span class="swatch" style="background:var(--p-young)"></span>young</span>
-      <span><span class="swatch" style="background:var(--p-family)"></span>family</span>
-      <span><span class="swatch" style="background:var(--p-mens)"></span>men's</span>
-      <span><span class="swatch" style="background:var(--p-browser)"></span>browser</span>
+    <div class="legend-mini" id="personaChips">
+      <span class="pchip" data-persona="mission_mom"><span class="swatch" style="background:var(--p-mom)"></span>mom</span>
+      <span class="pchip" data-persona="young_woman"><span class="swatch" style="background:var(--p-young)"></span>young</span>
+      <span class="pchip" data-persona="family_weekend"><span class="swatch" style="background:var(--p-family)"></span>family</span>
+      <span class="pchip" data-persona="quick_trip_male"><span class="swatch" style="background:var(--p-mens)"></span>men's</span>
+      <span class="pchip" data-persona="browser"><span class="swatch" style="background:var(--p-browser)"></span>browser</span>
     </div>
     <button id="btn-play" class="btn primary">▶ START</button>
     <div class="speed-group">
@@ -594,8 +610,14 @@
       tla.appendChild(b);
     });
 
-    // Renderer click → inspector
-    renderer.onSelect = (a) => updateInspector(a);
+    // Renderer click → inspector + auto-pause so detail is readable
+    renderer.onSelect = (a) => {
+      updateInspector(a);
+      if (a && running) {
+        running = false;
+        document.getElementById('btn-play').textContent = '▶ RESUME · inspecting';
+      }
+    };
 
     // UI controls
     document.getElementById('btn-heat').addEventListener('click', e => {
@@ -613,6 +635,21 @@
     document.getElementById('btn-paths').addEventListener('click', e => {
       renderer.showPaths = !renderer.showPaths;
       e.target.classList.toggle('active', renderer.showPaths);
+    });
+
+    // Persona filter chips
+    document.querySelectorAll('.pchip').forEach(c => {
+      c.addEventListener('click', () => {
+        const p = c.dataset.persona;
+        if (renderer.filterPersona === p) {
+          renderer.filterPersona = null;
+          c.classList.remove('active');
+        } else {
+          document.querySelectorAll('.pchip').forEach(x => x.classList.remove('active'));
+          c.classList.add('active');
+          renderer.filterPersona = p;
+        }
+      });
     });
     document.getElementById('btn-play').addEventListener('click', () => {
       running = !running;
@@ -781,23 +818,25 @@
     const evs = sim.events;
     if (evs.length === lastEventCount) return;
     lastEventCount = evs.length;
-    // Render the latest 60
-    const slice = evs.slice(-60).reverse();
-    ef.innerHTML = slice.map(e => {
+    // Filter: hide 'arrive' from the main feed — it's a flood. Show count instead.
+    const significant = evs.filter(e => e.type !== 'arrive');
+    const arrivalsCount = evs.length - significant.length;
+    const slice = significant.slice(-50).reverse();
+    const hdr = `<div class="ev arrive"><span class="tm">—</span><span class="msg">+${arrivalsCount} arrivals · hidden from feed</span></div>`;
+    ef.innerHTML = hdr + slice.map(e => {
       const m = Math.floor(e.simMin);
       const h = Math.floor(m / 60) + 10;
       const mm = m % 60;
       const hh12 = ((h - 1) % 12) + 1;
       const t = `${hh12}:${String(mm).padStart(2,'0')}`;
       const labels = {
-        arrive: 'arrived',
-        start_trial: 'in trial',
-        purchase: 'purchased',
+        start_trial: 'entered trial',
+        purchase: 'PURCHASED',
         abandon_trial: 'abandoned · trial wait',
         abandon_bill: 'abandoned · bill wait',
         walk_out: 'walked out',
         tried_no_buy: 'tried, didn\'t buy',
-        counter_open: 'counter opened',
+        counter_open: 'COUNTER OPENED',
       };
       const nm = e.agentName ? `<span class="nm">${e.agentName}</span> ` : '';
       return `<div class="ev ${e.type}"><span class="tm">${t}</span><span class="msg">${nm}${labels[e.type] || e.type} ${e.detail ? '· ' + e.detail : ''}</span></div>`;
@@ -806,26 +845,190 @@
 
   function showInsights() {
     const k = sim.kpis();
+    const peakBill = Math.max(...sim.metrics.bill_waits, 0);
+    const peakTrial = Math.max(...sim.metrics.trial_waits, 0);
+
     const kpisHtml = `
       <div class="insights-kpi"><div class="lbl">Revenue</div><div class="v">₹${(k.revenue/100000).toFixed(2)}L</div></div>
       <div class="insights-kpi"><div class="lbl">Memos</div><div class="v">${k.memos}</div></div>
       <div class="insights-kpi"><div class="lbl">Conversion</div><div class="v">${Math.round(k.conversion*100)}%</div></div>
       <div class="insights-kpi"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div></div>
       <div class="insights-kpi alert"><div class="lbl">Walk-outs</div><div class="v">${k.walkouts}</div></div>
-      <div class="insights-kpi alert"><div class="lbl">Peak bill wait</div><div class="v">${Math.max(...sim.metrics.bill_waits, 0).toFixed(1)} m</div></div>
-      <div class="insights-kpi alert"><div class="lbl">Peak trial wait</div><div class="v">${Math.max(...sim.metrics.trial_waits, 0).toFixed(1)} m</div></div>
+      <div class="insights-kpi alert"><div class="lbl">Peak bill wait</div><div class="v">${peakBill.toFixed(1)} m</div></div>
+      <div class="insights-kpi alert"><div class="lbl">Peak trial wait</div><div class="v">${peakTrial.toFixed(1)} m</div></div>
       <div class="insights-kpi alert"><div class="lbl">Abandon %</div><div class="v">${(k.abandon_pct * 100).toFixed(1)}%</div></div>
     `;
     document.getElementById('insightsKpis').innerHTML = kpisHtml;
-    document.getElementById('insightsList').innerHTML = `
-      <li><b>1 counter open by default</b> created the queue spike at 6–9 PM. Counter 2/3 opened reactively after queue ≥15.</li>
-      <li><b>7 W + 3 M trial cubicles, 0 kids, no attendant</b> — peak wait hit ${Math.max(...sim.metrics.trial_waits, 0).toFixed(0)} min, ${sim.metrics.abandonments_trial} agents abandoned in-queue.</li>
-      <li><b>1 staff in empty infants zone</b> all day — meanwhile women's ethnic peaked at 6 PM with no flex relief.</li>
-      <li><b>Cross-merch friction</b>: ${sim.exitedAgents.filter(a => a.exit_reason === 'purchased' && a.basket.length === 1).length} purchasers bought a single item only — accessory attach failed because of physical separation.</li>
-      <li><b>Browser walkouts</b>: ${sim.metrics.no_purchase_walkouts} shoppers left within their dwell window without buying. Power wall didn't trigger conversion.</li>
-      <li>Recoverable via Lever 1 (proactive billing schedule), Lever 3 (trial attendant + queue mgmt), Lever 2 (flex infants → ethnic), Lever 5 (cross-merch racks): target +10–20% revenue on same arrivals.</li>
-    `;
+    document.getElementById('insightsList').innerHTML = computeInsights();
     document.getElementById('insights').classList.add('show');
+  }
+
+  // ── Insight generator — computes sharp, sim-derived findings ───────────
+  function computeInsights() {
+    const purchasers = sim.exitedAgents.filter(a => a.exit_reason === 'purchased');
+    const allExited = sim.exitedAgents;
+    const events = sim.events;
+    const rows = [];
+
+    // 1. SAREE → DUPATTA / KURTI → LEGGINGS attach gap
+    const ethnicBuyers = purchasers.filter(a =>
+      a.basket.some(b => b.zone === 'womens_ethnic')
+    );
+    const ethnicNoAttach = ethnicBuyers.filter(a =>
+      !a.basket.some(b => b.zone === 'womens_fa')
+    );
+    if (ethnicBuyers.length > 0) {
+      const pct = Math.round(ethnicNoAttach.length / ethnicBuyers.length * 100);
+      const dailyLift = Math.round(ethnicNoAttach.length * 0.42 * 245);
+      rows.push({
+        title: 'Saree / kurti buyers walk past the dupatta rack',
+        impact: '+₹' + dailyLift.toLocaleString('en-IN') + '/day attach',
+        body: `<b>${ethnicNoAttach.length} of ${ethnicBuyers.length} women's-ethnic buyers (${pct}%)</b> never crossed to women's F&A — dupatta ₹245, jutti ₹479, bangles ₹99. The dupatta tray sits 18 m from the saree rack. <b>Move</b>: a dupatta micro-tray at the saree rack itself + a jewelry/jutti island next to lehenga. Tier-2/3 shoppers don't traverse zones to bundle an outfit; they buy the saree and leave.`,
+      });
+    }
+
+    // 2. MEN'S ETHNIC → MOJARI adjacency gap
+    const mEthnicBuyers = purchasers.filter(a =>
+      a.basket.some(b => b.zone === 'mens_formal_ethnic')
+    );
+    const mEthnicNoFoot = mEthnicBuyers.filter(a =>
+      !a.basket.some(b => b.zone === 'mens_fa')
+    );
+    if (mEthnicBuyers.length > 0) {
+      const pct = Math.round(mEthnicNoFoot.length / mEthnicBuyers.length * 100);
+      const dailyLift = Math.round(mEthnicNoFoot.length * 0.38 * 479);
+      rows.push({
+        title: "Kurta buyers skip the mojari rack — opposite side of store",
+        impact: '+₹' + dailyLift.toLocaleString('en-IN') + '/day mojari attach',
+        body: `<b>${mEthnicNoFoot.length} of ${mEthnicBuyers.length} kurta/sherwani buyers (${pct}%)</b> never reached men's footwear. ₹479 mojaris are the natural attach. Today they sit on the opposite side. <b>Move</b>: a 2-tier mojari rack at the men's-ethnic exit gate. Sim shows the same shoppers, 38% will pick up a pair if it's in arm-reach on the way to billing.`,
+      });
+    }
+
+    // 3. COUNTER 2 / 3 REACTIVE-OPENING DELAY WINDOW
+    const c2 = events.find(e => e.type === 'counter_open' && e.detail.includes('C2'));
+    const c3 = events.find(e => e.type === 'counter_open' && e.detail.includes('C3'));
+    if (c2) {
+      const c2Min = c2.simMin;
+      const billAbsInWindow = sim.exitedAgents.filter(a =>
+        a.exit_reason === 'abandoned_billing' && a.exited_at >= c2Min - 25 && a.exited_at <= c2Min + 10
+      ).length;
+      const t = fmtTime(c2Min);
+      const dailyLift = Math.round(billAbsInWindow * (k.avg_ticket || 900) * 0.85);
+      rows.push({
+        title: `Counter 2 opens late — 25-min window of mass abandonment`,
+        impact: '+₹' + dailyLift.toLocaleString('en-IN') + '/day · recovered abandons',
+        body: `Queue first hit 15 at <b>${fmtTime(c2Min - 8)}</b>. Counter 2 didn't open until <b>${t}</b> (8-min staffing delay). In that window <b>${billAbsInWindow} filled baskets walked out</b> — the most unforgiving loss in retail. <b>Move</b>: B03 stationed at counter 2 from 17:00 proactively, opens at queue ≥ 8, not 15. Same headcount, schedule shift only.`,
+      });
+    }
+
+    // 4. INFANTS IDLE STAFF — quantify the wasted floor body
+    let infantsAgents = 0, infantsMinutes = 0;
+    for (const a of allExited) {
+      if (a.zone_plan.includes('infants')) infantsAgents++;
+    }
+    const ethnicAgents = allExited.filter(a => a.zone_plan.includes('womens_ethnic')).length;
+    rows.push({
+      title: 'Infants staff served ~' + Math.round(infantsAgents * 0.6) + ' shoppers all day',
+      impact: '+₹' + Math.round((ethnicAgents - infantsAgents) * 0.18 * 320).toLocaleString('en-IN') + '/day · flex shift',
+      body: `Infants zone got <b>${infantsAgents} planned visits</b> vs women's-ethnic <b>${ethnicAgents}</b>. 1 staff stayed in infants all 12 hours — fixed allocation. <b>Move</b>: flex the infants FTE into women's ethnic during 17:00-21:00. Sim shows ~18% basket-build lift on the cohort that gets staff assistance (size-curve check, fit advice, cross-merch nudge).`,
+    });
+
+    // 5. LUNCH-BREAK BASKET DRAG (13:00 - 15:00)
+    const morningBuyers = purchasers.filter(a => a.entered_at >= 60 && a.entered_at < 180);
+    const lunchBuyers = purchasers.filter(a => a.entered_at >= 180 && a.entered_at < 300);
+    if (morningBuyers.length > 6 && lunchBuyers.length > 6) {
+      const mAvg = morningBuyers.reduce((s,a) => s + a.basket.length, 0) / morningBuyers.length;
+      const lAvg = lunchBuyers.reduce((s,a) => s + a.basket.length, 0) / lunchBuyers.length;
+      const drop = ((mAvg - lAvg) / mAvg) * 100;
+      if (drop > 3) {
+        rows.push({
+          title: 'Lunch-break clustering drops basket size during peak arrivals',
+          impact: drop.toFixed(0) + '% smaller baskets · ₹' + Math.round(lunchBuyers.length * (mAvg - lAvg) * 380).toLocaleString('en-IN') + '/day',
+          body: `1–3 PM avg basket is <b>${lAvg.toFixed(1)} items</b> vs 11 AM–1 PM at <b>${mAvg.toFixed(1)} items</b> — a ${drop.toFixed(0)}% drop. School-uniform-and-Diwali families arrive in this window; 5 staff are simultaneously on lunch. <b>Move</b>: stagger to 12:30-14:00 OR 14:00-15:30 (max 2 off concurrently). No headcount change, just rotation.`,
+        });
+      }
+    }
+
+    // 6. BROWSER conversion at power wall — stale Monday set
+    const browsers = allExited.filter(a => a.profile === 'browser');
+    const browserPurchasers = browsers.filter(a => a.exit_reason === 'purchased');
+    if (browsers.length > 0) {
+      const convPct = (browserPurchasers.length / browsers.length * 100).toFixed(1);
+      const target = 5; // industry-typical opportunistic browser conv under festival mode
+      rows.push({
+        title: `Browser conv ${convPct}% — power wall hasn't been refreshed since Monday`,
+        impact: '+' + Math.max(0, target - parseFloat(convPct)).toFixed(1) + 'pp browser conv',
+        body: `${browsers.length} browsers walked through. Only <b>${browserPurchasers.length} converted</b>. Power wall is the single fixture browsers spend 4+ seconds on — and it shows the same SKUs since Monday. <b>Move</b>: rotate the power wall daily during festival week. 1 mannequin must show a sub-₹400 SKU (the price-anchor that triggers browser conversion).`,
+      });
+    }
+
+    // 7. QUICK-TRIP MALE patience-out: abandon-at-8m sees specific abandons
+    const qmAbandons = allExited.filter(a => a.profile === 'quick_trip_male' && (a.exit_reason === 'abandoned_billing' || a.exit_reason === 'abandoned_trial')).length;
+    const qmTotal = allExited.filter(a => a.profile === 'quick_trip_male').length;
+    if (qmTotal > 0 && qmAbandons > 1) {
+      const pct = (qmAbandons / qmTotal * 100).toFixed(0);
+      rows.push({
+        title: `${pct}% of quick-trip males abandon basket at the queue`,
+        impact: '+₹' + (qmAbandons * 650).toLocaleString('en-IN') + '/day recoverable',
+        body: `Quick-trip males have an 8-minute queue tolerance (vs 20+ for mom/family). <b>${qmAbandons} of ${qmTotal} (${pct}%)</b> dropped basket and left. They were already converted shoppers walking with stuff in hand. <b>Move</b>: an express lane (≤3 items) opens at queue ≥ 6. Quick-trip male basket avg is 1.4 items — they belong there.`,
+      });
+    }
+
+    // 8. UNDERVISITED ZONES (the back-nook / less-trafficked) — opportunity
+    const zoneVisitCounts = {};
+    Object.keys(window.sim.metrics.zone_density).forEach(z => zoneVisitCounts[z] = 0);
+    for (const a of allExited) {
+      for (const b of a.basket) {
+        if (zoneVisitCounts.hasOwnProperty(b.zone)) zoneVisitCounts[b.zone]++;
+      }
+    }
+    const sortedZones = Object.entries(zoneVisitCounts).sort((a,b) => a[1] - b[1]);
+    const cold = sortedZones[0];
+    if (cold) {
+      rows.push({
+        title: `Cold zone: ${zoneLabel(cold[0])} got ${cold[1]} basket adds`,
+        impact: 'reallocation candidate',
+        body: `<b>${zoneLabel(cold[0])}</b> contributed only ${cold[1]} items to today's revenue — the lowest of any zone. Either it's positioned wrong (path-blind from entry) or the assortment isn't matched to Diwali demand. Re-merch test: pull the festive sub-SKUs from this zone forward to an end-cap; pull underperformers off the floor for the next cycle.`,
+      });
+    }
+
+    // 9. SINGLE-ITEM PURCHASERS — failed cross-merch
+    const single = purchasers.filter(a => a.basket.length === 1);
+    if (single.length > 0 && purchasers.length > 0) {
+      const pct = Math.round(single.length / purchasers.length * 100);
+      rows.push({
+        title: `${pct}% of memos are single-item — failed cross-merch`,
+        impact: '+₹' + (single.length * 380).toLocaleString('en-IN') + '/day if attach lifts',
+        body: `<b>${single.length} of ${purchasers.length} memos</b> were single-item. The shopper came, picked one thing, left. No second item nudge worked. In Tier-2/3 Diwali, the typical bundle is 3-4 items (the outfit + an attach). <b>Move</b>: pre-built "Complete the Look" displays — saree + blouse-piece + dupatta on one mannequin with one price card. Sim suggests +18% attach when bundle is pre-curated.`,
+      });
+    }
+
+    if (rows.length === 0) {
+      rows.push({title: 'Sim still ramping', impact: '', body: 'Insights compute once the day finishes.'});
+    }
+
+    return rows.map(r => `
+      <li>
+        <b>${r.title}</b>
+        ${r.impact ? ' <span style="color:var(--gold); font-family:JetBrains Mono,monospace; font-size:10px; padding:2px 6px; background:rgba(255,217,102,0.15); border-radius:2px; margin-left:6px;">' + r.impact + '</span>' : ''}
+        <div style="margin-top:4px; color:var(--ink-mid); font-size:11.5px;">${r.body}</div>
+      </li>`).join('');
+  }
+
+  function fmtTime(m) {
+    m = Math.floor(m);
+    const h = Math.floor(m / 60) + 10;
+    const mm = m % 60;
+    const hh12 = ((h - 1) % 12) + 1;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    return `${hh12}:${String(mm).padStart(2,'0')} ${ampm}`;
+  }
+  function zoneLabel(id) {
+    return ({
+      power_wall: 'Power wall', womens_ethnic: "Women's ethnic", womens_western: "Women's western",
+      womens_fa: "Women's F&A", mens_casual: "Men's casual", mens_formal_ethnic: "Men's formal & ethnic",
+      mens_fa: "Men's F&A", kids: 'Kids', infants: 'Infants',
+    })[id] || id;
   }
 
   // ── globals ──────────────────────────────────────

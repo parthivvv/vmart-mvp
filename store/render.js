@@ -28,6 +28,9 @@ class Renderer {
     this.showPaths = false;
     this.showStaff = true;
     this.showQueues = true;
+    this.filterPersona = null; // when set, fade others to 30% alpha
+    this.pings = [];           // {x, y, color, t0, ttl}
+    this._lastEventCount = 0;
 
     // Heat density buffer
     this._heatCells = null;
@@ -41,11 +44,10 @@ class Renderer {
   _resize() {
     const rect = this.canvas.getBoundingClientRect();
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.canvas.width = rect.width * this.dpr;
+    this.canvas.width  = rect.width  * this.dpr;
     this.canvas.height = rect.height * this.dpr;
-    this.canvas.style.height = (rect.width * (H / W)) + 'px';
     this.cssW = rect.width;
-    this.cssH = rect.width * (H / W);
+    this.cssH = rect.height;
   }
 
   // ─── coordinate transforms ───────────────────────────────
@@ -439,40 +441,32 @@ class Renderer {
   }
 
   _drawTrialBank(ctx) {
-    // Bank backdrop
-    const bx = 530, by = 110;
-    // 7 W cubicles
-    for (let i = 0; i < 7; i++) {
-      const cx = bx + i * 36;
+    // Bank dimensions chosen so 7W + 4-px divider + 3M fits in the 340-px
+    // window between the women's-footwear nook and the stockroom door.
+    // 7×30 + 6×2 (gaps) + 6 (divider) + 3×30 + 2×2 (gaps) = 312 px wide,
+    // starting at x=520 → ends at x=832; stockroom is at x=880 → clear gap.
+    const by = 110;
+    let cx = 520;
+    const W_LBL = '#5A3920', M_LBL = '#1F4A78';
+    const drawCubicle = (x, lbl, col) => {
       ctx.fillStyle = '#FAF2D8';
-      ctx.fillRect(cx, by, 32, 68);
+      ctx.fillRect(x, by, 30, 68);
       ctx.strokeStyle = '#5A3920';
       ctx.lineWidth = 2;
-      ctx.strokeRect(cx, by, 32, 68);
+      ctx.strokeRect(x, by, 30, 68);
       ctx.fillStyle = '#2A1810';
-      ctx.fillRect(cx + 11, by + 50, 10, 18);
-      ctx.fillStyle = '#5A3920';
+      ctx.fillRect(x + 10, by + 50, 10, 18);
+      ctx.fillStyle = col;
       ctx.font = 'bold 6px "Press Start 2P", monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('W' + (i + 1), cx + 16, by + 32);
-    }
+      ctx.fillText(lbl, x + 15, by + 32);
+    };
+    for (let i = 0; i < 7; i++) { drawCubicle(cx, 'W' + (i + 1), W_LBL); cx += 32; }
     // divider
     ctx.fillStyle = '#5A3920';
-    ctx.fillRect(786, 108, 4, 72);
-    // 3 M cubicles
-    for (let i = 0; i < 3; i++) {
-      const cx = bx + 264 + i * 36;
-      ctx.fillStyle = '#FAF2D8';
-      ctx.fillRect(cx, by, 32, 68);
-      ctx.strokeStyle = '#5A3920';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(cx, by, 32, 68);
-      ctx.fillStyle = '#2A1810';
-      ctx.fillRect(cx + 11, by + 50, 10, 18);
-      ctx.fillStyle = '#1F4A78';
-      ctx.font = 'bold 6px "Press Start 2P", monospace';
-      ctx.fillText('M' + (i + 1), cx + 16, by + 32);
-    }
+    ctx.fillRect(cx, 108, 4, 72);
+    cx += 8;
+    for (let i = 0; i < 3; i++) { drawCubicle(cx, 'M' + (i + 1), M_LBL); cx += 32; }
   }
 
   _drawCountersBase(ctx) {
@@ -546,17 +540,8 @@ class Renderer {
     L(1350, 932, 9, "BILLING · 6 COUNTERS", '#5A3920');
     L(1350, 945, 6, "single straight queue", '#8B6440');
 
-    // Promo aisle vertical labels
-    ctx.save();
-    ctx.translate(670, 305);
-    ctx.rotate(-Math.PI / 2);
-    L(0, 0, 7, "PROMO ISLAND · B2G1", '#A56500');
-    ctx.restore();
-    ctx.save();
-    ctx.translate(670, 700);
-    ctx.rotate(-Math.PI / 2);
-    L(0, 0, 7, "STALE CLEARANCE", '#A56500');
-    ctx.restore();
+    // Promo aisle single header (no vertical rotated text that collides with bins)
+    L(670, 232, 7, "PROMO ISLAND · CENTER AISLE · B2G1 CLEARANCE", '#A56500');
   }
 
   // ─── per-frame dynamic render ───────────────────────────
@@ -584,16 +569,24 @@ class Renderer {
     // Staff
     if (this.showStaff) {
       for (const s of this.sim.staff) {
-        const onBreak = this.sim.staffOnBreak(s);
-        this._drawStaff(ctx, s.x, s.y, onBreak);
+        this._drawStaff(ctx, s);
       }
     }
 
-    // Agents
+    // Detect new sim events → emit pings
+    this._collectPings();
+
+    // Agents (with optional persona filter — fade others)
     const sel = this.selected, hov = this.hover;
     for (const a of this.sim.activeAgents) {
+      const dim = this.filterPersona && a.profile !== this.filterPersona;
+      ctx.globalAlpha = dim ? 0.18 : 1.0;
       this._drawShopper(ctx, a, a === sel, a === hov);
     }
+    ctx.globalAlpha = 1.0;
+
+    // Draw event pings (purchases, abandonments)
+    this._drawPings(ctx);
 
     // Selected agent path preview
     if (sel && sel.path && sel.path.length) {
@@ -777,32 +770,69 @@ class Renderer {
     }
   }
 
-  _drawStaff(ctx, x, y, onBreak) {
-    ctx.fillStyle = 'rgba(0,0,0,0.34)';
+  _drawStaff(ctx, s) {
+    const x = s.x, y = s.y;
+    const onBreak = (s.activity === 'break');
+    const helping = (s.activity === 'help' && s._helping);
+
+    // help-arc: faint glowing yellow ring + dashed line to the customer
+    if (helping) {
+      ctx.fillStyle = 'rgba(255,217,102,0.18)';
+      ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,217,102,0.70)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(s._helping.x, s._helping.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.36)';
     ctx.beginPath();
-    ctx.ellipse(x, y + 6.5, 4, 1.4, 0, 0, Math.PI * 2);
+    ctx.ellipse(x, y + 7, 4.4, 1.5, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = onBreak ? '#6B6B6B' : '#D03A30';
-    ctx.fillRect(x - 3.5, y - 1.5, 7, 8);
-    ctx.strokeStyle = '#FAF2D8';
-    ctx.lineWidth = 0.7;
-    ctx.strokeRect(x - 3.5, y - 1.5, 7, 8);
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(x - 1.5, y + 1, 0.7, 0, Math.PI * 2);
-    ctx.fill();
+
+    // pants
+    ctx.fillStyle = '#1F1611';
+    ctx.fillRect(x - 3, y + 3, 6, 5);
+
+    // shirt (under the vest)
+    ctx.fillStyle = onBreak ? '#6B6B6B' : '#3A6B98';
+    ctx.fillRect(x - 3.5, y - 1.5, 7, 5);
+    // arms (shirt color)
+    ctx.fillRect(x - 4.8, y - 0.5, 1.3, 4);
+    ctx.fillRect(x + 3.5, y - 0.5, 1.3, 4);
+
+    // YELLOW SAFETY VEST — defining staff visual
+    ctx.fillStyle = onBreak ? '#A89060' : '#FFCC00';
+    ctx.fillRect(x - 3, y - 1, 6, 4.5);
+    // reflective stripes
+    ctx.fillStyle = '#FAF2D8';
+    ctx.fillRect(x - 3, y + 0.5, 6, 0.6);
+    ctx.fillRect(x - 3, y + 2.5, 6, 0.6);
+    // vest opening (down the middle)
+    ctx.fillStyle = onBreak ? '#3A3328' : '#C39800';
+    ctx.fillRect(x - 0.3, y - 1, 0.6, 4.5);
+
+    // head
     ctx.fillStyle = '#F0CFA8';
     ctx.beginPath();
     ctx.arc(x, y - 3.5, 2.6, 0, Math.PI * 2);
     ctx.fill();
+    // hair
     ctx.fillStyle = '#1F1108';
     ctx.fillRect(x - 2.6, y - 6.5, 5.2, 2.6);
-    if (onBreak) {
-      ctx.fillStyle = '#E11D26';
-      ctx.font = 'bold 6px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(onBreak === 'lunch' ? '🍱' : '🍴', x, y - 10);
-    }
+
+    // ID badge floating above (persistent identifier — fixes "is this staff?")
+    ctx.fillStyle = onBreak ? 'rgba(110,110,110,0.85)' : '#E11D26';
+    ctx.fillRect(x - 3.5, y - 11, 7, 4);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 3.2px "Press Start 2P", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(onBreak ? 'BRK' : 'STAFF', x, y - 8.2);
   }
 
   _drawTooltip(ctx, a) {
@@ -843,32 +873,58 @@ class Renderer {
     ctx.fillText(text, 240, 116);
   }
 
+  _collectPings() {
+    const evs = this.sim.events;
+    if (evs.length === this._lastEventCount) return;
+    for (let i = this._lastEventCount; i < evs.length; i++) {
+      const e = evs[i];
+      // Look up the agent for position
+      const a = this.sim.activeAgents.find(x => x.id === e.agentId) ||
+                this.sim.exitedAgents.slice(-50).find(x => x.id === e.agentId);
+      if (!a) continue;
+      if (e.type === 'purchase') {
+        this.pings.push({ x:a.x, y:a.y, color:'rgba(61,220,132,', t0:performance.now(), ttl:900 });
+      } else if (e.type === 'abandon_trial' || e.type === 'abandon_bill') {
+        this.pings.push({ x:a.x, y:a.y, color:'rgba(225,29,38,', t0:performance.now(), ttl:900 });
+      } else if (e.type === 'counter_open') {
+        this.pings.push({ x:1090 + (parseInt((e.detail||'C2').replace(/\D/g,''))-1)*105, y:920, color:'rgba(255,217,102,', t0:performance.now(), ttl:1400 });
+      }
+    }
+    this._lastEventCount = evs.length;
+    if (this.pings.length > 60) this.pings = this.pings.slice(-60);
+  }
+
+  _drawPings(ctx) {
+    const now = performance.now();
+    const alive = [];
+    for (const p of this.pings) {
+      const t = (now - p.t0) / p.ttl;
+      if (t > 1) continue;
+      alive.push(p);
+      const r = 6 + t * 24;
+      const a = (1 - t) * 0.7;
+      ctx.strokeStyle = p.color + a + ')';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    this.pings = alive;
+  }
+
   _drawHeatmap(ctx) {
-    // Build per-cell density once per ~5 sim minutes
-    const cellsX = 60, cellsY = 38;
-    if (this._heatCells == null || Math.abs(this.sim.simMin - this._heatLast) > 1) {
-      const cells = new Float32Array(cellsX * cellsY);
-      for (const a of this.sim.activeAgents) {
-        const cx = Math.floor((a.x / W) * cellsX);
-        const cy = Math.floor((a.y / H) * cellsY);
-        if (cx >= 0 && cx < cellsX && cy >= 0 && cy < cellsY) {
-          cells[cy * cellsX + cx] += 1;
-        }
-      }
-      this._heatCells = cells;
-      this._heatLast = this.sim.simMin;
+    // Smooth radial blobs per agent — additive blending creates organic gradient
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (const a of this.sim.activeAgents) {
+      const grd = ctx.createRadialGradient(a.x, a.y, 1, a.x, a.y, 70);
+      grd.addColorStop(0,   'rgba(225,29,38,0.22)');
+      grd.addColorStop(0.4, 'rgba(225,29,38,0.10)');
+      grd.addColorStop(1,   'rgba(225,29,38,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(a.x - 70, a.y - 70, 140, 140);
     }
-    const cw = W / cellsX, ch = H / cellsY;
-    let max = 1;
-    for (let i = 0; i < this._heatCells.length; i++) if (this._heatCells[i] > max) max = this._heatCells[i];
-    for (let y = 0; y < cellsY; y++) {
-      for (let x = 0; x < cellsX; x++) {
-        const v = this._heatCells[y * cellsX + x] / max;
-        if (v < 0.05) continue;
-        ctx.fillStyle = `rgba(225,29,38,${v * 0.55})`;
-        ctx.fillRect(x * cw, y * ch, cw, ch);
-      }
-    }
+    ctx.restore();
   }
 
   // ─── hit testing ──────────────────────────────────────
@@ -883,7 +939,8 @@ class Renderer {
     if (typeof this.onSelect === 'function') this.onSelect(a);
   }
   _pickAgent(x, y) {
-    let best = null, bestDist = 12;
+    // Larger hitbox (~25 logical px) so clicking moving sprites is forgiving
+    let best = null, bestDist = 25;
     for (const a of this.sim.activeAgents) {
       const d = Math.hypot(a.x - x, a.y - y);
       if (d < bestDist) { bestDist = d; best = a; }
