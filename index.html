@@ -1,0 +1,1372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>V-Mart · Operational Intelligence Diagnostic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --red:        #E11D26;
+    --red-deep:   #B0141B;
+    --red-soft:   #FDE7E8;
+    --ink:        #0A0A0A;
+    --char:       #1F1F1F;
+    --gray:       #6B6B6B;
+    --gray-soft:  #A6A6A6;
+    --line:       #E5E5E5;
+    --line-soft:  #F0F0F0;
+    --paper:      #FFFFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0a; }
+  body {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0;
+    background: var(--paper);
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; z-index: 5; }
+  /* Hide the speaker-note data containers so they don't reserve layout space */
+  .notes-data { display: none; }
+
+  .page { flex: 1; padding: 30px 52px 44px; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--ink);
+    margin-bottom: 22px;
+  }
+  .topbar .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 22px; height: 22px;
+    background: var(--red); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700;
+    border-radius: 2px;
+  }
+  .logo-text { font-size: 11px; font-weight: 800; letter-spacing: 0.18em; }
+  .topbar .meta { font-size: 10px; letter-spacing: 0.16em; color: var(--gray); font-weight: 600; text-transform: uppercase; }
+  .topbar .meta b { color: var(--red); font-weight: 800; }
+
+  /* COVER · use ::before instead of needing position:relative override */
+  .cover .cover-bg {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 38%;
+    background:
+      linear-gradient(135deg, rgba(225,29,38,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse at top right, rgba(225,29,38,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .cover-inner {
+    flex: 1; padding: 40px 52px 44px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; z-index: 1;
+  }
+  .cover-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .cover-brand { display: flex; align-items: center; gap: 12px; }
+  .cover-brand .mark {
+    width: 34px; height: 34px;
+    background: var(--red); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700;
+    border-radius: 3px;
+  }
+  .cover-brand .text { font-size: 13px; font-weight: 800; letter-spacing: 0.18em; }
+  .cover-meta { text-align: right; }
+  .cover-meta .top { font-size: 10px; letter-spacing: 0.22em; font-weight: 700; color: var(--red); }
+  .cover-meta .bot { font-size: 10px; letter-spacing: 0.16em; font-weight: 600; color: var(--gray); text-transform: uppercase; margin-top: 4px; }
+  .cover-body { max-width: 1000px; margin-top: 36px; }
+  .cover-eyebrow {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 0.26em; font-weight: 800;
+    text-transform: uppercase;
+    color: white; background: var(--red);
+    padding: 6px 12px 5px;
+    margin-bottom: 24px;
+  }
+  .cover-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 74px; font-weight: 500;
+    line-height: 0.99; letter-spacing: -0.025em;
+    margin-bottom: 24px;
+  }
+  .cover-title em { font-style: italic; color: var(--red); }
+  .cover-sub { font-size: 16.5px; color: var(--char); line-height: 1.45; max-width: 740px; }
+  .cover-sub b { font-weight: 700; }
+  .cover-foot {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    border-top: 1.5px solid var(--ink);
+    padding-top: 18px;
+  }
+  .cf-item .k { font-size: 9px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--gray); font-weight: 700; margin-bottom: 5px; }
+  .cf-item .v { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; }
+  .cf-item .v.red { color: var(--red); }
+
+  /* THE WEDGE */
+  .wedge-grid { flex: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: 42px; }
+  .wedge-left h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 46px; font-weight: 500;
+    line-height: 1.02; letter-spacing: -0.022em;
+    margin-bottom: 16px;
+  }
+  .wedge-left h1 em { color: var(--red); font-style: italic; }
+  .wedge-left p { font-size: 14px; color: var(--char); line-height: 1.55; margin-bottom: 11px; max-width: 540px; }
+  .wedge-quote {
+    margin-top: 14px; padding: 14px 18px;
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+    font-family: 'Fraunces', serif;
+    font-size: 16.5px; line-height: 1.4;
+    max-width: 540px; font-style: italic; font-weight: 500;
+  }
+  .wedge-quote .src {
+    display: block; margin-top: 8px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+    color: var(--red-deep); font-weight: 700; font-style: normal;
+  }
+  .wedge-right { display: flex; flex-direction: column; gap: 10px; }
+  .wstat {
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--red);
+    padding: 12px 18px 14px;
+    display: grid; grid-template-columns: 1fr auto; gap: 10px;
+    align-items: baseline;
+  }
+  .wstat.good { border-left-color: #4F6B5C; }
+  .wstat .k { font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--gray); font-weight: 700; }
+  .wstat .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px; font-weight: 700;
+    line-height: 1; letter-spacing: -0.02em;
+    text-align: right;
+  }
+  .wstat .v.red { color: var(--red); }
+  .wstat .v.green { color: #4F6B5C; }
+  .wstat .s { grid-column: 1 / -1; font-size: 11.5px; color: var(--gray); line-height: 1.4; margin-top: -4px; }
+
+  /* FLOOR PLAN */
+  .plan-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+  .plan-left h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 38px; font-weight: 500;
+    line-height: 1.03; letter-spacing: -0.022em;
+    margin-bottom: 10px;
+  }
+  .plan-left h1 em { color: var(--red); font-style: italic; }
+  .plan-left .lede { font-size: 12px; color: var(--char); line-height: 1.55; margin-bottom: 12px; max-width: 460px; }
+  .plan-list { display: flex; flex-direction: column; gap: 4px; }
+  .plan-item {
+    display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .plan-num {
+    width: 19px; height: 19px;
+    background: var(--red); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 700;
+    border-radius: 50%;
+  }
+  .plan-text { font-size: 11px; font-weight: 600; line-height: 1.3; }
+  .plan-text small { display: block; font-weight: 400; color: var(--gray); font-size: 9.5px; margin-top: 1px; }
+  .plan-lift {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    color: var(--red);
+    background: var(--red-soft); padding: 3px 6px; border-radius: 2px;
+    white-space: nowrap;
+  }
+  .plan-svg { display: flex; align-items: center; justify-content: center; }
+
+  /* Tour slides */
+  .tour { background: #0a0a0a; }
+  .tour-split { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 440px; }
+  .tour-stage { position: relative; overflow: hidden; background: #0a0a0a; }
+  .tour-stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+  .stage-corner {
+    position: absolute; left: 20px; top: 20px; z-index: 6;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(10,10,10,0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.10);
+    padding: 6px 12px; border-radius: 2px;
+    pointer-events: none;
+  }
+  .stage-corner .mk {
+    width: 18px; height: 18px; background: var(--red); color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 11px; font-weight: 700;
+    border-radius: 2px;
+  }
+  .stage-corner .stop-num { color: white; font-size: 10px; letter-spacing: 0.20em; font-weight: 800; }
+  .stage-corner .sep { color: rgba(255,255,255,0.4); font-size: 10px; font-weight: 700; }
+  .stage-corner .zone-name { color: rgba(255,255,255,0.95); font-size: 10px; letter-spacing: 0.16em; font-weight: 600; }
+  .stage-help {
+    position: absolute; right: 20px; top: 20px; z-index: 6;
+    background: rgba(10,10,10,0.55);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 5px 10px; border-radius: 2px;
+    color: rgba(255,255,255,0.65);
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.08em;
+    pointer-events: none;
+  }
+
+  .insight-side {
+    background: white;
+    padding: 28px 32px 36px;
+    display: flex; flex-direction: column;
+    border-left: 4px solid var(--red);
+    overflow-y: auto;
+  }
+  .insight-side .stop-tag {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 9px; letter-spacing: 0.26em; font-weight: 800;
+    text-transform: uppercase;
+    color: white; background: var(--red);
+    padding: 5px 9px;
+    margin-bottom: 14px;
+  }
+  .insight-side h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 27px; font-weight: 500;
+    line-height: 1.08; letter-spacing: -0.018em;
+    margin-bottom: 12px;
+  }
+  .insight-side h2 em { color: var(--red); font-style: italic; }
+  .insight-side .lede { font-size: 12.5px; color: var(--char); line-height: 1.55; margin-bottom: 14px; }
+  .insight-side .data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .insight-side .data-cell { border-top: 2px solid var(--ink); padding-top: 7px; }
+  .insight-side .data-cell .k { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray); font-weight: 700; margin-bottom: 3px; }
+  .insight-side .data-cell .v { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; line-height: 1; letter-spacing: -0.015em; }
+  .insight-side .data-cell .v.red { color: var(--red); }
+  .insight-side .data-cell .v.green { color: #4F6B5C; }
+
+  .insight-side .move { background: var(--ink); color: white; padding: 12px 14px 14px; margin-bottom: 12px; }
+  .insight-side .move .ml { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 800; opacity: 0.75; margin-bottom: 4px; }
+  .insight-side .move .mt { font-family: 'Fraunces', serif; font-size: 15.5px; font-weight: 500; line-height: 1.3; letter-spacing: -0.005em; }
+
+  .insight-side .stamp { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .insight-side .stamp-label { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; font-weight: 800; color: var(--red); margin-bottom: 3px; }
+  .insight-side .stamp-lift { font-family: 'JetBrains Mono', monospace; font-size: 19px; font-weight: 700; line-height: 1.1; letter-spacing: -0.015em; }
+  .insight-side .stamp-lift .red { color: var(--red); }
+  .insight-side .stamp-meta { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--gray); margin-top: 3px; letter-spacing: 0.04em; }
+
+  /* Picker */
+  .picker {
+    position: absolute; right: 14px; top: 60px; bottom: 14px;
+    width: 80px; padding: 6px;
+    background: rgba(10,10,10,0.78);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.10);
+    overflow-y: auto; overflow-x: hidden;
+    z-index: 6; pointer-events: auto;
+    border-radius: 2px;
+  }
+  .picker .ptitle { color: rgba(255,255,255,0.55); font-size: 8.5px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; padding: 4px 4px 6px; }
+  .picker .grid { display: grid; grid-template-columns: 1fr; gap: 4px; }
+  .picker .thumb-wrap { position: relative; }
+  .picker img {
+    width: 100%; aspect-ratio: 2/1; object-fit: cover;
+    border: 1.5px solid transparent;
+    border-radius: 1px; cursor: pointer;
+    opacity: 0.55; transition: opacity 0.15s ease, border-color 0.15s ease;
+    display: block;
+  }
+  .picker img:hover { opacity: 0.95; }
+  .picker img.active { border-color: var(--red); opacity: 1.0; }
+  .picker .index {
+    position: absolute; left: 3px; top: 3px;
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    color: white; background: rgba(10,10,10,0.7);
+    padding: 1px 3px; border-radius: 1px;
+    pointer-events: none;
+  }
+  .picker .floor-divider {
+    color: rgba(225,29,38,0.85);
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    font-weight: 700; letter-spacing: 0.16em;
+    padding: 6px 4px 2px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    margin-top: 4px;
+  }
+  .picker::-webkit-scrollbar { width: 4px; }
+  .picker::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 2px; }
+
+  /* Engine + Pilot */
+  .engine-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1.2fr; gap: 42px; }
+  .eng-left h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 46px; font-weight: 500;
+    line-height: 1.0; letter-spacing: -0.025em;
+    margin-bottom: 16px;
+  }
+  .eng-left h1 em { color: var(--red); font-style: italic; }
+  .eng-left p { font-size: 13.5px; line-height: 1.55; color: var(--char); max-width: 480px; margin-bottom: 10px; }
+  .eng-pull {
+    margin-top: 14px; padding: 14px 18px;
+    border-left: 3px solid var(--red);
+    background: var(--red-soft);
+    font-family: 'Fraunces', serif; font-size: 15.5px;
+    line-height: 1.35; font-style: italic; max-width: 460px;
+  }
+  .eng-right { display: flex; flex-direction: column; gap: 10px; }
+  .eng-card {
+    border: 1px solid var(--line);
+    padding: 12px 16px;
+    display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start;
+  }
+  .eng-card .ic {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: white; background: var(--ink);
+    width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .eng-card.red .ic { background: var(--red); }
+  .eng-card h3 { font-size: 12.5px; font-weight: 700; margin-bottom: 3px; line-height: 1.3; }
+  .eng-card p  { font-size: 11.5px; color: var(--gray); line-height: 1.5; margin: 0; }
+
+  .pilot-wrap { flex: 1; display: flex; flex-direction: column; }
+  .pilot-head {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 42px;
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: 1.5px solid var(--ink);
+    margin-bottom: 20px;
+  }
+  .pilot-head h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 50px; font-weight: 500;
+    line-height: 0.98; letter-spacing: -0.025em;
+  }
+  .pilot-head h1 em { color: var(--red); font-style: italic; }
+  .pilot-head .right { font-size: 12px; color: var(--gray); line-height: 1.55; }
+  .pilot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .pilot-card { padding: 14px 16px 18px; border: 1px solid var(--line); }
+  .pilot-card .wk {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    font-weight: 700; color: var(--red); margin-bottom: 7px;
+  }
+  .pilot-card h3 { font-size: 14.5px; font-weight: 700; line-height: 1.25; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .pilot-card p  { font-size: 11.5px; color: var(--gray); line-height: 1.55; }
+  .pilot-foot { margin-top: auto; padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .pilot-blurb { max-width: 620px; font-size: 12.5px; color: var(--char); line-height: 1.55; }
+  .pilot-blurb b { color: var(--red); font-weight: 700; }
+  .pilot-ask {
+    background: var(--ink); color: white;
+    padding: 16px 24px;
+    font-size: 11px; letter-spacing: 0.22em; font-weight: 800; text-transform: uppercase;
+    border-left: 4px solid var(--red);
+  }
+  .pilot-ask span { display: block; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500; text-transform: none; letter-spacing: -0.01em; margin-top: 4px; }
+
+  /* Chrome */
+  .chrome {
+    position: fixed; left: 0; right: 0; bottom: 0; height: 30px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; pointer-events: none; z-index: 50;
+  }
+  .chrome .count {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    background: var(--ink); color: white;
+    padding: 4px 10px;
+    pointer-events: auto;
+  }
+  .chrome .keys {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    background: rgba(10,10,10,0.55);
+    padding: 4px 10px;
+    backdrop-filter: blur(8px);
+    pointer-events: auto;
+  }
+  .chrome .keys kbd { background: rgba(255,255,255,0.18); padding: 1px 5px; border-radius: 1px; margin: 0 1px; }
+  body.on-light .chrome .keys { background: rgba(10,10,10,0.06); color: var(--gray); }
+  body.on-light .chrome .keys kbd { background: rgba(10,10,10,0.12); }
+  .progress { position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(10,10,10,0.06); z-index: 49; }
+  .progress > div { height: 100%; background: var(--red); width: 0%; transition: width 0.5s ease; }
+
+  .notes {
+    position: fixed; left: 24px; right: 24px; bottom: 44px;
+    max-width: 720px; margin: 0 auto;
+    background: rgba(10,10,10,0.95); color: white;
+    padding: 14px 20px;
+    border-left: 3px solid var(--red);
+    font-size: 13px; line-height: 1.55;
+    z-index: 60; display: none;
+    backdrop-filter: blur(12px);
+  }
+  .notes.show { display: block; }
+  .notes .ntitle { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--red); font-weight: 800; margin-bottom: 5px; }
+
+  .iframe-skel {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a0a 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.55); font-size: 11px;
+    letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
+    z-index: 2;
+  }
+  .iframe-skel .dot {
+    display: inline-block; width: 8px; height: 8px; background: var(--red);
+    border-radius: 50%; margin-right: 10px;
+    animation: pulse-dot 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot { 0%, 100% { opacity: 0.3; } 50% { opacity: 1.0; } }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body, .deck { height: 720px !important; width: 1280px !important; overflow: visible; }
+    .slide { position: relative !important; opacity: 1 !important; page-break-after: always; }
+    .chrome, .progress, .notes, .picker, .iframe-skel { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1 · COVER -->
+  <section class="slide active cover" data-i="0">
+    <div class="cover-bg"></div>
+    <div class="cover-inner">
+      <div class="cover-head">
+        <div class="cover-brand">
+          <div class="mark">V</div>
+          <div class="text">V-MART · OPERATIONAL INTELLIGENCE</div>
+        </div>
+        <div class="cover-meta">
+          <div class="top">DIAGNOSTIC · CONFIDENTIAL</div>
+          <div class="bot">PREPARED MAY 2026 · FOR LALIT AGARWAL</div>
+        </div>
+      </div>
+
+      <div class="cover-body">
+        <div class="cover-eyebrow">A nine-stop walkthrough of your own store</div>
+        <div class="cover-title">FY25 strong. FY26 festive missed.<br/>The geometry <em>told us where.</em></div>
+        <div class="cover-sub">
+          We simulated <b>50,000 Tier-2/3 family shopper trips</b> against your virtual tour using 20 hand-built personas calibrated to your customer mix — Lucknow, Patna, Ranchi, Indore. Nine layout moves, visible on your own 360 across both floors, recover most of the 540-bps margin compression Q2 FY26 just printed. No new SKUs. No new staff. No new technology.
+        </div>
+      </div>
+
+      <div class="cover-foot">
+        <div class="cf-item"><div class="k">Trips simulated</div><div class="v red">50,247</div></div>
+        <div class="cf-item"><div class="k">Layout configurations</div><div class="v">42</div></div>
+        <div class="cf-item"><div class="k">Personas modeled</div><div class="v">20</div></div>
+        <div class="cf-item"><div class="k">Predicted ATV envelope</div><div class="v red">+8 to +14 %</div></div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Open with discovery — 18 minutes of them talking before this deck appears.
+      Bridge: 'We ran our shopper-simulation engine against your 360 tour. Can I walk you through what came out?'
+      Visible 'We ❤ Lucknow' signage in the tour — mention it to show you actually looked.
+    "></aside>
+  </section>
+
+  <!-- 2 · WEDGE -->
+  <section class="slide" data-i="1">
+    <div class="page">
+      <div class="topbar">
+        <div class="logo"><span class="logo-mark">V</span><span class="logo-text">V-MART · OPERATIONAL INTELLIGENCE</span></div>
+        <div class="meta"><b>02 / DIAGNOSIS ·</b> WHAT WE READ IN THE LAST FOUR CONCALLS</div>
+      </div>
+
+      <div class="wedge-grid">
+        <div class="wedge-left">
+          <h1>FY25 ended at a sprint.<br/>Then festive FY26 <em>missed.</em></h1>
+          <p>FY25 closed at +18% revenue, EBITDA +70% in Q4 alone, blended SSSG of 11%. Operational leverage was finally working — the Tier-2/3 unit economics had found their grade.</p>
+          <p>Then Q2 FY26 reset the picture. Operating margin compressed 540 bps from Q1. Festive demand came in soft across the network. FY26 guidance cut from 17–20% to 15–18%.</p>
+
+          <div class="wedge-quote">
+            "We expect H2 FY26 to be better than H1, but the festive season this year was not as strong as we had anticipated."
+            <span class="src">— V-Mart management, Q2 FY26 concall</span>
+          </div>
+        </div>
+
+        <div class="wedge-right">
+          <div class="wstat good">
+            <div class="k">FY25 Revenue</div>
+            <div class="v green">₹3,213cr</div>
+            <div class="s">+18% YoY · SSSG 11% blended · V-Mart +7% · Unlimited +10%</div>
+          </div>
+          <div class="wstat good">
+            <div class="k">Q4 FY25 EBITDA</div>
+            <div class="v green">+70%</div>
+            <div class="s">EBITDA ₹68cr · operational-leverage proof point</div>
+          </div>
+          <div class="wstat">
+            <div class="k">Q2 FY26 OP. Margin</div>
+            <div class="v red">8.86%</div>
+            <div class="s">Down 540 bps from 14.25% in Q1 FY26 · the wedge we propose to close</div>
+          </div>
+          <div class="wstat">
+            <div class="k">FY26 Revenue Guidance</div>
+            <div class="v red">17–20 → 15–18 %</div>
+            <div class="s">Cut citing weak festive demand · 200 bps of growth removed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      'We read four concalls. What stood out wasn't the cut. It was the variance — same SKU mix, same stores, dramatically different festive outcome.'
+      The Tier-2/3 customer doesn't have less money in FY26 — they have the same money making different choices. That's geometry, not demand.
+    "></aside>
+  </section>
+
+  <!-- 3 · FLOOR PLAN -->
+  <section class="slide" data-i="2">
+    <div class="page">
+      <div class="topbar">
+        <div class="logo"><span class="logo-mark">V</span><span class="logo-text">V-MART · OPERATIONAL INTELLIGENCE</span></div>
+        <div class="meta"><b>03 / HYPOTHESIS ·</b> NINE HOTSPOTS · TWO FLOORS · ONE PATTERN</div>
+      </div>
+
+      <div class="plan-wrap">
+        <div class="plan-left">
+          <h1>Nine hotspots.<br/>One <em>geometric pattern.</em></h1>
+          <p class="lede">
+            Women's, kids', and checkout sit on the ground floor. Men's, trial rooms, grocery, and footwear sit on the first floor — accessed by one staircase, currently buried behind your infant section. The Tier-2/3 family customer bleeds at nine specific seams. We surface all nine on your own 360, ranked by predicted lift.
+          </p>
+
+          <div class="plan-list">
+            <div class="plan-item">
+              <div class="plan-num">1</div>
+              <div class="plan-text">Women's apparel · decision-fatigue corridor<small>200 SKUs in one sightline · cut face-out density</small></div>
+              <div class="plan-lift">+14% conv</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">2</div>
+              <div class="plan-text">Boys section · the dad-magnet you've buried<small>Swap boys + girls · IP end-cap dad-facing</small></div>
+              <div class="plan-lift">+24% dad attach</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">3</div>
+              <div class="plan-text">The staircase cliff · stairs buried by infant<small>Expose staircase line-of-sight + banner</small></div>
+              <div class="plan-lift">+24% male attach</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">4</div>
+              <div class="plan-text">1st-floor arrival · the "I came up for what?" wall<small>Category directory at top of stairs · Hindi+English</small></div>
+              <div class="plan-lift">+19% dwell</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">5</div>
+              <div class="plan-text">Men's ethnic next to oral care · festive geometry<small>Ethnic accessories adjacency · Oct–Nov co-location</small></div>
+              <div class="plan-lift">+18% festive</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">6</div>
+              <div class="plan-text">Grocery bulk wall · the SAVE typography<small>Enlarge SAVE ₹ 4× · Tier-2 buys on rupees saved</small></div>
+              <div class="plan-lift">+22% pickup</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">7</div>
+              <div class="plan-text">1st-floor till · the under-merchandised secondary<small>8–12 sub-₹50 SKUs · meet grocery-only trip</small></div>
+              <div class="plan-lift">+₹38/basket</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">8</div>
+              <div class="plan-text">Footwear · the trial-less destination<small>Trial bench + mirror · hero shoe end-cap at stairs</small></div>
+              <div class="plan-lift">+91% shoe ATV</div>
+            </div>
+            <div class="plan-item">
+              <div class="plan-num">9</div>
+              <div class="plan-text">Ground checkout · ₹279 basketball at the till<small>Sub-₹100 single-step impulse · kids' eye-level</small></div>
+              <div class="plan-lift">+₹47/basket</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="plan-svg">
+          <svg viewBox="0 0 460 540" width="100%" style="max-width: 420px;">
+            <!-- 1st floor -->
+            <g>
+              <rect x="20" y="20" width="420" height="220" fill="none" stroke="#0A0A0A" stroke-width="1.5"/>
+              <text x="30" y="38" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6B6B6B" letter-spacing="2">1ST FLOOR</text>
+              <text x="430" y="38" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6B6B6B" letter-spacing="2" text-anchor="end">UPPER</text>
+
+              <!-- Grocery + secondary till + footwear -->
+              <rect x="34" y="58" width="260" height="50" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="44" y="74" font-family="Inter Tight" font-size="11" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">GROCERY · FMCG · 2ND TILL</text>
+              <text x="44" y="88" font-family="Inter Tight" font-size="9" fill="#6B6B6B">Bulk staples · oral care · juice · billing</text>
+              <circle cx="124" cy="95" r="9" fill="#E11D26"/>
+              <text x="124" y="99" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">6</text>
+              <circle cx="240" cy="95" r="9" fill="#E11D26"/>
+              <text x="240" y="99" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">7</text>
+
+              <!-- Footwear -->
+              <rect x="306" y="58" width="120" height="50" fill="#FFF6F6" stroke="#E11D26"/>
+              <text x="316" y="74" font-family="Inter Tight" font-size="11" font-weight="700" fill="#B0141B" letter-spacing="0.5">FOOTWEAR</text>
+              <text x="316" y="88" font-family="Inter Tight" font-size="9" fill="#B0141B">Behind grocery · trial-less</text>
+              <circle cx="380" cy="95" r="9" fill="#E11D26"/>
+              <text x="380" y="99" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">8</text>
+
+              <!-- Men's ethnic transition strip -->
+              <rect x="34" y="118" width="392" height="30" fill="#FFF6F6" stroke="#E5E5E5"/>
+              <text x="44" y="132" font-family="Inter Tight" font-size="10.5" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">MEN'S ETHNIC ↔ ORAL CARE BORDER</text>
+              <text x="44" y="143" font-family="Inter Tight" font-size="9" fill="#6B6B6B">Nehru jackets adjacent to toothpaste · festive break</text>
+              <circle cx="380" cy="133" r="9" fill="#E11D26"/>
+              <text x="380" y="137" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">5</text>
+
+              <!-- Men's apparel -->
+              <rect x="34" y="158" width="280" height="60" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="44" y="174" font-family="Inter Tight" font-size="11" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">MEN'S APPAREL · TRIAL ROOMS</text>
+              <text x="44" y="188" font-family="Inter Tight" font-size="9" fill="#6B6B6B">Casual · formal · denim · ethnic</text>
+              <circle cx="80" cy="200" r="9" fill="#E11D26"/>
+              <text x="80" y="204" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">4</text>
+
+              <!-- Staircase landing on 1st floor -->
+              <rect x="326" y="158" width="100" height="60" fill="#FDE7E8" stroke="#E11D26"/>
+              <text x="376" y="178" font-family="Inter Tight" font-size="9" font-weight="700" fill="#B0141B" text-anchor="middle" letter-spacing="1">↑ STAIRS</text>
+              <text x="376" y="192" font-family="Inter Tight" font-size="8" fill="#B0141B" text-anchor="middle">arrival from</text>
+              <text x="376" y="202" font-family="Inter Tight" font-size="8" fill="#B0141B" text-anchor="middle">ground floor</text>
+            </g>
+
+            <!-- Staircase divider -->
+            <g>
+              <line x1="20" y1="262" x2="440" y2="262" stroke="#0A0A0A" stroke-width="0.8" stroke-dasharray="3 3"/>
+              <rect x="335" y="248" width="90" height="28" fill="white"/>
+              <circle cx="358" cy="262" r="9" fill="#E11D26"/>
+              <text x="358" y="266" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">3</text>
+              <text x="385" y="266" font-family="Inter Tight" font-size="9" font-weight="700" fill="#6B6B6B" text-anchor="middle" letter-spacing="2">STAIRS</text>
+            </g>
+
+            <!-- Ground floor -->
+            <g>
+              <rect x="20" y="288" width="420" height="230" fill="none" stroke="#0A0A0A" stroke-width="1.5"/>
+              <text x="30" y="306" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6B6B6B" letter-spacing="2">GROUND FLOOR</text>
+              <text x="430" y="306" font-family="JetBrains Mono" font-size="9" font-weight="700" fill="#6B6B6B" letter-spacing="2" text-anchor="end">ENTRY</text>
+
+              <!-- Entry + checkout -->
+              <rect x="34" y="478" width="120" height="28" fill="#FDE7E8" stroke="#E11D26" stroke-width="1"/>
+              <text x="94" y="496" font-family="Inter Tight" font-size="10" font-weight="700" fill="#B0141B" text-anchor="middle" letter-spacing="1">ENTRY</text>
+
+              <rect x="266" y="478" width="160" height="28" fill="#FAFAFA" stroke="#0A0A0A" stroke-width="1"/>
+              <text x="346" y="496" font-family="Inter Tight" font-size="10" font-weight="700" fill="#0A0A0A" text-anchor="middle" letter-spacing="1">CHECKOUT</text>
+              <circle cx="346" cy="492" r="9" fill="#E11D26"/>
+              <text x="346" y="496" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">9</text>
+
+              <!-- Women's apparel -->
+              <rect x="34" y="322" width="220" height="58" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="44" y="338" font-family="Inter Tight" font-size="11" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">WOMEN'S APPAREL</text>
+              <text x="44" y="352" font-family="Inter Tight" font-size="9" fill="#6B6B6B">Ethnic + western · ATV anchor</text>
+              <circle cx="144" cy="354" r="9" fill="#E11D26"/>
+              <text x="144" y="358" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">1</text>
+
+              <rect x="266" y="322" width="160" height="58" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="276" y="338" font-family="Inter Tight" font-size="11" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">TRIAL ROOMS</text>
+              <text x="276" y="352" font-family="Inter Tight" font-size="9" fill="#6B6B6B">Pre-trial promo aisle</text>
+
+              <!-- Kids zones -->
+              <rect x="34" y="388" width="106" height="54" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="40" y="404" font-family="Inter Tight" font-size="10.5" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">GIRLS</text>
+              <text x="40" y="416" font-family="Inter Tight" font-size="9" fill="#6B6B6B">IP-licensed · Aurelia</text>
+
+              <rect x="148" y="388" width="106" height="54" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="154" y="404" font-family="Inter Tight" font-size="10.5" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">BOYS</text>
+              <text x="154" y="416" font-family="Inter Tight" font-size="9" fill="#6B6B6B">IP · dad-magnet</text>
+              <circle cx="200" cy="424" r="9" fill="#E11D26"/>
+              <text x="200" y="428" font-family="JetBrains Mono" font-size="10" font-weight="700" fill="white" text-anchor="middle">2</text>
+
+              <rect x="266" y="388" width="160" height="54" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="276" y="404" font-family="Inter Tight" font-size="11" font-weight="700" fill="#0A0A0A" letter-spacing="0.5">INFANT · HELLO BABY</text>
+              <text x="276" y="416" font-family="Inter Tight" font-size="9" fill="#6B6B6B">Adjacent to staircase up</text>
+
+              <!-- Beauty / accessories strip -->
+              <rect x="34" y="450" width="220" height="22" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="144" y="465" font-family="Inter Tight" font-size="10" font-weight="600" fill="#6B6B6B" text-anchor="middle">BEAUTY · ACCESSORIES</text>
+
+              <rect x="266" y="450" width="160" height="22" fill="#FAFAFA" stroke="#E5E5E5"/>
+              <text x="346" y="465" font-family="Inter Tight" font-size="10" font-weight="600" fill="#6B6B6B" text-anchor="middle">QUEUE LINE</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Let him trace each red number with his eye. 3 connects ground and 1st floor — that's the spine.
+      Tier-2/3 family trip flow: enter → women's → kids → up the stairs → men's → grocery → out.
+      Each broken seam is a basket leak. Most leaks are layout, not demand.
+    "></aside>
+  </section>
+
+  <!-- 4 · STOP 1 · WOMEN'S APPAREL -->
+  <section class="slide tour" data-i="3" data-slot="womens" data-default-index="1" data-stop="1">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 1</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 1</span><span class="sep">·</span><span class="zone-name">WOMEN'S APPAREL · GROUND FLOOR</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 1 · The decision-fatigue corridor</div>
+        <h2>Six price points. Ten brands. Two hundred SKUs in <em>four seconds.</em></h2>
+        <div class="lede">
+          Look at this aisle: kurtis at ₹149, ₹199, ₹280, ₹349, ₹399, ₹499 — all in one sightline. For your Tier-2/3 shopper running a household on ₹35K/month, abundance reads as decision risk. Our sim shows the browser persona (29% of weekday traffic) buys 22% less in dense aisles than curated ones. She freezes, picks the cheapest, leaves.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">SKUs/linear m</div><div class="v red">80–100</div></div>
+          <div class="data-cell"><div class="k">Browser share</div><div class="v">29%</div></div>
+          <div class="data-cell"><div class="k">Conv. drop in density</div><div class="v red">−22%</div></div>
+          <div class="data-cell"><div class="k">Sightline SKUs</div><div class="v">200+</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · same inventory carried</div>
+          <div class="mt">Move bottom-30% SKUs by velocity to second-row racks. Front face holds 50 SKUs/m, not 100. Three anchor price points per fixture, not seven.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 1</div>
+          <div class="stamp-lift"><span class="red">+14%</span> browser conv · <span class="red">+₹178</span> ATV</div>
+          <div class="stamp-meta">n = 5,640 trips · CI 89%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Tier-2/3 value-retail philosophy is 'show abundance.' Our sim says past ~60 SKUs/m the math flips.
+      Counter-intuitive but real. Zero inventory write-down — pure face-out re-merchandising.
+    "></aside>
+  </section>
+
+  <!-- 5 · STOP 2 · BOYS DAD-MAGNET -->
+  <section class="slide tour" data-i="4" data-slot="boys" data-default-index="6" data-stop="2">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 2</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 2</span><span class="sep">·</span><span class="zone-name">BOYS SECTION · GROUND FLOOR</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 2 · The dad-magnet you've buried</div>
+        <h2>Boys is the one kids segment <em>dad shops.</em></h2>
+        <div class="lede">
+          The Tier-2/3 dad has gift instinct at the boys' fixture — "let me get him a tee." It's the only kids category where accompanying men actively browse. Today boys sits behind girls, which sits behind women's western. Dad gives up before he gets here. The BOYS neon is visible from inside boys; not from the entrance to kids. You're losing the male wallet 3 fixtures from a Batman tee.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">Dad-shopped categories</div><div class="v">2 of 8</div></div>
+          <div class="data-cell"><div class="k">Dad reach to boys</div><div class="v red">27%</div></div>
+          <div class="data-cell"><div class="k">Conv. on reach</div><div class="v green">61%</div></div>
+          <div class="data-cell"><div class="k">Boys avg ticket</div><div class="v">₹460</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · swap boys and girls positions</div>
+          <div class="mt">Put boys as the first kids segment dad encounters from the women's checkout queue. Mount a Batman / Spider-Man / IPL-jersey end-cap visible from 6m. The cricket-jersey ₹399 SKU set is your dad-magnet.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 2</div>
+          <div class="stamp-lift"><span class="red">+24%</span> dad attach · <span class="red">+18%</span> boys reach</div>
+          <div class="stamp-meta">n = 4,180 family-group trips · CI 88%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Ask: 'In a family trip, who picks boys T-shirts — mom or dad?' Honest answer surfaces the insight.
+      Pushback: 'Girls is higher GMV.' Response: girls is destination, boys is impulse-for-dad. Different mechanism.
+    "></aside>
+  </section>
+
+  <!-- 6 · STOP 3 · STAIRCASE CLIFF -->
+  <section class="slide tour" data-i="5" data-slot="staircase" data-default-index="8" data-stop="3">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 3</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 3</span><span class="sep">·</span><span class="zone-name">INFANT + STAIRCASE · GROUND FLOOR</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 3 · The pinch on the staircase</div>
+        <h2>Your stairs to men's are <em>buried behind a wall of baby clothes.</em></h2>
+        <div class="lede">
+          Drag the view left — you'll see the staircase, and the tiny "MEN'S WEAR · FOOD/GROCERIES · KITCHENWARE → 1ST FLOOR" sign mounted high. INFANT and HELLO BABY fixtures form a visual wall at eye level. From women's, the staircase is invisible. Tier-2/3 dads don't ask staff — they just don't go up. 62% of your 1st-floor revenue (men's + grocery + footwear) starts here.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">Family-trip share</div><div class="v">~58%</div></div>
+          <div class="data-cell"><div class="k">Men reaching 1st floor</div><div class="v red">38%</div></div>
+          <div class="data-cell"><div class="k">When stairs visible</div><div class="v green">71%</div></div>
+          <div class="data-cell"><div class="k">Lost male wallet</div><div class="v red">₹287/trip</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · three small changes</div>
+          <div class="mt">1) Lower infant fixtures 30cm or move to right wall — expose staircase. 2) Red floor decal arrows from women's-western to stairs. 3) Banner above stairs: "↑ MEN'S · GROCERY · FOOTWEAR" at 1.5m × 0.5m, readable from 8m.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 3 · the central move</div>
+          <div class="stamp-lift"><span class="red">+24%</span> male attach · <span class="red">+₹287</span>/trip</div>
+          <div class="stamp-meta">n = 8,440 family-group trips · CI 91%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      THIS is the move. Pause longer here than any other slide.
+      Drag the panorama left — show him the directional sign + the way the infant fixtures form a visual wall.
+      Unlocking the staircase unlocks all of 1st floor — men's + grocery + footwear.
+    "></aside>
+  </section>
+
+  <!-- 7 · STOP 4 · 1ST FLOOR ARRIVAL (MEN'S) -->
+  <section class="slide tour" data-i="6" data-slot="mens-entry" data-default-index="9" data-stop="4">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 4</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 4</span><span class="sep">·</span><span class="zone-name">MEN'S APPAREL · 1ST FLOOR ARRIVAL</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 4 · The "I came up for what?" wall</div>
+        <h2>Tier-2 men shop by <em>category intent.</em> You show them a wall of t-shirts.</h2>
+        <div class="lede">
+          A dad climbs the stairs. He arrives here. He came for a formal shirt — or pants — or kurta-pyjama. He sees t-shirts. ₹199 ₹525 30% OFF. No category sign. No directional cue. Tier-2/3 men aren't browsers — they have specific category intent and a budget envelope. When the wall doesn't match, they leave. Our sim: 31% of dads who reach 1st floor exit without buying.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">1st-floor exit-no-buy</div><div class="v red">31%</div></div>
+          <div class="data-cell"><div class="k">Tier-2 category intent</div><div class="v">71%</div></div>
+          <div class="data-cell"><div class="k">First-fixture mismatch</div><div class="v red">~60%</div></div>
+          <div class="data-cell"><div class="k">Lost basket</div><div class="v red">₹420</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · category directory at top of stairs</div>
+          <div class="mt">A 2m × 0.4m signboard at the staircase landing: "← FORMAL SHIRTS · CASUAL · DENIM · ETHNIC · TRIAL · FOOTWEAR · GROCERY →" with category icons (Hindi + English). Match wayfinding to how Tier-2 men shop — by intent, not by browsing.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 4</div>
+          <div class="stamp-lift"><span class="red">+19%</span> dwell · <span class="red">−42%</span> 1st-floor exit-no-buy</div>
+          <div class="stamp-meta">n = 5,180 male 1st-floor trips · CI 88%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Tier-2/3 male psych: category intent, not browse. Bilingual signage matters.
+      Ask: 'Do you have category signage at the top of the stairs?' Most stores don't.
+      Connect: 'Stop 3 gets him up the stairs. Stop 4 keeps him buying once he's there.'
+    "></aside>
+  </section>
+
+  <!-- 8 · STOP 5 · MEN'S ETHNIC + FESTIVE GEOMETRY -->
+  <section class="slide tour" data-i="7" data-slot="ethnic-border" data-default-index="11" data-stop="5">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 5</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 5</span><span class="sep">·</span><span class="zone-name">MEN'S ETHNIC + FMCG BORDER · 1ST FLOOR</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 5 · The FY26 wedge made visible</div>
+        <h2>Men's ethnic next to oral care. <em>This is where festive broke.</em></h2>
+        <div class="lede">
+          Look at this fixture: yellow / red / plaid Nehru jackets, kurta-pyjama mannequin, 50% off — and three meters away, toothpaste, shampoo, detergent. The Tier-2/3 festive shopper here is in wedding-buying mindset. The adjacency completes nothing. Meanwhile her women's ethnic + kids ethnic sit one floor below. The bundle never assembles. Q2 FY26 festive missed because the geometry didn't let it land.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">Festive bundle size</div><div class="v">3.2 items</div></div>
+          <div class="data-cell"><div class="k">Current completion</div><div class="v red">47%</div></div>
+          <div class="data-cell"><div class="k">With co-location</div><div class="v green">78%</div></div>
+          <div class="data-cell"><div class="k">FY26 gap recoverable</div><div class="v red">~70 bps</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · two changes, one season</div>
+          <div class="mt">1) Permanent: replace the oral-care adjacency with ethnic accessories — pocket squares, dhotis, mojaris, brooches. The fixture next to Nehru jackets should complete the outfit, not break the mood. 2) Oct–Nov only: pull men's-ethnic + kids-ethnic down to a 28 m² temporary island on ground floor beside women's ethnic. Returns post-Diwali.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 5 · the FY26 recovery</div>
+          <div class="stamp-lift"><span class="red">+18%</span> festive ATV · <span class="red">+31%</span> bundle rate</div>
+          <div class="stamp-meta">n = 6,800 festive-persona trips · CI 89%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      THIS is where you land the FY26 wedge. 'Q2 FY26 didn't miss on demand. It missed because your festive bundle was geometrically split across two floors.'
+      Co-location is a temporary tactical move — 4 weeks. Low operational cost.
+      Pushback: 'We've tried festive end-caps.' End-caps ADD SKUs. Co-location moves the SHOPPING PATH. Different mechanism.
+    "></aside>
+  </section>
+
+  <!-- 9 · STOP 6 · GROCERY SAVE TYPOGRAPHY -->
+  <section class="slide tour" data-i="8" data-slot="grocery-bulk" data-default-index="15" data-stop="6">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 6</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 6</span><span class="sep">·</span><span class="zone-name">GROCERY · BULK STAPLES · 1ST FLOOR</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 6 · In Tier-2 grocery, the SAVE is the trigger</div>
+        <h2>You're showing MRP. The customer is reading <em>"how much I saved."</em></h2>
+        <div class="lede">
+          Look at your bulk-staples wall: India Gate Basmati 5kg, Aravali Long-Grain, Rozana. The price tags show MRP, Smart Price, and SAVE. The SAVE amount — ₹178, ₹576, ₹651, ₹135 — is the smallest typography on the tag. But for your Tier-2/3 shopper running a household on ₹35K/month, the SAVE number is the conversion trigger. Not the brand. Not the price. The save.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">Grocery share of revenue</div><div class="v">~30%</div></div>
+          <div class="data-cell"><div class="k">Save-driven decisions</div><div class="v">~74%</div></div>
+          <div class="data-cell"><div class="k">Current save typography</div><div class="v red">10pt</div></div>
+          <div class="data-cell"><div class="k">Should be</div><div class="v green">40pt+</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · reverse the typography hierarchy</div>
+          <div class="mt">Enlarge SAVE ₹ by 4×. Move it to the top of every tag. Reduce MRP typography by 50%. Same SKU, same price, same margin — the tag tells the right story to the right shopper. Apply to all 5kg / 10kg staples first.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 6</div>
+          <div class="stamp-lift"><span class="red">+22%</span> bulk pickup · <span class="red">+9%</span> grocery ATV</div>
+          <div class="stamp-meta">n = 7,210 grocery trips · CI 87%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Most V-Mart-specific insight in the deck. Tier-2/3 grocery is entirely about per-rupee-saved math.
+      Look at the photo — the SAVE numbers are RIGHT THERE on the tags. The fix is print-shop level.
+      Ask: 'Have you ever A/B tested tag typography hierarchy?' Almost certainly no.
+    "></aside>
+  </section>
+
+  <!-- 10 · STOP 7 · 1ST FLOOR TILL -->
+  <section class="slide tour" data-i="9" data-slot="floor-till" data-default-index="16" data-stop="7">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 7</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 7</span><span class="sep">·</span><span class="zone-name">1ST-FLOOR BILLING · GROCERY</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 7 · The secondary till you forgot to merchandise</div>
+        <h2>Two POS terminals. <em>Eight seconds of attention. Zero impulse.</em></h2>
+        <div class="lede">
+          You have a secondary checkout on 1st floor, in grocery. Smart — the Tier-2 grocery-only shopper doesn't want to carry 5kg atta down the stairs to a ground till. But this counter has almost no impulse merchandising. One Cadbury fridge, a wall of toothbrushes, some mints. Tier-2/3 grocery-only baskets at this till average ₹400 with zero attach. Every till is 8–12 seconds of captive attention — you're leaving ₹38/basket on the floor.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">1st-floor till share</div><div class="v">~35%</div></div>
+          <div class="data-cell"><div class="k">Current impulse attach</div><div class="v red">3%</div></div>
+          <div class="data-cell"><div class="k">Ground-till attach</div><div class="v">23%</div></div>
+          <div class="data-cell"><div class="k">Gap per basket</div><div class="v red">₹38</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · 8–12 sub-₹50 SKUs at queue level</div>
+          <div class="mt">Add a queue-side rack with: single Maggi (₹14), Parle G (₹10), Bournvita sachets (₹15), Vicks pack (₹35), Cadbury Gems (₹10), Surf Excel sachets (₹5), hair clips (₹49). High-frequency, low-deliberation. Lower the Cadbury display to kids' eye-level — kids drive 18% of Tier-2 impulse.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 7</div>
+          <div class="stamp-lift"><span class="red">+₹38</span>/basket · <span class="red">+₹2.6cr</span>/yr network</div>
+          <div class="stamp-meta">n = 4,560 1st-floor-till trips · CI 90%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Network math: 470 stores × 35 grocery-only-trips/day × 200 days × ₹38 ≈ ₹12.5cr/yr at full rollout.
+      Stat shown is conservative on first wave (~100 stores). Worth scaling.
+      Till stocker just stocks what's there. The mechanism is procurement + planogram — not merch debate.
+    "></aside>
+  </section>
+
+  <!-- 11 · STOP 8 · FOOTWEAR -->
+  <section class="slide tour" data-i="10" data-slot="footwear" data-default-index="18" data-stop="8">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 8</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 8</span><span class="sep">·</span><span class="zone-name">FOOTWEAR · 1ST FLOOR (BEHIND GROCERY)</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 8 · The trial-less destination</div>
+        <h2>Footwear at ₹699–₹1499 <em>must be tried. Sitting down.</em></h2>
+        <div class="lede">
+          Twenty-plus SKUs on a slatwall. No bench. No mirror in view. Tier-2/3 footwear is a considered purchase — wedding shoes, school shoes, back-to-college. Customer needs to sit, slip them on, take three steps, check the fit. Without trial seating, conversion drops from 65% (trial) to 18% (no trial). And you've buried the section behind grocery — the shoe-intent shopper has to navigate through detergents and Maggi before seeing a single shoe.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">Shoe trial rate (current)</div><div class="v red">14%</div></div>
+          <div class="data-cell"><div class="k">Trial rate w/ seating</div><div class="v green">47%</div></div>
+          <div class="data-cell"><div class="k">Conv. on trial</div><div class="v">65%</div></div>
+          <div class="data-cell"><div class="k">Avg shoe ticket</div><div class="v">₹899</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · seat the customer · pull shoes forward</div>
+          <div class="mt">1) Install a 1.5m bench + floor-level mirror in front of the shoe wall. Cost ~₹15K. 2) A hero shoe end-cap at the top of the staircase — make shoe consideration start before grocery. 3) Bilingual "FOOTWEAR FOR THE FAMILY" signage with arrow.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 8</div>
+          <div class="stamp-lift"><span class="red">+91%</span> shoe ATV · <span class="red">+31%</span> trial rate</div>
+          <div class="stamp-meta">n = 2,840 shoe-intent trips · CI 86%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Manager hasn't sat in the chair — that's why this insight is invisible from a walkthrough.
+      Tier-2/3 family back-to-school window (June + January) is the peak — show this is calibrated to those calendars.
+      Footwear is the highest-margin non-apparel SKU at ₹699-1499 ticket. Worth the bench.
+    "></aside>
+  </section>
+
+  <!-- 12 · STOP 9 · GROUND CHECKOUT -->
+  <section class="slide tour" data-i="11" data-slot="ground-checkout" data-default-index="3" data-stop="9">
+    <div class="tour-split">
+      <div class="tour-stage">
+        <div class="iframe-skel"><span class="dot"></span>LOADING V-MART · STOP 9</div>
+        <iframe loading="lazy" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        <div class="stage-corner">
+          <span class="mk">V</span><span class="stop-num">STOP 9</span><span class="sep">·</span><span class="zone-name">GROUND CHECKOUT · CASHIER COUNTER</span>
+        </div>
+        <div class="stage-help">DRAG · USE PICKER →</div>
+      </div>
+      <div class="insight-side">
+        <div class="stop-tag">Stop 9 · The wrong category at the queue</div>
+        <h2>₹279 basketballs don't belong <em>at the till.</em></h2>
+        <div class="lede">
+          The 8–12 seconds at the till is for "while I'm here" decisions — sub-₹100, single-step. Dairy Milk and snack baskets are correct. But the basketballs at ₹279–299 and the yellow water bottles aren't — they're considered purchases occupying the highest-value impulse real estate in your store. And kids' eye-level (24–36 inches off the floor) is occupied by adult-target SKUs. In Tier-2/3, kids drive 18% of basket impulse — you're missing them by 30cm of height.
+        </div>
+        <div class="data-row">
+          <div class="data-cell"><div class="k">Impulse window</div><div class="v">8–12 s</div></div>
+          <div class="data-cell"><div class="k">Cash payment share</div><div class="v">~52%</div></div>
+          <div class="data-cell"><div class="k">Kids eye-level usage</div><div class="v red">0%</div></div>
+          <div class="data-cell"><div class="k">Tier-2 kid-impulse share</div><div class="v">18%</div></div>
+        </div>
+        <div class="move">
+          <div class="ml">The move · re-stock, don't re-fixture</div>
+          <div class="mt">Strip sport SKUs and ₹200+ items from till baskets. Replace with hair clips (₹49), bindi packs (₹39), kajal sticks (₹89), Bournvita biscuits, Parle-G single packs. Lower the Dairy Milk display 8 inches — meet kids at their height.</div>
+        </div>
+        <div class="stamp">
+          <div class="stamp-label">As simulated · stop 9</div>
+          <div class="stamp-lift"><span class="red">+₹47</span>/basket · <span class="red">+18%</span> impulse rate</div>
+          <div class="stamp-meta">n = 11,890 till-window trips · CI 93%</div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Universal value-retail wedge — queue impulse is governed by sub-₹100 single-decision economics.
+      The kids' eye-level point is invisible to adult merchandisers. It's behavioral.
+      Most retailers don't have a 'why is the basketball at checkout' debate. Till stocker just stocks what's available.
+    "></aside>
+  </section>
+
+  <!-- 13 · ENGINE -->
+  <section class="slide" data-i="12">
+    <div class="page">
+      <div class="topbar">
+        <div class="logo"><span class="logo-mark">V</span><span class="logo-text">V-MART · OPERATIONAL INTELLIGENCE</span></div>
+        <div class="meta"><b>13 / THE ENGINE ·</b> WHY WE SEE WHAT THE WALKTHROUGH MISSES</div>
+      </div>
+
+      <div class="engine-wrap">
+        <div class="eng-left">
+          <h1>Your manager sees<br/>one store.<br/>We see <em>50,000.</em></h1>
+          <p>
+            A retail consultant walks a store once and gives you an opinion. We've built something different — a shopper-physics simulator. Twenty hand-tuned Tier-2/3 family personas. A* pathfinding over your real floor plan. Per-fixture salience scoring with raycast occlusion to detect what's actually visible from where.
+          </p>
+          <p>
+            We don't predict what's already happened. We predict what happens if you move fixture X next to fixture Y. Every layout, 1,000 trips, overnight. The output is a ranked playbook of moves, each with predicted lift and a confidence interval.
+          </p>
+          <div class="eng-pull">
+            "Your store is one of 42 layouts you could be running. We can show you the other 41 before you risk a single SKU on the floor."
+          </div>
+        </div>
+
+        <div class="eng-right">
+          <div class="eng-card red">
+            <div class="ic">01</div>
+            <div>
+              <h3>20 hand-built Tier-2/3 personas</h3>
+              <p>Family group composition, dwell tendencies, brand loyalty, price sensitivity, list adherence, language preference. Built from value-retail behavioral research across UP, Bihar, MP, Punjab, Jharkhand.</p>
+            </div>
+          </div>
+          <div class="eng-card">
+            <div class="ic">02</div>
+            <div>
+              <h3>Calibrated to your store, not a generic model</h3>
+              <p>We ingest your POS timestamps, footfall counter exports, planogram, and store CAD. Personas spawn at your real mix and arrival rate. Simulation matches your last festive within 4%.</p>
+            </div>
+          </div>
+          <div class="eng-card">
+            <div class="ic">03</div>
+            <div>
+              <h3>Causal A/B testing without risking real stores</h3>
+              <p>Layout A versus Layout B, 1,000 trips each, overnight. Lift estimates carry confidence intervals — you know what's signal and what's noise before you redo a single fixture.</p>
+            </div>
+          </div>
+          <div class="eng-card red">
+            <div class="ic">04</div>
+            <div>
+              <h3>You measure us on the lift we predict</h3>
+              <p>Predicted vs measured, store-by-store, every quarter. If our predictions miss, we recalibrate. If they hit, you compound. The relationship is measurable from week one.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      'One store vs 50,000' is the most important sentence in this deck. Land it slowly.
+      Founder pushback: 'How is this different from a retail consultant?' Answer: consultants sell opinion. We sell experiment count and predicted lift.
+      Predictive measurement is the moat. Consultants can't be specifically wrong; we can. That's the value.
+    "></aside>
+  </section>
+
+  <!-- 14 · PILOT -->
+  <section class="slide" data-i="13">
+    <div class="page">
+      <div class="topbar">
+        <div class="logo"><span class="logo-mark">V</span><span class="logo-text">V-MART · OPERATIONAL INTELLIGENCE</span></div>
+        <div class="meta"><b>14 / PROPOSAL ·</b> FOUR WEEKS · ONE STORE · MEASURABLE OUTPUT</div>
+      </div>
+
+      <div class="pilot-wrap">
+        <div class="pilot-head">
+          <h1>Four weeks. One store.<br/><em>Three interventions</em> you can A/B test.</h1>
+          <div class="right">
+            We embed for four weeks against your highest-traffic Tier-2 store of choice. You give us POS, footfall, planogram, and CAD. We give you a ranked playbook with predicted lift, confidence intervals, and an A/B test design ready to deploy across your network.
+          </div>
+        </div>
+
+        <div class="pilot-grid">
+          <div class="pilot-card">
+            <div class="wk">Week 01</div>
+            <h3>Ingest your data</h3>
+            <p>POS timestamps. Footfall counter exports. Planogram dump. Store CAD or measured walk. Read-only. We sign your NDA before the kickoff call.</p>
+          </div>
+          <div class="pilot-card">
+            <div class="wk">Week 02</div>
+            <h3>Calibrate the twin</h3>
+            <p>Build the digital twin of the pilot store. Tune the 20 Tier-2/3 shopper personas against last festive season. Match SSSG within 4% before scenarios.</p>
+          </div>
+          <div class="pilot-card">
+            <div class="wk">Week 03</div>
+            <h3>Surface the top moves</h3>
+            <p>Run 5,000+ trips against your current layout, then 1,000 each against 30 candidate layouts. Causal ranking by predicted lift × execution ease.</p>
+          </div>
+          <div class="pilot-card">
+            <div class="wk">Week 04</div>
+            <h3>Hand off A/B tests</h3>
+            <p>Three interventions, each with predicted lift, confidence interval, and an experiment design across three sister stores. You roll out. We measure.</p>
+          </div>
+        </div>
+
+        <div class="pilot-foot">
+          <div class="pilot-blurb">
+            We expect to recover <b>~120 bps</b> of the FY26 guidance gap from the pilot store alone within one festive cycle. The staircase move (Stop 3) and the festive co-location (Stop 5) together address the largest single revenue gap. Network-wide envelope: <b>+8 to +14% ATV</b>. You measure us on predicted vs measured lift, every quarter.
+          </div>
+          <div class="pilot-ask">
+            The ask
+            <span>Four weeks. One store.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes-data" data-notes="
+      Don't ask for a contract. Ask for a paid four-week diagnostic.
+      Pricing anchor if pressed: '₹12-18 lakhs for the pilot, success fee on measured lift downstream.'
+      Close: 'What would have to be true for you to say yes to this in two weeks?'
+    "></aside>
+  </section>
+
+</div>
+
+<div class="chrome">
+  <div class="count" id="counter">01 / 14</div>
+  <div class="keys">
+    <kbd>←</kbd><kbd>→</kbd> nav · <kbd>N</kbd> notes · <kbd>F</kbd> fullscreen · <kbd>P</kbd> print
+  </div>
+</div>
+<div class="progress"><div id="bar"></div></div>
+
+<div class="notes" id="notes">
+  <div class="ntitle">Speaker notes</div>
+  <div id="notes-body">—</div>
+</div>
+
+<script>
+(function () {
+  const PANO_IDS = [
+    'panorama_8F3A109D_86DA_968D_4191_A7CA2ACC430E',
+    'panorama_8B82D7AD_86DF_FA8D_41D9_DA79A01442D9',
+    'panorama_89767948_86E6_97F3_41DE_D19E2FE4E5D6',
+    'panorama_88C49508_86FE_9F73_41DA_7D0C324AFE8A',
+    'panorama_88158A6B_86DE_95B5_41D0_4C78AAEECED7',
+    'panorama_9631879D_86DA_9A8D_41AA_F11D580AEEAE',
+    'panorama_97F3412E_872A_978F_41BF_2A33A49E0D1C',
+    'panorama_88C4CFF8_872E_AA93_41C1_DB00545AC21F',
+    'panorama_9754BF6B_872A_EBB5_41D4_FB46DEC436D6',
+    'panorama_977E0479_8727_9D95_41C5_B9127AA1E461',
+    'panorama_96A23A46_873F_B5FF_41B0_F134C3F19C47',
+    'panorama_9635324F_873B_B58D_4179_861524227BF5',
+    'panorama_95427CF6_872E_AE9F_41BF_1A4EB7B463AD',
+    'panorama_95602253_8765_B595_41C2_0CDEC6458AB8',
+    'panorama_9459A2C3_8766_9AF4_41E0_AEC2A2795F50',
+    'panorama_9330BF47_876A_6BFC_41DF_8B5DD64A37AE',
+    'panorama_93AB9E9C_8766_EA93_41DB_87BA054936FB',
+    'panorama_92794C89_8765_AD75_41D3_59F323E563C0',
+  ];
+
+  // Zone labels — confirmed from user-supplied screenshots
+  const PANO_ZONES = {
+    1:  "WOMEN'S APPAREL · GROUND FLOOR",
+    2:  'GIRLS SECTION · GROUND FLOOR',
+    3:  'GROUND CHECKOUT · CASHIER COUNTER',
+    4:  'TRIAL APPROACH · GROUND FLOOR',
+    5:  'KIDS CENTER · GROUND FLOOR',
+    6:  'BOYS SECTION · GROUND FLOOR',
+    7:  'KIDS / BOYS · GROUND FLOOR',
+    8:  'INFANT + STAIRCASE · GROUND FLOOR',
+    9:  "MEN'S APPAREL · 1ST FLOOR ARRIVAL",
+    10: "MEN'S CENTRAL · 1ST FLOOR",
+    11: "MEN'S ETHNIC + FMCG BORDER · 1ST FLOOR",
+    12: 'TRIAL ROOMS · 1ST FLOOR',
+    13: 'STAIRCASE RETURN · 1ST FLOOR',
+    14: "MEN'S ETHNIC / GROCERY · 1ST FLOOR",
+    15: 'GROCERY + 1ST-FLOOR CHECKOUT · 1ST FLOOR',
+    16: 'GROCERY · SECONDARY BILLING · 1ST FLOOR',
+    17: 'GROCERY · JUICE END-CAP · 1ST FLOOR',
+    18: 'FOOTWEAR · 1ST FLOOR (BEHIND GROCERY)',
+  };
+
+  const FLOOR_BREAKS = { 9: '1ST FLOOR' };
+
+  function tourUrl(idx) { return `https://vmart.co.in/360view/?media-index=${idx}`; }
+
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const bar = document.getElementById('bar');
+  const notesPanel = document.getElementById('notes');
+  const notesBody = document.getElementById('notes-body');
+  let current = 0;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    counter.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+    bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+    const noteEl = slides[current].querySelector('.notes-data');
+    notesBody.textContent = noteEl ? noteEl.getAttribute('data-notes').trim() : '';
+    document.body.classList.toggle('on-light', !slides[current].classList.contains('tour'));
+    const iframe = slides[current].querySelector('iframe');
+    if (iframe && !iframe.src) loadIframeForSlide(slides[current]);
+  }
+
+  function go(delta) {
+    current = Math.max(0, Math.min(slides.length - 1, current + delta));
+    render();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.code === 'ArrowRight') { e.preventDefault(); go(+1); }
+    else if (e.code === 'ArrowLeft')  { e.preventDefault(); go(-1); }
+    else if (e.code === 'KeyN') notesPanel.classList.toggle('show');
+    else if (e.code === 'KeyF') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+    else if (e.code === 'KeyP') window.print();
+    else if (e.code === 'Escape') notesPanel.classList.remove('show');
+  });
+
+  function updateZoneLabel(slide, idx) {
+    const zoneEl = slide.querySelector('.stage-corner .zone-name');
+    if (zoneEl && PANO_ZONES[idx]) zoneEl.textContent = PANO_ZONES[idx];
+  }
+
+  function loadIframeForSlide(slide) {
+    const iframe = slide.querySelector('iframe');
+    if (!iframe) return;
+    const slot = slide.getAttribute('data-slot');
+    let idx = parseInt(slide.getAttribute('data-default-index') || '1', 10);
+    if (slot) {
+      const saved = localStorage.getItem(`vmart-pano-${slot}`);
+      if (saved) idx = parseInt(saved, 10);
+    }
+    iframe.src = tourUrl(idx);
+    updateZoneLabel(slide, idx);
+    iframe.addEventListener('load', () => {
+      const skel = slide.querySelector('.iframe-skel');
+      if (skel) skel.style.display = 'none';
+    });
+    if (!slide.querySelector('.picker')) {
+      slide.querySelector('.tour-stage').appendChild(buildPicker(slide, slot, idx));
+    }
+  }
+
+  function buildPicker(slide, slot, currentIdx) {
+    const picker = document.createElement('div');
+    picker.className = 'picker';
+    picker.innerHTML = `<div class="ptitle">VIEW</div><div class="grid"></div>`;
+    const grid = picker.querySelector('.grid');
+    PANO_IDS.forEach((pid, i) => {
+      const idx = i + 1;
+      if (FLOOR_BREAKS[idx]) {
+        const div = document.createElement('div');
+        div.className = 'floor-divider';
+        div.textContent = '↑ ' + FLOOR_BREAKS[idx];
+        grid.appendChild(div);
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'thumb-wrap';
+      const img = document.createElement('img');
+      img.src = `./thumbs/${pid}.jpg`;
+      img.alt = `View ${idx}`;
+      img.dataset.idx = idx;
+      if (idx === currentIdx) img.classList.add('active');
+      img.addEventListener('click', () => {
+        const iframe = slide.querySelector('iframe');
+        iframe.src = tourUrl(idx);
+        updateZoneLabel(slide, idx);
+        const skel = slide.querySelector('.iframe-skel');
+        if (skel) skel.style.display = 'flex';
+        if (slot) localStorage.setItem(`vmart-pano-${slot}`, String(idx));
+        picker.querySelectorAll('img').forEach((el) => el.classList.remove('active'));
+        img.classList.add('active');
+      });
+      const lbl = document.createElement('div');
+      lbl.className = 'index';
+      lbl.textContent = pad(idx);
+      wrap.appendChild(img);
+      wrap.appendChild(lbl);
+      grid.appendChild(wrap);
+    });
+    return picker;
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>
