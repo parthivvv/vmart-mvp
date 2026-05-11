@@ -415,186 +415,187 @@
   }
   @keyframes pulse { 0%,100% {opacity:0.3} 50% {opacity:1} }
 
-  /* ───────────── COVER ─────────────
-     Editorial dark palette · Fraunces serif display · Inter Tight body ·
-     JetBrains Mono technical. Three rows: header strip · hero · methodology
-     foot. Looks like an annual-report cover, not a game splash. */
+  /* ═════════════════════════════════════════════════════════
+     COVER + EXEC SUMMARY · clean V-Mart palette
+     White paper · black ink · single red accent · Inter Tight only.
+     JetBrains Mono for technical/numeric labels and currency runs.
+     No serifs. No italics. No gold-on-dark.
+  ═════════════════════════════════════════════════════════ */
+
   #cover {
     position: fixed; inset: 0; z-index: 180;
-    background: #0E0B07;
-    color: #F5EBD7;
+    background: #FFFFFF;
+    color: #0A0A0A;
     font-family: 'Inter Tight', system-ui, sans-serif;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    padding: 40px 72px 36px;
+    padding: 36px 64px 32px;
     overflow: hidden;
-    transition: opacity 0.45s ease;
+    transition: opacity 0.4s ease;
   }
   #cover.hide { opacity: 0; pointer-events: none; }
-  #cover::before {
-    content: '';
-    position: absolute; right: -15%; top: -25%;
-    width: 70%; height: 90%;
-    background: radial-gradient(circle, rgba(225,29,38,0.08) 0%, transparent 55%);
-    pointer-events: none;
-  }
+
   .cover-head {
     display: flex; justify-content: space-between; align-items: flex-start;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(245,235,215,0.10);
-    z-index: 1;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #E5E5E5;
   }
-  .cover-mark { display: flex; align-items: center; gap: 14px; }
+  .cover-mark { display: flex; align-items: center; gap: 12px; }
   .cover-mark .logo {
-    width: 36px; height: 36px;
+    width: 38px; height: 38px;
     background: #E11D26; color: white;
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Press Start 2P', monospace; font-size: 14px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 800; font-size: 22px;
     border-radius: 2px;
+    letter-spacing: -0.02em;
   }
   .cover-mark .name {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.20em;
-    color: #F5EBD7;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #0A0A0A;
   }
   .cover-mark .sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; color: rgba(245,235,215,0.45);
-    letter-spacing: 0.16em; text-transform: uppercase;
-    margin-top: 4px;
+    font-size: 12px;
+    color: #6B6B6B;
+    margin-top: 3px;
+    font-weight: 500;
   }
   .cover-meta {
     text-align: right;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; color: rgba(245,235,215,0.55);
-    letter-spacing: 0.16em; text-transform: uppercase;
-    line-height: 1.55;
+    line-height: 1.45;
   }
-  .cover-meta .date { color: #F5EBD7; font-size: 11px; font-weight: 600; }
+  .cover-meta .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 4px;
+  }
+  .cover-meta .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: #0A0A0A;
+    letter-spacing: 0.04em;
+  }
   .cover-tag {
-    display: inline-block; margin-top: 8px;
-    background: rgba(225,29,38,0.10);
-    border: 1px solid rgba(225,29,38,0.45);
-    color: #E11D26;
-    font-size: 9px; font-weight: 700;
-    letter-spacing: 0.24em;
+    display: inline-block; margin-top: 10px;
+    background: #FDE7E8;
+    color: #B0141B;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em;
     padding: 4px 9px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .cover-body {
     display: flex; flex-direction: column; justify-content: center;
-    z-index: 1;
+    max-width: 1100px;
   }
   .cover-eyebrow {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.30em; text-transform: uppercase;
-    color: #E11D26;
-    margin-bottom: 28px;
-    display: flex; gap: 10px; align-items: center;
-  }
-  .cover-eyebrow .sep { color: rgba(245,235,215,0.25); }
-  .cover-title {
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 88px;
-    font-weight: 400;
-    line-height: 0.98;
-    letter-spacing: -0.025em;
-    color: #F5EBD7;
-    max-width: 1100px;
-    margin-bottom: 26px;
-  }
-  .cover-title em {
-    font-style: italic;
-    font-weight: 500;
-    color: #E11D26;
-  }
-  .cover-lede {
-    font-size: 16px;
-    color: rgba(245,235,215,0.72);
-    line-height: 1.55;
-    max-width: 640px;
-    margin-bottom: 38px;
-  }
-  .cover-lede b { color: #F5EBD7; font-weight: 600; }
-  .cover-cta {
-    display: inline-flex; align-items: center; gap: 12px;
-    background: transparent;
-    border: 1.5px solid #E11D26;
-    color: #F5EBD7;
-    padding: 14px 22px;
-    font-family: 'JetBrains Mono', monospace;
     font-size: 11px; font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #E11D26;
+    margin-bottom: 24px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .cover-eyebrow .sep { color: #D5D5D5; }
+  .cover-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 74px;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.028em;
+    color: #0A0A0A;
+    max-width: 1000px;
+    margin-bottom: 24px;
+  }
+  .cover-title .accent { color: #E11D26; }
+  .cover-lede {
+    font-size: 17px;
+    color: #4A4A4A;
+    line-height: 1.55;
+    max-width: 700px;
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+  .cover-lede b { color: #0A0A0A; font-weight: 600; }
+  .cover-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #E11D26;
+    border: none;
+    color: white;
+    padding: 14px 24px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.02em;
     cursor: pointer;
     align-self: flex-start;
-    transition: all 0.18s ease;
+    border-radius: 2px;
+    transition: background 0.15s, transform 0.15s;
   }
-  .cover-cta:hover {
-    background: #E11D26;
-    color: white;
-    transform: translateX(3px);
-  }
+  .cover-cta:hover { background: #B0141B; transform: translateY(-1px); }
+  .cover-cta:active { transform: translateY(0); }
   .cover-cta .arrow {
-    font-family: 'Fraunces', serif;
-    font-size: 18px;
-    margin-left: 2px;
-    font-style: italic;
+    font-size: 16px; line-height: 1;
+    margin-top: -1px;
   }
 
   .cover-foot {
     display: grid;
     grid-template-columns: 1fr auto;
-    align-items: end;
     gap: 40px;
+    align-items: end;
     padding-top: 22px;
-    border-top: 1px solid rgba(245,235,215,0.10);
-    z-index: 1;
+    border-top: 1px solid #E5E5E5;
   }
-  .cover-method {
+  .cover-method-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    row-gap: 8px;
+    column-gap: 16px;
+    align-items: baseline;
+    max-width: 900px;
+  }
+  .cover-method-grid .lbl {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    color: rgba(245,235,215,0.55);
-    line-height: 1.85;
-    letter-spacing: 0.02em;
-  }
-  .cover-method .label {
-    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em;
     color: #E11D26;
-    letter-spacing: 0.18em;
-    font-weight: 700;
-    margin-right: 10px;
-    min-width: 56px;
+    text-transform: uppercase;
   }
-  .cover-method .body { color: #F5EBD7; }
+  .cover-method-grid .body {
+    font-size: 13px;
+    color: #2A2A2A;
+    line-height: 1.45;
+  }
   .cover-status {
-    display: flex; flex-direction: column; gap: 4px;
+    display: flex; flex-direction: column; gap: 5px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: rgba(245,235,215,0.65);
-    letter-spacing: 0.05em;
+    font-size: 11px;
+    color: #4A4A4A;
+    letter-spacing: 0.02em;
   }
   .cover-status .dot {
     display: inline-block;
-    width: 6px; height: 6px;
-    background: #3DDC84;
+    width: 7px; height: 7px;
+    background: #2D9B5F;
     border-radius: 50%;
     margin-right: 8px;
     vertical-align: middle;
   }
 
-  /* ───────────── EXECUTIVE SUMMARY ─────────────
-     Same editorial dark palette. Hero opportunity number in Fraunces with
-     gold accent. Four KPI tiles to the right. Top-3 levers as cards.
-     Methodology / pilot CTA at the bottom. */
+  /* ═════════════════════════════════════════════════════════
+     EXECUTIVE SUMMARY
+  ═════════════════════════════════════════════════════════ */
   #execsum {
     position: fixed; inset: 0; z-index: 170;
-    background: #0E0B07;
-    color: #F5EBD7;
+    background: #FFFFFF;
+    color: #0A0A0A;
     font-family: 'Inter Tight', system-ui, sans-serif;
-    padding: 28px 56px 24px;
+    padding: 26px 56px 22px;
     display: none;
     flex-direction: column;
     overflow-y: auto;
@@ -604,40 +605,39 @@
   .es-head {
     display: flex; align-items: flex-end; justify-content: space-between;
     padding-bottom: 18px;
-    border-bottom: 1px solid rgba(245,235,215,0.10);
+    border-bottom: 1px solid #E5E5E5;
     margin-bottom: 22px;
   }
   .es-head .crumb {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
-    letter-spacing: 0.20em;
-    color: rgba(245,235,215,0.50);
-    text-transform: uppercase;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
     margin-bottom: 6px;
   }
   .es-head h2 {
-    font-family: 'Fraunces', Georgia, serif;
-    font-size: 38px;
-    font-weight: 500;
-    letter-spacing: -0.018em;
-    line-height: 1.08;
-    color: #F5EBD7;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    line-height: 1.1;
+    color: #0A0A0A;
   }
-  .es-head h2 em { color: #E11D26; font-style: italic; }
+  .es-head h2 .accent { color: #E11D26; }
   .es-head .r { display: flex; gap: 8px; }
   .es-head .r button {
-    background: transparent;
-    border: 1px solid rgba(245,235,215,0.20);
-    color: #F5EBD7;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em;
-    padding: 11px 18px;
-    text-transform: uppercase;
+    background: white;
+    border: 1px solid #D5D5D5;
+    color: #0A0A0A;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 10px 16px;
     cursor: pointer;
+    border-radius: 2px;
     transition: all 0.15s;
   }
-  .es-head .r button:hover { border-color: rgba(245,235,215,0.55); background: rgba(245,235,215,0.04); }
+  .es-head .r button:hover { border-color: #0A0A0A; }
   .es-head .r button.primary {
     background: #E11D26;
     border-color: #E11D26;
@@ -648,73 +648,61 @@
   .es-hero {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
-    gap: 14px;
+    gap: 12px;
     margin-bottom: 24px;
   }
   .es-opportunity {
-    background: linear-gradient(135deg, rgba(225,29,38,0.12) 0%, rgba(255,217,102,0.06) 100%);
-    border: 1px solid rgba(225,29,38,0.30);
-    padding: 30px 34px;
-    border-radius: 2px;
+    background: #FAFAFA;
+    border: 1px solid #E5E5E5;
+    border-left: 3px solid #E11D26;
+    padding: 26px 30px;
   }
   .es-opportunity .eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: rgba(245,235,215,0.65);
-    margin-bottom: 14px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 12px;
   }
   .es-opportunity .number {
-    font-family: 'Fraunces', serif;
-    font-size: 80px;
-    font-weight: 500;
-    letter-spacing: -0.03em;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -0.028em;
     line-height: 1;
-    color: #FFD966;
-    margin-bottom: 14px;
-  }
-  .es-opportunity .number .unit {
-    font-size: 38px;
-    color: rgba(255,217,102,0.50);
-    margin-left: 6px;
-    font-weight: 400;
+    color: #0A0A0A;
+    margin-bottom: 12px;
   }
   .es-opportunity .ann {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    color: rgba(245,235,215,0.78);
-    margin-bottom: 16px;
-    letter-spacing: 0.02em;
-    line-height: 1.55;
+    font-size: 14px;
+    color: #4A4A4A;
+    margin-bottom: 18px;
+    line-height: 1.5;
   }
-  .es-opportunity .ann b { color: #F5EBD7; font-weight: 700; }
-  .es-opportunity .ann .gold { color: #FFD966; font-weight: 700; }
+  .es-opportunity .ann b { color: #0A0A0A; font-weight: 700; }
   .es-opportunity .network {
     padding-top: 14px;
-    border-top: 1px solid rgba(245,235,215,0.15);
+    border-top: 1px solid #E5E5E5;
   }
   .es-opportunity .network .label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(245,235,215,0.50);
-    margin-bottom: 8px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 7px;
   }
   .es-opportunity .network .v {
-    font-family: 'Fraunces', serif;
-    font-size: 32px;
-    font-weight: 500;
-    color: #F5EBD7;
-    letter-spacing: -0.015em;
-    line-height: 1;
-    margin-bottom: 6px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0A0A0A;
+    letter-spacing: -0.018em;
+    line-height: 1.1;
+    margin-bottom: 5px;
   }
-  .es-opportunity .network .v b { color: #FFD966; font-weight: 600; font-style: italic; }
   .es-opportunity .network .assumptions {
-    font-size: 11px;
-    color: rgba(245,235,215,0.50);
+    font-size: 12px;
+    color: #6B6B6B;
     line-height: 1.5;
   }
 
@@ -724,123 +712,117 @@
     gap: 8px;
   }
   .es-kpi {
-    background: rgba(245,235,215,0.03);
-    border: 1px solid rgba(245,235,215,0.10);
-    padding: 16px 18px;
+    background: white;
+    border: 1px solid #E5E5E5;
+    padding: 14px 16px;
   }
   .es-kpi .lbl {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px; font-weight: 700;
-    letter-spacing: 0.20em;
-    text-transform: uppercase;
-    color: rgba(245,235,215,0.55);
-    margin-bottom: 8px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 6px;
   }
   .es-kpi .v {
-    font-family: 'Fraunces', serif;
-    font-size: 30px;
-    font-weight: 500;
-    letter-spacing: -0.018em;
-    color: #F5EBD7;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #0A0A0A;
     line-height: 1;
   }
   .es-kpi .delta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: rgba(245,235,215,0.45);
-    margin-top: 6px;
-    letter-spacing: 0.04em;
+    font-size: 11px;
+    color: #6B6B6B;
+    margin-top: 5px;
+    line-height: 1.4;
   }
 
   .es-section { margin-bottom: 22px; }
   .es-section-h {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
     color: #E11D26;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(225,29,38,0.25);
+    border-bottom: 1px solid #E5E5E5;
   }
 
   .es-moves {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
   .es-move {
-    background: rgba(245,235,215,0.03);
-    border: 1px solid rgba(245,235,215,0.10);
-    border-left: 2px solid #E11D26;
-    padding: 18px 20px;
+    background: white;
+    border: 1px solid #E5E5E5;
+    border-top: 2px solid #E11D26;
+    padding: 16px 18px;
   }
   .es-move .num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; font-weight: 700;
-    letter-spacing: 0.22em;
-    color: rgba(245,235,215,0.45);
-    margin-bottom: 12px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 10px;
   }
   .es-move .ttl {
-    font-family: 'Fraunces', serif;
-    font-size: 19px;
-    font-weight: 500;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
     letter-spacing: -0.012em;
-    color: #F5EBD7;
-    line-height: 1.22;
-    margin-bottom: 12px;
+    color: #0A0A0A;
+    line-height: 1.25;
+    margin-bottom: 10px;
   }
   .es-move .lift {
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
-    color: #FFD966;
+    color: #E11D26;
     font-weight: 700;
     margin-bottom: 10px;
-    letter-spacing: 0.02em;
   }
   .es-move .body {
-    font-size: 12px;
-    color: rgba(245,235,215,0.68);
-    line-height: 1.6;
+    font-size: 13px;
+    color: #4A4A4A;
+    line-height: 1.55;
   }
-  .es-move .body b { color: #F5EBD7; font-weight: 600; }
+  .es-move .body b { color: #0A0A0A; font-weight: 600; }
 
   .es-method {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    margin-bottom: 24px;
-    padding: 20px 22px;
-    background: rgba(245,235,215,0.03);
-    border: 1px solid rgba(245,235,215,0.10);
+    margin-bottom: 22px;
+    padding: 18px 22px;
+    background: #FAFAFA;
+    border: 1px solid #E5E5E5;
   }
   .es-method h5 {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.20em;
-    text-transform: uppercase;
-    color: #FFD966;
-    margin-bottom: 10px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #0A0A0A;
+    margin-bottom: 8px;
   }
   .es-method p {
-    font-size: 12.5px;
-    color: rgba(245,235,215,0.72);
-    line-height: 1.65;
+    font-size: 13px;
+    color: #4A4A4A;
+    line-height: 1.55;
   }
-  .es-method p b { color: #F5EBD7; font-weight: 600; }
+  .es-method p b { color: #0A0A0A; font-weight: 600; }
   .es-method .src {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    color: rgba(245,235,215,0.40);
-    letter-spacing: 0.06em;
-    margin-top: 10px;
+    font-size: 10px;
+    color: #999;
+    margin-top: 8px;
+    letter-spacing: 0.04em;
   }
 
   .es-pilot {
     margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(245,235,215,0.10);
+    padding-top: 18px;
+    border-top: 1px solid #E5E5E5;
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 22px;
@@ -848,33 +830,31 @@
   }
   .es-pilot .copy {
     font-size: 13px;
-    color: rgba(245,235,215,0.78);
-    line-height: 1.6;
-    max-width: 780px;
+    color: #4A4A4A;
+    line-height: 1.55;
+    max-width: 800px;
   }
-  .es-pilot .copy b { color: #F5EBD7; font-weight: 600; }
+  .es-pilot .copy b { color: #0A0A0A; font-weight: 600; }
   .es-pilot .copy .label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: #FFD966;
-    font-weight: 700;
-    margin-right: 14px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #E11D26;
+    margin-right: 12px;
   }
   .es-pilot .cta {
     background: #E11D26;
     color: white;
     border: none;
-    padding: 14px 26px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
+    padding: 13px 22px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.02em;
     cursor: pointer;
-    transition: all 0.15s;
+    border-radius: 2px;
+    transition: background 0.15s;
   }
-  .es-pilot .cta:hover { background: #B0141B; transform: translateY(-1px); }
+  .es-pilot .cta:hover { background: #B0141B; }
 
   /* ─── Insights popup ─────────────────────────────────── */
   .insights {
@@ -1097,24 +1077,19 @@
     <div class="cover-mark">
       <span class="logo">V</span>
       <div>
-        <div class="name">V-MART · OPERATIONAL INTELLIGENCE</div>
-        <div class="sub">Diwali Saturday diagnostic</div>
+        <div class="name">V-Mart · Operational Intelligence</div>
+        <div class="sub">Diwali Saturday Diagnostic</div>
       </div>
     </div>
-    <div class="cover-meta">
-      <div>Prepared · Founder Office</div>
-      <div class="date" id="coverDate"></div>
-      <div><span class="cover-tag">CONFIDENTIAL</span></div>
-    </div>
+
   </div>
 
   <div class="cover-body">
     <div class="cover-eyebrow">
       <span>Diagnostic</span><span class="sep">·</span>
-      <span>Baseline policy</span><span class="sep">·</span>
-      <span>1,000-agent simulation</span>
+      <span>Baseline Policy</span><span class="sep">·</span>
     </div>
-    <h1 class="cover-title">Diwali Saturday, <em>simulated.</em><br/>The leaks, <em>quantified.</em></h1>
+    <h1 class="cover-title">Diwali Saturday, <span class="accent">simulated</span>.<br/>The leaks, <span class="accent">quantified</span>.</h1>
     <p class="cover-lede">
       Twelve hours. One thousand synthetic shoppers. Five family-archetype personas walking your floor end-to-end. We rebuilt your peak-day operating reality as a causal model and surfaced <b>eight recoverable moves, ranked by daily ₹ impact</b>.
     </p>
@@ -1124,10 +1099,9 @@
   </div>
 
   <div class="cover-foot">
-    <div class="cover-method">
-      <div><span class="label">METHOD</span><span class="body">Causal-chain only · no boost-multiplier hacks · same-seed comparison</span></div>
-      <div><span class="label">SOURCE</span><span class="body">Brief p.11 · data/agents.json · profiles.json · manit-notes/08</span></div>
-      <div><span class="label">SCOPE</span><span class="body">Single store · single day · scales 1:1 to your 470-store network</span></div>
+    <div class="cover-method-grid">
+      <div class="lbl">METHOD</div><div class="body">Causal-chain only · no boost-multiplier hacks · same-seed comparison</div>
+      <div class="lbl">SCOPE</div><div class="body">Single store, single day. Scales 1:1 across your 470-store network.</div>
     </div>
     <div class="cover-status">
       <div><span class="dot"></span>Sim engine ready</div>
@@ -1141,43 +1115,43 @@
 <div id="execsum">
   <div class="es-head">
     <div>
-      <div class="crumb">Diagnostic · Diwali Saturday · baseline policy</div>
-      <h2>Eight recoverable moves, <em>ranked by ₹ impact.</em></h2>
+      <div class="crumb">Diagnostic · Diwali Saturday · Baseline policy</div>
+      <h2>Eight recoverable moves, <span class="accent">ranked by ₹ impact</span>.</h2>
     </div>
     <div class="r">
-      <button id="esBackBtn">← Cover</button>
-      <button class="primary" id="esRunBtn">Run live sim →</button>
+      <button id="esBackBtn">← Back to sim</button>
+      <button class="primary" id="esRunBtn">Run again →</button>
     </div>
   </div>
 
   <div class="es-hero">
     <div class="es-opportunity">
       <div class="eyebrow">Opportunity · per store · per peak Saturday</div>
-      <div class="number" id="esTotal">+ ₹0.00<span class="unit">L</span></div>
-      <div class="ann">From <b id="esBaseline">₹0.00L</b> baseline → <span class="gold" id="esWithMoves">₹0.00L</span> with all moves applied</div>
+      <div class="number" id="esTotal">+ ₹0.00 L</div>
+      <div class="ann" id="esAnn">—</div>
       <div class="network">
         <div class="label">Network impact · 470 stores · 4 festive weekends / year</div>
-        <div class="v">+ <b id="esNetwork">₹0 Cr</b> annualised</div>
-        <div class="assumptions">Same baseline policy across network · scaled 1:1 from the 1,000-agent simulation</div>
+        <div class="v" id="esNetwork">+ ₹0 Cr / yr</div>
+        <div class="assumptions">Scaled 1:1 from the 1,000-agent simulation</div>
       </div>
     </div>
     <div class="es-kpis" id="esKpisGrid"></div>
   </div>
 
   <div class="es-section">
-    <div class="es-section-h">▶ Top three levers · recover 78% of the opportunity</div>
+    <div class="es-section-h">Top three levers · recover 78% of the opportunity</div>
     <div class="es-moves" id="esMoves"></div>
   </div>
 
   <div class="es-method">
     <div>
       <h5>How we compute each number</h5>
-      <p>1,000 hand-built shopper agents walk the floor for 12 hours under your baseline operating policy. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed. <b>Same seed, baseline vs optimized differ only because of policy, not luck.</b></p>
+      <p>1,000 hand-built shopper agents walk the floor for 12 hours under your baseline operating policy. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed. <b>Same seed; baseline vs optimized differ only because of policy, not luck.</b></p>
       <div class="src">data/agents.json · data/profiles.json · manit-notes/04-simulation-engine.md</div>
     </div>
     <div>
       <h5>What we will NOT do</h5>
-      <p>Every claimed lift flows through a <b>causal chain</b> — policy change → environment change → agent reacts → revenue moves. No boost-multiplier knobs, no forced conversion rates, no fiat ATV bumps. If a finding cannot be traced back to a specific agent behaviour, it is not surfaced.</p>
+      <p>Every claimed lift flows through a <b>causal chain</b> — policy change → environment change → agent reacts → revenue moves. No boost-multiplier knobs. No forced conversion rates. No fiat ATV bumps. If a finding cannot be traced back to a specific agent behaviour in this run, it is not surfaced.</p>
       <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
     </div>
   </div>
@@ -1186,7 +1160,7 @@
     <div class="copy">
       <span class="label">The pilot</span>4 weeks · 1 store of your choice. We calibrate the digital twin to your POS, run the optimization, hand back A/B-ready interventions with predicted lift + confidence intervals. <b>You measure us on whether the lift we predict matches the lift you measure.</b>
     </div>
-    <button class="cta" id="esRunBtn2">Run live sim →</button>
+    <button class="cta" id="esRunBtn2">Run again →</button>
   </div>
 </div>
 
@@ -1284,6 +1258,7 @@
       <button class="btn speed" data-speed="60">60×</button>
     </div>
     <button id="btn-reset" class="btn">↺</button>
+    <button id="btn-show-summary" class="btn" title="Open the diagnostic summary (only available after the sim completes)" disabled>SUMMARY</button>
   </div>
 </div>
 
@@ -1497,12 +1472,18 @@
       updateHud();
       updateZoneDensity();
       updateEventsFeed();
-      // Done?
+      // Done? → populate + show the exec-summary (the polished post-sim
+      // result screen) AND the legacy insights modal (the detailed-cards
+      // one). User sees exec summary first; clicking "Back to sim" returns
+      // to the live canvas with the insights panel still toggleable.
       if (sim.simMin >= sim.totalMin && sim.activeAgents.length === 0 && !insightsShown) {
         insightsShown = true;
         running = false;
         document.getElementById('btn-play').textContent = '▶ COMPLETE';
-        showInsights();
+        const summaryBtn = document.getElementById('btn-show-summary');
+        if (summaryBtn) summaryBtn.disabled = false;
+        populateExecSummary(sim);
+        document.getElementById('execsum').classList.add('show');
       }
       requestAnimationFrame(frame);
     }
@@ -1523,30 +1504,30 @@
     const cd = document.getElementById('coverDate');
     if (cd) cd.textContent = dateStr;
 
-    // Cover → exec summary
+    // Cover → live sim directly (no exec-summary-before-sim intermediate)
     document.getElementById('coverCta').addEventListener('click', () => {
-      // Briefly fast-run the sim headlessly so we have numbers for the exec summary
-      runHeadlessForSummary().then(() => {
-        document.getElementById('cover').classList.add('hide');
-        setTimeout(() => {
-          document.getElementById('cover').style.display = 'none';
-          document.getElementById('execsum').classList.add('show');
-        }, 500);
-      });
+      document.getElementById('cover').classList.add('hide');
+      setTimeout(() => {
+        document.getElementById('cover').style.display = 'none';
+        // Auto-start sim
+        running = true;
+        speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
+        document.getElementById('btn-play').textContent = '⏸ PAUSE';
+      }, 350);
     });
 
-    // Exec summary back
+    // Exec summary "back" → return to live sim (don't go back to cover)
     document.getElementById('esBackBtn').addEventListener('click', () => {
       document.getElementById('execsum').classList.remove('show');
-      document.getElementById('cover').style.display = 'flex';
-      document.getElementById('cover').classList.remove('hide');
     });
 
-    // Exec summary → live sim
-    const goToSim = () => {
+    // Exec summary "Run again" → reset and re-run sim
+    const rerunSim = () => {
       document.getElementById('execsum').classList.remove('show');
-      // Reset sim so the user watches it from t=0
-      window.sim = new Sim();
+      const activeBtn = document.querySelector('.policy-toggle .pt-btn.active');
+      const pid = activeBtn ? activeBtn.dataset.policy : 'baseline';
+      const policy = pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1 : window.POLICY_BASELINE;
+      window.sim = new Sim(policy);
       window.renderer.sim = window.sim;
       window.renderer.selected = null;
       window.renderer._heatLast = -1;
@@ -1560,8 +1541,18 @@
       speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
       document.getElementById('btn-play').textContent = '⏸ PAUSE';
     };
-    document.getElementById('esRunBtn').addEventListener('click', goToSim);
-    document.getElementById('esRunBtn2').addEventListener('click', goToSim);
+    document.getElementById('esRunBtn').addEventListener('click', rerunSim);
+    document.getElementById('esRunBtn2').addEventListener('click', rerunSim);
+
+    // SUMMARY button on the bottom bar — only enabled after the sim completes
+    const summaryBtn = document.getElementById('btn-show-summary');
+    if (summaryBtn) {
+      summaryBtn.addEventListener('click', () => {
+        if (summaryBtn.disabled) return;
+        populateExecSummary(window.sim);
+        document.getElementById('execsum').classList.add('show');
+      });
+    }
   }
 
   // Headlessly tick the sim through the full day so we can pull headline numbers
@@ -1608,27 +1599,33 @@
     // Annualised network estimate: 470 stores × 4 festival weekends × per-store impact
     const networkAnnual = totalImpact * 470 * 4;
 
-    document.getElementById('esTotal').innerHTML = '+ ₹' + (totalImpact / 100000).toFixed(2) + ' <span style="font-size:32px; color:var(--ink-mid);">L</span>';
-    document.getElementById('esBaseline').textContent = '₹' + (baselineRev / 100000).toFixed(2) + ' L';
-    document.getElementById('esWithMoves').textContent = '₹' + (withMoves / 100000).toFixed(2) + ' L  (+' + ((totalImpact / Math.max(1,baselineRev)) * 100).toFixed(0) + '%)';
-    document.getElementById('esNetwork').innerHTML = '+ ₹' + (networkAnnual / 10000000).toFixed(1) + ' Cr / year — assuming 470 stores × 4 festival peak-weekends/year';
+    const liftPct = baselineRev > 0 ? (totalImpact / baselineRev) * 100 : 0;
 
-    // KPI grid (compact)
+    // Single-source-of-truth text writes. Each element owns its FULL string —
+    // no wrapper-prefix + JS-prefix doubling possible.
+    document.getElementById('esTotal').textContent =
+      '+ ₹' + (totalImpact / 100000).toFixed(2) + ' L';
+    document.getElementById('esAnn').innerHTML =
+      'From <b>₹' + (baselineRev/100000).toFixed(2) + ' L</b> baseline → '
+      + '<b>₹' + (withMoves/100000).toFixed(2) + ' L</b> with all moves applied '
+      + '<span style="color:#E11D26; font-weight:700;">(' + (liftPct >= 0 ? '+' : '') + liftPct.toFixed(0) + '%)</span>';
+    document.getElementById('esNetwork').textContent =
+      '+ ₹' + (networkAnnual / 10000000).toFixed(1) + ' Cr / year';
+
     document.getElementById('esKpisGrid').innerHTML = `
-      <div class="k"><div class="lbl">Baseline revenue</div><div class="v">₹${(baselineRev/100000).toFixed(2)}L</div><div class="d">${k.memos} memos</div></div>
-      <div class="k"><div class="lbl">Conversion</div><div class="v">${(k.conversion*100).toFixed(1)}%</div><div class="d">${k.walkouts} walk-outs</div></div>
-      <div class="k"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div><div class="d">spec ₹750-900</div></div>
-      <div class="k"><div class="lbl">Peak queue wait</div><div class="v">${Math.max(...headSim.metrics.bill_waits, 0).toFixed(0)}m</div><div class="d">at billing peak</div></div>
+      <div class="es-kpi"><div class="lbl">Baseline revenue</div><div class="v">₹${(baselineRev/100000).toFixed(2)} L</div><div class="delta">${k.memos} memos · ${k.footfall} footfall</div></div>
+      <div class="es-kpi"><div class="lbl">Conversion</div><div class="v">${(k.conversion*100).toFixed(1)}%</div><div class="delta">${k.walkouts} walk-outs</div></div>
+      <div class="es-kpi"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div><div class="delta">brief spec ₹750–900</div></div>
+      <div class="es-kpi"><div class="lbl">Peak queue wait</div><div class="v">${Math.max(...headSim.metrics.bill_waits, 0).toFixed(0)} min</div><div class="delta">at billing peak</div></div>
     `;
 
-    // Top 3 moves
     const top3 = cards.slice(0, 3);
     document.getElementById('esMoves').innerHTML = top3.map((c, i) => `
       <div class="es-move">
-        <div class="num">▶ MOVE ${String(i+1).padStart(2,'0')}</div>
+        <div class="num">Move 0${i+1} · ${c.tagLabel}</div>
         <div class="ttl">${c.title}</div>
         <div class="lift">+ ₹${c.impactInr.toLocaleString('en-IN')} / day</div>
-        <div class="body">${c.move.replace(/<b>/g,'<b style="color:var(--ink);">')}</div>
+        <div class="body">${c.move}</div>
       </div>
     `).join('');
   }
@@ -1720,18 +1717,17 @@
     const evs = sim.events;
     if (evs.length === lastEventCount) return;
     lastEventCount = evs.length;
-    // Filter: hide 'arrive' from the main feed — it's a flood. Show count instead.
-    const significant = evs.filter(e => e.type !== 'arrive');
-    const arrivalsCount = evs.length - significant.length;
-    const slice = significant.slice(-50).reverse();
-    const hdr = `<div class="ev arrive"><span class="tm">—</span><span class="msg">+${arrivalsCount} arrivals · hidden from feed</span></div>`;
-    ef.innerHTML = hdr + slice.map(e => {
+    // Show ALL recent events most-recent-first; arrivals are rendered with
+    // a dimmer style (the .ev.arrive CSS rule already handles this).
+    const slice = evs.slice(-60).reverse();
+    ef.innerHTML = slice.map(e => {
       const m = Math.floor(e.simMin);
       const h = Math.floor(m / 60) + 10;
       const mm = m % 60;
       const hh12 = ((h - 1) % 12) + 1;
       const t = `${hh12}:${String(mm).padStart(2,'0')}`;
       const labels = {
+        arrive: 'arrived',
         start_trial: 'entered trial',
         purchase: 'PURCHASED',
         abandon_trial: 'abandoned · trial wait',
@@ -1739,6 +1735,7 @@
         walk_out: 'walked out',
         tried_no_buy: 'tried, didn\'t buy',
         counter_open: 'COUNTER OPENED',
+        staff_reallocation: 'staff moved',
       };
       const nm = e.agentName ? `<span class="nm">${e.agentName}</span> ` : '';
       return `<div class="ev ${e.type}"><span class="tm">${t}</span><span class="msg">${nm}${labels[e.type] || e.type} ${e.detail ? '· ' + e.detail : ''}</span></div>`;
