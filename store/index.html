@@ -6,7 +6,7 @@
 <title>V-Mart Unlimited · Bangalore · Diwali Saturday simulation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg:          #14110D;
@@ -385,304 +385,466 @@
   }
   @keyframes pulse { 0%,100% {opacity:0.3} 50% {opacity:1} }
 
-  /* ─── COVER SCREEN ─────────────────────────────────────── */
+  /* ───────────── COVER ─────────────
+     Editorial dark palette · Fraunces serif display · Inter Tight body ·
+     JetBrains Mono technical. Three rows: header strip · hero · methodology
+     foot. Looks like an annual-report cover, not a game splash. */
   #cover {
     position: fixed; inset: 0; z-index: 180;
-    background: radial-gradient(ellipse at top right, #2A1612 0%, #0E0A06 65%);
-    color: var(--ink);
-    display: flex; flex-direction: column;
-    padding: 52px 76px 44px;
+    background: #0E0B07;
+    color: #F5EBD7;
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 40px 72px 36px;
     overflow: hidden;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.45s ease;
   }
   #cover.hide { opacity: 0; pointer-events: none; }
   #cover::before {
     content: '';
-    position: absolute; right: -10%; top: -10%;
-    width: 60%; height: 60%;
-    background: radial-gradient(circle, rgba(225,29,38,0.10) 0%, transparent 60%);
+    position: absolute; right: -15%; top: -25%;
+    width: 70%; height: 90%;
+    background: radial-gradient(circle, rgba(225,29,38,0.08) 0%, transparent 55%);
     pointer-events: none;
   }
   .cover-head {
-    display: flex; align-items: center; justify-content: space-between;
+    display: flex; justify-content: space-between; align-items: flex-start;
     padding-bottom: 14px;
-    border-bottom: 1px solid rgba(250,242,216,0.20);
+    border-bottom: 1px solid rgba(245,235,215,0.10);
     z-index: 1;
   }
-  .cover-brand { display: flex; align-items: center; gap: 14px; }
-  .cover-brand .logo {
-    width: 42px; height: 42px;
-    background: var(--red); color: white;
+  .cover-mark { display: flex; align-items: center; gap: 14px; }
+  .cover-mark .logo {
+    width: 36px; height: 36px;
+    background: #E11D26; color: white;
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Press Start 2P', monospace; font-size: 17px;
-    border-radius: 3px;
-    box-shadow: 0 3px 0 #6B0E14;
+    font-family: 'Press Start 2P', monospace; font-size: 14px;
+    border-radius: 2px;
   }
-  .cover-brand .name {
-    font-family: 'Press Start 2P', monospace; font-size: 11px;
-    letter-spacing: 0.10em;
-  }
-  .cover-brand .sub {
-    font-size: 10px; color: var(--ink-dim);
-    letter-spacing: 0.20em; text-transform: uppercase;
-    margin-top: 4px; font-weight: 600;
-  }
-  .cover-meta { text-align: right; }
-  .cover-meta .k {
-    font-size: 9px; color: var(--ink-dim);
-    letter-spacing: 0.20em; text-transform: uppercase; font-weight: 700;
-  }
-  .cover-meta .v {
+  .cover-mark .name {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; color: var(--ink);
-    margin-top: 4px; letter-spacing: 0.02em;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em;
+    color: #F5EBD7;
   }
+  .cover-mark .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: rgba(245,235,215,0.45);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .cover-meta {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: rgba(245,235,215,0.55);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    line-height: 1.55;
+  }
+  .cover-meta .date { color: #F5EBD7; font-size: 11px; font-weight: 600; }
+  .cover-tag {
+    display: inline-block; margin-top: 8px;
+    background: rgba(225,29,38,0.10);
+    border: 1px solid rgba(225,29,38,0.45);
+    color: #E11D26;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.24em;
+    padding: 4px 9px;
+  }
+
   .cover-body {
-    flex: 1;
     display: flex; flex-direction: column; justify-content: center;
-    max-width: 880px;
     z-index: 1;
   }
   .cover-eyebrow {
-    font-size: 10px; color: var(--red);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
     letter-spacing: 0.30em; text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 22px;
+    color: #E11D26;
+    margin-bottom: 28px;
+    display: flex; gap: 10px; align-items: center;
   }
+  .cover-eyebrow .sep { color: rgba(245,235,215,0.25); }
   .cover-title {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 56px;
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 88px;
     font-weight: 400;
-    line-height: 1.08;
-    letter-spacing: -0.02em;
-    color: var(--ink);
-    margin-bottom: 16px;
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    color: #F5EBD7;
+    max-width: 1100px;
+    margin-bottom: 26px;
   }
   .cover-title em {
-    color: var(--red); font-style: italic;
+    font-style: italic;
     font-weight: 500;
+    color: #E11D26;
   }
-  .cover-sub {
-    font-size: 15px; color: rgba(250,242,216,0.78);
+  .cover-lede {
+    font-size: 16px;
+    color: rgba(245,235,215,0.72);
     line-height: 1.55;
-    max-width: 660px;
-    margin-bottom: 32px;
+    max-width: 640px;
+    margin-bottom: 38px;
   }
-  .cover-sub b { color: var(--ink); font-weight: 700; }
+  .cover-lede b { color: #F5EBD7; font-weight: 600; }
   .cover-cta {
     display: inline-flex; align-items: center; gap: 12px;
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 14px 26px;
+    background: transparent;
+    border: 1.5px solid #E11D26;
+    color: #F5EBD7;
+    padding: 14px 22px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.18em;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     cursor: pointer;
     align-self: flex-start;
-    box-shadow: 0 3px 0 #6B0E14, 0 12px 36px rgba(225,29,38,0.35);
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition: all 0.18s ease;
   }
-  .cover-cta:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #6B0E14, 0 18px 44px rgba(225,29,38,0.45); }
-  .cover-cta:active { transform: translateY(1px); box-shadow: 0 2px 0 #6B0E14; }
-  .cover-foot {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 28px;
-    padding-top: 22px;
-    border-top: 1px solid rgba(250,242,216,0.20);
-    z-index: 1;
+  .cover-cta:hover {
+    background: #E11D26;
+    color: white;
+    transform: translateX(3px);
   }
-  .cover-foot .item .k {
-    font-size: 9px; color: var(--ink-dim);
-    letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
-    margin-bottom: 5px;
-  }
-  .cover-foot .item .v {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 17px; font-weight: 700;
-    color: var(--ink);
-    line-height: 1.0;
-  }
-  .cover-foot .item .v.red { color: var(--red); }
-  .cover-foot .item .d {
-    font-size: 10.5px; color: rgba(250,242,216,0.6);
-    margin-top: 4px;
-    line-height: 1.35;
+  .cover-cta .arrow {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    margin-left: 2px;
+    font-style: italic;
   }
 
-  /* ─── EXECUTIVE SUMMARY ─────────────────────────────── */
+  .cover-foot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 40px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(245,235,215,0.10);
+    z-index: 1;
+  }
+  .cover-method {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: rgba(245,235,215,0.55);
+    line-height: 1.85;
+    letter-spacing: 0.02em;
+  }
+  .cover-method .label {
+    display: inline-block;
+    color: #E11D26;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    margin-right: 10px;
+    min-width: 56px;
+  }
+  .cover-method .body { color: #F5EBD7; }
+  .cover-status {
+    display: flex; flex-direction: column; gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(245,235,215,0.65);
+    letter-spacing: 0.05em;
+  }
+  .cover-status .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: #3DDC84;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ───────────── EXECUTIVE SUMMARY ─────────────
+     Same editorial dark palette. Hero opportunity number in Fraunces with
+     gold accent. Four KPI tiles to the right. Top-3 levers as cards.
+     Methodology / pilot CTA at the bottom. */
   #execsum {
     position: fixed; inset: 0; z-index: 170;
-    background: linear-gradient(180deg, #1A1410 0%, #0E0A06 100%);
-    color: var(--ink);
+    background: #0E0B07;
+    color: #F5EBD7;
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    padding: 28px 56px 24px;
     display: none;
     flex-direction: column;
-    padding: 22px 44px 18px;
     overflow-y: auto;
   }
   #execsum.show { display: flex; }
+
   .es-head {
     display: flex; align-items: flex-end; justify-content: space-between;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(250,242,216,0.18);
-    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(245,235,215,0.10);
+    margin-bottom: 22px;
   }
-  .es-head .l h2 {
-    font-family: Georgia, serif;
-    font-size: 26px; font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    margin-bottom: 5px;
-  }
-  .es-head .l h2 em { color: var(--red); font-style: italic; }
-  .es-head .l .sub {
-    font-size: 10px; color: var(--ink-dim);
-    letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600;
-  }
-  .es-head .r {
-    display: flex; gap: 8px;
-  }
-  .es-head .r .btn-es {
-    background: rgba(250,242,216,0.06);
-    color: var(--ink);
-    border: 1px solid rgba(250,242,216,0.18);
-    padding: 8px 14px;
+  .es-head .crumb {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.10em;
-    cursor: pointer;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em;
+    color: rgba(245,235,215,0.50);
     text-transform: uppercase;
-    font-weight: 700;
-  }
-  .es-head .r .btn-es:hover { background: rgba(225,29,38,0.20); }
-
-  .es-hero {
-    display: grid; grid-template-columns: 1.4fr 1fr;
-    gap: 18px;
-    margin-bottom: 18px;
-  }
-  .es-headline {
-    background: linear-gradient(135deg, rgba(225,29,38,0.18) 0%, rgba(255,217,102,0.10) 80%);
-    border: 1px solid rgba(225,29,38,0.30);
-    border-radius: 4px;
-    padding: 22px 26px;
-  }
-  .es-headline .lbl {
-    font-size: 9px; color: var(--ink-dim);
-    letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700;
-    margin-bottom: 7px;
-  }
-  .es-headline .num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 48px; font-weight: 800;
-    color: var(--gold);
-    line-height: 1; letter-spacing: -0.02em;
-    margin-bottom: 8px;
-  }
-  .es-headline .ann {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--ink);
-    margin-bottom: 4px;
-    line-height: 1.25;
-  }
-  .es-headline .ann b { color: var(--gold); font-weight: 800; }
-  .es-headline .net {
-    font-size: 11px; color: rgba(250,242,216,0.65);
-    margin-top: 10px;
-    line-height: 1.45;
-  }
-  .es-headline .net b { color: var(--ink); }
-
-  .es-kpis {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .es-kpis .k {
-    background: rgba(250,242,216,0.04);
-    border: 1px solid rgba(250,242,216,0.10);
-    padding: 11px 13px;
-  }
-  .es-kpis .k .lbl { font-size: 9px; color: var(--ink-dim); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; }
-  .es-kpis .k .v { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; margin-top: 3px; line-height: 1; }
-  .es-kpis .k .d { font-size: 10px; color: var(--ink-dim); margin-top: 3px; }
-
-  .es-section-h {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px; color: var(--red);
-    letter-spacing: 0.10em;
-    margin-bottom: 10px;
-  }
-  .es-moves {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-  .es-move {
-    background: rgba(250,242,216,0.04);
-    border: 1px solid rgba(250,242,216,0.12);
-    border-left: 3px solid var(--red);
-    padding: 12px 14px;
-  }
-  .es-move .num { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--red); letter-spacing: 0.10em; margin-bottom: 6px; }
-  .es-move .ttl { font-size: 12.5px; font-weight: 700; color: var(--ink); line-height: 1.28; margin-bottom: 5px; letter-spacing: -0.005em; }
-  .es-move .lift { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--gold); font-weight: 800; line-height: 1; margin-bottom: 6px; }
-  .es-move .body { font-size: 11px; color: var(--ink-mid); line-height: 1.5; }
-
-  .es-method {
-    background: rgba(250,242,216,0.03);
-    border: 1px solid rgba(250,242,216,0.10);
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 18px;
-  }
-  .es-method h5 {
-    font-size: 9px; color: var(--gold);
-    letter-spacing: 0.16em; text-transform: uppercase;
-    font-weight: 700;
     margin-bottom: 6px;
   }
-  .es-method p { font-size: 11px; color: var(--ink-mid); line-height: 1.55; }
-  .es-method p b { color: var(--ink); }
-  .es-method .src {
+  .es-head h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 38px;
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    line-height: 1.08;
+    color: #F5EBD7;
+  }
+  .es-head h2 em { color: #E11D26; font-style: italic; }
+  .es-head .r { display: flex; gap: 8px; }
+  .es-head .r button {
+    background: transparent;
+    border: 1px solid rgba(245,235,215,0.20);
+    color: #F5EBD7;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; color: rgba(250,242,216,0.5);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em;
+    padding: 11px 18px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .es-head .r button:hover { border-color: rgba(245,235,215,0.55); background: rgba(245,235,215,0.04); }
+  .es-head .r button.primary {
+    background: #E11D26;
+    border-color: #E11D26;
+    color: white;
+  }
+  .es-head .r button.primary:hover { background: #B0141B; border-color: #B0141B; }
+
+  .es-hero {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .es-opportunity {
+    background: linear-gradient(135deg, rgba(225,29,38,0.12) 0%, rgba(255,217,102,0.06) 100%);
+    border: 1px solid rgba(225,29,38,0.30);
+    padding: 30px 34px;
+    border-radius: 2px;
+  }
+  .es-opportunity .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(245,235,215,0.65);
+    margin-bottom: 14px;
+  }
+  .es-opportunity .number {
+    font-family: 'Fraunces', serif;
+    font-size: 80px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #FFD966;
+    margin-bottom: 14px;
+  }
+  .es-opportunity .number .unit {
+    font-size: 38px;
+    color: rgba(255,217,102,0.50);
+    margin-left: 6px;
+    font-weight: 400;
+  }
+  .es-opportunity .ann {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: rgba(245,235,215,0.78);
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+    line-height: 1.55;
+  }
+  .es-opportunity .ann b { color: #F5EBD7; font-weight: 700; }
+  .es-opportunity .ann .gold { color: #FFD966; font-weight: 700; }
+  .es-opportunity .network {
+    padding-top: 14px;
+    border-top: 1px solid rgba(245,235,215,0.15);
+  }
+  .es-opportunity .network .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(245,235,215,0.50);
+    margin-bottom: 8px;
+  }
+  .es-opportunity .network .v {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: #F5EBD7;
+    letter-spacing: -0.015em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .es-opportunity .network .v b { color: #FFD966; font-weight: 600; font-style: italic; }
+  .es-opportunity .network .assumptions {
+    font-size: 11px;
+    color: rgba(245,235,215,0.50);
+    line-height: 1.5;
+  }
+
+  .es-kpis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .es-kpi {
+    background: rgba(245,235,215,0.03);
+    border: 1px solid rgba(245,235,215,0.10);
+    padding: 16px 18px;
+  }
+  .es-kpi .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: rgba(245,235,215,0.55);
+    margin-bottom: 8px;
+  }
+  .es-kpi .v {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    color: #F5EBD7;
+    line-height: 1;
+  }
+  .es-kpi .delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(245,235,215,0.45);
     margin-top: 6px;
     letter-spacing: 0.04em;
   }
 
-  .es-cta-row {
-    display: flex; gap: 10px; align-items: center;
-    margin-top: auto;
-    padding-top: 14px;
-    border-top: 1px solid rgba(250,242,216,0.12);
-  }
-  .es-cta-row .pilot {
-    background: linear-gradient(90deg, rgba(225,29,38,0.18), rgba(255,217,102,0.12));
-    border: 1px solid rgba(255,217,102,0.30);
-    padding: 11px 16px;
-    flex: 1;
-    font-size: 12px;
-    color: var(--ink-mid);
-    line-height: 1.4;
-  }
-  .es-cta-row .pilot b { color: var(--gold); font-weight: 700; }
-  .es-cta-row .btn-big {
-    background: var(--red); color: white;
-    border: none;
-    padding: 13px 22px;
+  .es-section { margin-bottom: 22px; }
+  .es-section-h {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; font-weight: 800;
-    letter-spacing: 0.18em;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #E11D26;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(225,29,38,0.25);
+  }
+
+  .es-moves {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .es-move {
+    background: rgba(245,235,215,0.03);
+    border: 1px solid rgba(245,235,215,0.10);
+    border-left: 2px solid #E11D26;
+    padding: 18px 20px;
+  }
+  .es-move .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.22em;
+    color: rgba(245,235,215,0.45);
+    margin-bottom: 12px;
+  }
+  .es-move .ttl {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    color: #F5EBD7;
+    line-height: 1.22;
+    margin-bottom: 12px;
+  }
+  .es-move .lift {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #FFD966;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+  .es-move .body {
+    font-size: 12px;
+    color: rgba(245,235,215,0.68);
+    line-height: 1.6;
+  }
+  .es-move .body b { color: #F5EBD7; font-weight: 600; }
+
+  .es-method {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px 22px;
+    background: rgba(245,235,215,0.03);
+    border: 1px solid rgba(245,235,215,0.10);
+  }
+  .es-method h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: #FFD966;
+    margin-bottom: 10px;
+  }
+  .es-method p {
+    font-size: 12.5px;
+    color: rgba(245,235,215,0.72);
+    line-height: 1.65;
+  }
+  .es-method p b { color: #F5EBD7; font-weight: 600; }
+  .es-method .src {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: rgba(245,235,215,0.40);
+    letter-spacing: 0.06em;
+    margin-top: 10px;
+  }
+
+  .es-pilot {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(245,235,215,0.10);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 22px;
+    align-items: center;
+  }
+  .es-pilot .copy {
+    font-size: 13px;
+    color: rgba(245,235,215,0.78);
+    line-height: 1.6;
+    max-width: 780px;
+  }
+  .es-pilot .copy b { color: #F5EBD7; font-weight: 600; }
+  .es-pilot .copy .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: #FFD966;
+    font-weight: 700;
+    margin-right: 14px;
+  }
+  .es-pilot .cta {
+    background: #E11D26;
+    color: white;
+    border: none;
+    padding: 14px 26px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     cursor: pointer;
-    box-shadow: 0 3px 0 #6B0E14;
-    transition: transform 0.12s;
+    transition: all 0.15s;
   }
-  .es-cta-row .btn-big:hover { transform: translateY(-1px); }
+  .es-pilot .cta:hover { background: #B0141B; transform: translateY(-1px); }
 
   /* ─── Insights popup ─────────────────────────────────── */
   .insights {
@@ -899,53 +1061,48 @@
 </head>
 <body>
 
-<!-- ═════════════ COVER SCREEN ═════════════ -->
+<!-- ═════════════ COVER ═════════════ -->
 <div id="cover">
   <div class="cover-head">
-    <div class="cover-brand">
+    <div class="cover-mark">
       <span class="logo">V</span>
       <div>
         <div class="name">V-MART · OPERATIONAL INTELLIGENCE</div>
-        <div class="sub">DIAGNOSTIC · CONFIDENTIAL</div>
+        <div class="sub">Diwali Saturday diagnostic</div>
       </div>
     </div>
     <div class="cover-meta">
-      <div class="k">Prepared for · Founder Office</div>
-      <div class="v" id="coverDate"></div>
+      <div>Prepared · Founder Office</div>
+      <div class="date" id="coverDate"></div>
+      <div><span class="cover-tag">CONFIDENTIAL</span></div>
     </div>
   </div>
 
   <div class="cover-body">
-    <div class="cover-eyebrow">▶ DIWALI SATURDAY · BASELINE DIAGNOSTIC</div>
-    <h1 class="cover-title">Your peak day, simulated.<br/><em>The leaks, quantified.</em></h1>
-    <p class="cover-sub">
-      We built a shopper-physics model of one of your Tier-1 stores: <b>1,000 synthetic agents</b> across 20 hand-tuned family-shopper personas walking your floor for a full 12-hour Diwali Saturday. The simulation reproduces your queue dynamics, trial-room bottlenecks, basket-build behaviour, and abandonment patterns. What it surfaces is a set of <b>operational moves</b> — none of them require new SKUs, new staff, or capex — that close a measurable gap between <b>baseline policy</b> and <b>what's recoverable today</b>.
+    <div class="cover-eyebrow">
+      <span>Diagnostic</span><span class="sep">·</span>
+      <span>Baseline policy</span><span class="sep">·</span>
+      <span>1,000-agent simulation</span>
+    </div>
+    <h1 class="cover-title">Diwali Saturday, <em>simulated.</em><br/>The leaks, <em>quantified.</em></h1>
+    <p class="cover-lede">
+      Twelve hours. One thousand synthetic shoppers. Five family-archetype personas walking your floor end-to-end. We rebuilt your peak-day operating reality as a causal model and surfaced <b>eight recoverable moves, ranked by daily ₹ impact</b>.
     </p>
     <button class="cover-cta" id="coverCta">
-      View diagnostic →
+      Enter diagnostic <span class="arrow">→</span>
     </button>
   </div>
 
   <div class="cover-foot">
-    <div class="item">
-      <div class="k">Simulation</div>
-      <div class="v">1,000 agents</div>
-      <div class="d">5 personas · 18 staff · 9 zones · 100 SKUs</div>
+    <div class="cover-method">
+      <div><span class="label">METHOD</span><span class="body">Causal-chain only · no boost-multiplier hacks · same-seed comparison</span></div>
+      <div><span class="label">SOURCE</span><span class="body">Brief p.11 · data/agents.json · profiles.json · manit-notes/08</span></div>
+      <div><span class="label">SCOPE</span><span class="body">Single store · single day · scales 1:1 to your 470-store network</span></div>
     </div>
-    <div class="item">
-      <div class="k">Calibration</div>
-      <div class="v">Brief-locked bands</div>
-      <div class="d">ATV ₹750-900 · conv 36-42% · spec p.11</div>
-    </div>
-    <div class="item">
-      <div class="k">Method</div>
-      <div class="v">Causal-chain only</div>
-      <div class="d">No boost-multiplier hacks · audit-trail per insight</div>
-    </div>
-    <div class="item">
-      <div class="k">Output</div>
-      <div class="v red">8 levers · ranked</div>
-      <div class="d">Each with quantified ₹/day, intervention, source</div>
+    <div class="cover-status">
+      <div><span class="dot"></span>Sim engine ready</div>
+      <div><span class="dot"></span>1,000 agents calibrated</div>
+      <div><span class="dot"></span>Baseline policy applied</div>
     </div>
   </div>
 </div>
@@ -953,50 +1110,53 @@
 <!-- ═════════════ EXECUTIVE SUMMARY ═════════════ -->
 <div id="execsum">
   <div class="es-head">
-    <div class="l">
-      <h2>Diwali Saturday · <em>baseline findings</em></h2>
-      <div class="sub">1,000-agent simulation · 12-hour day · Tier-1 Unlimited Bangalore</div>
+    <div>
+      <div class="crumb">Diagnostic · Diwali Saturday · baseline policy</div>
+      <h2>Eight recoverable moves, <em>ranked by ₹ impact.</em></h2>
     </div>
     <div class="r">
-      <button class="btn-es" id="esBackBtn">← BACK</button>
-      <button class="btn-es" id="esRunBtn" style="background: var(--red); color: white; border-color: var(--red);">▶ RUN LIVE SIM</button>
+      <button id="esBackBtn">← Cover</button>
+      <button class="primary" id="esRunBtn">Run live sim →</button>
     </div>
   </div>
 
   <div class="es-hero">
-    <div class="es-headline">
-      <div class="lbl">Predicted opportunity · per store · per Diwali Saturday</div>
-      <div class="num" id="esTotal">+ ₹0.00 L</div>
-      <div class="ann">Baseline today: <span id="esBaseline">₹0.00 L</span>  →  With moves: <b id="esWithMoves">₹0.00 L</b></div>
-      <div class="net">
-        <b>Network impact at 470 stores · 4 festival weekends/year:</b><br/>
-        <span id="esNetwork" style="color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 14px;">— compute after sim</span>
+    <div class="es-opportunity">
+      <div class="eyebrow">Opportunity · per store · per peak Saturday</div>
+      <div class="number" id="esTotal">+ ₹0.00<span class="unit">L</span></div>
+      <div class="ann">From <b id="esBaseline">₹0.00L</b> baseline → <span class="gold" id="esWithMoves">₹0.00L</span> with all moves applied</div>
+      <div class="network">
+        <div class="label">Network impact · 470 stores · 4 festive weekends / year</div>
+        <div class="v">+ <b id="esNetwork">₹0 Cr</b> annualised</div>
+        <div class="assumptions">Same baseline policy across network · scaled 1:1 from the 1,000-agent simulation</div>
       </div>
     </div>
     <div class="es-kpis" id="esKpisGrid"></div>
   </div>
 
-  <div class="es-section-h">▶ TOP THREE LEVERS · RECOVER 78% OF THE OPPORTUNITY</div>
-  <div class="es-moves" id="esMoves"></div>
+  <div class="es-section">
+    <div class="es-section-h">▶ Top three levers · recover 78% of the opportunity</div>
+    <div class="es-moves" id="esMoves"></div>
+  </div>
 
   <div class="es-method">
     <div>
-      <h5>How we computed each number</h5>
-      <p>The simulation runs <b>1,000 hand-built shopper agents</b> through your store for 12 hours, applying your baseline operating policy (1 counter open by default, 7W+3M trial cubicles, fixed staff zone allocation, weekly power-wall refresh). Each agent has a backstory, queue tolerance, dwell distribution, basket-size target, and zone preferences — all reproducible from a single RNG seed.</p>
-      <div class="src">SOURCES · data/agents.json · data/profiles.json · data/skus.json · manit-notes/04-simulation-engine.md</div>
+      <h5>How we compute each number</h5>
+      <p>1,000 hand-built shopper agents walk the floor for 12 hours under your baseline operating policy. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed. <b>Same seed, baseline vs optimized differ only because of policy, not luck.</b></p>
+      <div class="src">data/agents.json · data/profiles.json · manit-notes/04-simulation-engine.md</div>
     </div>
     <div>
       <h5>What we will NOT do</h5>
-      <p>Every claimed lift flows through a <b>causal chain</b>: policy change → environment change → agent reacts → revenue moves. No "boost-multiplier" knobs, no forced conversion rates, no fiat ATV bumps. If a finding cannot be audited back to a specific agent behaviour or queue event in this run, it is not surfaced. <b>Same seed → same agents → only policy varies between baseline and optimized.</b></p>
-      <div class="src">SOURCES · manit-notes/08-policies-and-guardrails.md · "the causal-chain rule"</div>
+      <p>Every claimed lift flows through a <b>causal chain</b> — policy change → environment change → agent reacts → revenue moves. No boost-multiplier knobs, no forced conversion rates, no fiat ATV bumps. If a finding cannot be traced back to a specific agent behaviour, it is not surfaced.</p>
+      <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
     </div>
   </div>
 
-  <div class="es-cta-row">
-    <div class="pilot">
-      <b>The pilot:</b> 4 weeks · 1 store of your choice · we calibrate the twin to your POS, run the optimization, hand back A/B-ready interventions with predicted lift + CI. <b>You measure us on whether the lift we predict matches the lift you measure.</b>
+  <div class="es-pilot">
+    <div class="copy">
+      <span class="label">The pilot</span>4 weeks · 1 store of your choice. We calibrate the digital twin to your POS, run the optimization, hand back A/B-ready interventions with predicted lift + confidence intervals. <b>You measure us on whether the lift we predict matches the lift you measure.</b>
     </div>
-    <button class="btn-big" id="esRunBtn2">▶ RUN LIVE SIM</button>
+    <button class="cta" id="esRunBtn2">Run live sim →</button>
   </div>
 </div>
 
