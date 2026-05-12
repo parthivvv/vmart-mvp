@@ -590,271 +590,447 @@
   /* ═════════════════════════════════════════════════════════
      EXECUTIVE SUMMARY
   ═════════════════════════════════════════════════════════ */
+  /* ═══════════════ REPORT DECK ═══════════════
+     Aaru-style clean comparison report. White, lots of whitespace,
+     single accent (V-Mart red), Inter Tight + JetBrains Mono only. */
   #execsum {
     position: fixed; inset: 0; z-index: 170;
     background: #FFFFFF;
     color: #0A0A0A;
     font-family: 'Inter Tight', system-ui, sans-serif;
-    padding: 26px 56px 22px;
     display: none;
     flex-direction: column;
     overflow-y: auto;
   }
   #execsum.show { display: flex; }
 
-  .es-head {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    padding-bottom: 18px;
-    border-bottom: 1px solid #E5E5E5;
-    margin-bottom: 22px;
+  /* Report header (sticks to top of scroll) */
+  .rpt-head {
+    position: sticky; top: 0; z-index: 5;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 64px;
+    border-bottom: 1px solid #EAEAEA;
   }
-  .es-head .crumb {
+  .rpt-mark { display: flex; align-items: center; gap: 12px; }
+  .rpt-logo {
+    width: 32px; height: 32px;
+    background: #E11D26; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+  .rpt-name {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: #6B6B6B;
-    margin-bottom: 6px;
-  }
-  .es-head h2 {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 36px;
-    font-weight: 700;
-    letter-spacing: -0.022em;
-    line-height: 1.1;
+    letter-spacing: 0.18em;
     color: #0A0A0A;
   }
-  .es-head h2 .accent { color: #E11D26; }
-  .es-head .r { display: flex; gap: 8px; }
-  .es-head .r button {
+  .rpt-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #6B6B6B;
+    margin-top: 3px;
+    letter-spacing: 0.04em;
+  }
+  .rpt-actions { display: flex; gap: 8px; }
+  .rpt-actions button {
     background: white;
     border: 1px solid #D5D5D5;
     color: #0A0A0A;
     font-family: 'Inter Tight', sans-serif;
     font-size: 12px; font-weight: 600;
     letter-spacing: 0.02em;
-    padding: 10px 16px;
+    padding: 9px 16px;
     cursor: pointer;
     border-radius: 2px;
     transition: all 0.15s;
   }
-  .es-head .r button:hover { border-color: #0A0A0A; }
-  .es-head .r button.primary {
-    background: #E11D26;
-    border-color: #E11D26;
-    color: white;
+  .rpt-actions button:hover { border-color: #0A0A0A; }
+  .rpt-actions button.primary {
+    background: #E11D26; border-color: #E11D26; color: white;
   }
-  .es-head .r button.primary:hover { background: #B0141B; border-color: #B0141B; }
+  .rpt-actions button.primary:hover { background: #B0141B; border-color: #B0141B; }
 
-  .es-hero {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
+  /* Section */
+  .rpt-section {
+    padding: 56px 64px;
+    max-width: 1240px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #F0F0F0;
   }
-  .es-opportunity {
-    background: #FAFAFA;
-    border: 1px solid #E5E5E5;
-    border-left: 3px solid #E11D26;
-    padding: 26px 30px;
-  }
-  .es-opportunity .eyebrow {
+  .rpt-section:last-of-type { border-bottom: none; }
+
+  .rpt-eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: #6B6B6B;
-    margin-bottom: 12px;
-  }
-  .es-opportunity .number {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 64px;
-    font-weight: 700;
-    letter-spacing: -0.028em;
-    line-height: 1;
-    color: #0A0A0A;
-    margin-bottom: 12px;
-  }
-  .es-opportunity .ann {
-    font-size: 14px;
-    color: #4A4A4A;
-    margin-bottom: 18px;
-    line-height: 1.5;
-  }
-  .es-opportunity .ann b { color: #0A0A0A; font-weight: 700; }
-  .es-opportunity .network {
-    padding-top: 14px;
-    border-top: 1px solid #E5E5E5;
-  }
-  .es-opportunity .network .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: #6B6B6B;
-    margin-bottom: 7px;
-  }
-  .es-opportunity .network .v {
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: #0A0A0A;
-    letter-spacing: -0.018em;
-    line-height: 1.1;
-    margin-bottom: 5px;
-  }
-  .es-opportunity .network .assumptions {
-    font-size: 12px;
-    color: #6B6B6B;
-    line-height: 1.5;
-  }
-
-  .es-kpis {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .es-kpi {
-    background: white;
-    border: 1px solid #E5E5E5;
-    padding: 14px 16px;
-  }
-  .es-kpi .lbl {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: #6B6B6B;
-    margin-bottom: 6px;
-  }
-  .es-kpi .v {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 22px; font-weight: 700;
-    letter-spacing: -0.01em;
-    color: #0A0A0A;
-    line-height: 1;
-  }
-  .es-kpi .delta {
-    font-size: 11px;
-    color: #6B6B6B;
-    margin-top: 5px;
-    line-height: 1.4;
-  }
-
-  .es-section { margin-bottom: 22px; }
-  .es-section-h {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
+    letter-spacing: 0.20em; text-transform: uppercase;
     color: #E11D26;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #E5E5E5;
+    margin-bottom: 18px;
   }
+  .rpt-q {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.024em;
+    line-height: 1.1;
+    color: #0A0A0A;
+    margin-bottom: 16px;
+    max-width: 880px;
+  }
+  .rpt-q .muted { color: #8A8A8A; font-weight: 500; }
+  .rpt-lede {
+    font-size: 15px;
+    color: #4A4A4A;
+    line-height: 1.6;
+    max-width: 780px;
+    margin-bottom: 30px;
+  }
+  .rpt-lede b { color: #0A0A0A; font-weight: 600; }
 
-  .es-moves {
+  /* Headline hero — baseline → optimized comparison */
+  .rpt-hero {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: 1fr auto 1fr 1.2fr;
+    gap: 28px;
+    align-items: stretch;
+    margin-top: 30px;
+    padding: 32px;
+    background: #FAFAFA;
+    border: 1px solid #EAEAEA;
   }
-  .es-move {
-    background: white;
-    border: 1px solid #E5E5E5;
-    border-top: 2px solid #E11D26;
-    padding: 16px 18px;
+  .rpt-hero-side {
+    display: flex; flex-direction: column; justify-content: center;
   }
-  .es-move .num {
+  .rpt-hero-side .lbl {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
+    letter-spacing: 0.18em; text-transform: uppercase;
     color: #6B6B6B;
     margin-bottom: 10px;
   }
-  .es-move .ttl {
+  .rpt-hero-side.opt .lbl { color: #E11D26; }
+  .rpt-hero-side .val {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.026em;
+    line-height: 1;
+    color: #0A0A0A;
+    margin-bottom: 8px;
+  }
+  .rpt-hero-side.opt .val { color: #E11D26; }
+  .rpt-hero-side .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6B6B6B;
+    letter-spacing: 0.02em;
+  }
+  .rpt-hero-arrow {
+    font-size: 28px;
+    color: #C5C5C5;
+    align-self: center;
+    font-weight: 300;
+  }
+  .rpt-hero-delta {
+    border-left: 1px solid #EAEAEA;
+    padding-left: 28px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .rpt-hero-delta .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 8px;
+  }
+  .rpt-hero-delta .dv {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    color: #E11D26;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .rpt-hero-delta .dp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #E11D26;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  .rpt-hero-delta .net {
+    font-size: 12px;
+    color: #6B6B6B;
+    line-height: 1.5;
+    border-top: 1px solid #EAEAEA;
+    padding-top: 10px;
+  }
+  .rpt-hero-delta .net b {
+    color: #0A0A0A;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* Charts */
+  .rpt-chart-wrap {
+    margin-top: 24px;
+    width: 100%;
+  }
+  .rpt-chart-wrap svg { width: 100%; height: auto; display: block; }
+  .rpt-legend {
+    display: flex; gap: 22px; align-items: center;
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4A4A4A;
+    letter-spacing: 0.02em;
+  }
+  .rpt-legend span { display: flex; align-items: center; gap: 8px; }
+  .rpt-legend .muted { color: #8A8A8A; }
+  .rpt-legend .dot {
+    width: 10px; height: 10px; border-radius: 999px;
+    display: inline-block;
+  }
+  .rpt-legend .dot.baseline { background: #0A0A0A; }
+  .rpt-legend .dot.optimized { background: #E11D26; }
+
+  /* Per-lever cards */
+  .rpt-levers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .rpt-lever {
+    background: white;
+    border: 1px solid #EAEAEA;
+    padding: 22px 24px;
+    display: flex; flex-direction: column;
+  }
+  .rpt-lever .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #E11D26;
+    margin-bottom: 8px;
+  }
+  .rpt-lever h4 {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.014em;
+    line-height: 1.25;
+    color: #0A0A0A;
+    margin-bottom: 14px;
+  }
+  .rpt-lever .step {
+    font-size: 13px;
+    color: #4A4A4A;
+    line-height: 1.55;
+    margin-bottom: 8px;
+    padding-left: 18px;
+    position: relative;
+  }
+  .rpt-lever .step::before {
+    content: ''; position: absolute;
+    left: 0; top: 8px;
+    width: 8px; height: 1px;
+    background: #C5C5C5;
+  }
+  .rpt-lever .step b { color: #0A0A0A; font-weight: 600; }
+  .rpt-lever .metric {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #EAEAEA;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #6B6B6B;
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+  }
+  .rpt-lever .metric .v {
+    color: #E11D26;
+    font-weight: 700;
+  }
+
+  /* Moves */
+  .rpt-moves {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    margin-top: 24px;
+    background: #EAEAEA;
+    border: 1px solid #EAEAEA;
+  }
+  .rpt-move {
+    background: white;
+    padding: 22px 28px;
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 180px;
+    gap: 24px;
+    align-items: center;
+  }
+  .rpt-move .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 700;
+    color: #E11D26;
+    letter-spacing: -0.01em;
+  }
+  .rpt-move .ttl {
     font-family: 'Inter Tight', sans-serif;
     font-size: 17px;
     font-weight: 700;
     letter-spacing: -0.012em;
     color: #0A0A0A;
     line-height: 1.25;
-    margin-bottom: 10px;
   }
-  .es-move .lift {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: #E11D26;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .es-move .body {
+  .rpt-move .body {
     font-size: 13px;
     color: #4A4A4A;
     line-height: 1.55;
   }
-  .es-move .body b { color: #0A0A0A; font-weight: 600; }
-
-  .es-method {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 22px;
-    padding: 18px 22px;
-    background: #FAFAFA;
-    border: 1px solid #E5E5E5;
+  .rpt-move .body b { color: #0A0A0A; font-weight: 600; }
+  .rpt-move .lift {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: #E11D26;
+    font-weight: 700;
+    text-align: right;
+    letter-spacing: -0.01em;
   }
-  .es-method h5 {
+  .rpt-move .lift small {
+    display: block;
+    font-size: 10px;
+    color: #6B6B6B;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Methodology */
+  .rpt-method {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .rpt-method h5 {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; font-weight: 700;
     letter-spacing: 0.16em; text-transform: uppercase;
     color: #0A0A0A;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
-  .es-method p {
+  .rpt-method p {
     font-size: 13px;
     color: #4A4A4A;
-    line-height: 1.55;
+    line-height: 1.6;
   }
-  .es-method p b { color: #0A0A0A; font-weight: 600; }
-  .es-method .src {
+  .rpt-method p b { color: #0A0A0A; font-weight: 600; }
+  .rpt-method .src {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     color: #999;
-    margin-top: 8px;
+    margin-top: 10px;
     letter-spacing: 0.04em;
   }
 
-  .es-pilot {
-    margin-top: auto;
-    padding-top: 18px;
-    border-top: 1px solid #E5E5E5;
+  /* Pilot CTA */
+  .rpt-pilot {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 22px;
+    gap: 32px;
     align-items: center;
+    background: #0A0A0A;
+    color: white;
+    padding: 40px 64px;
+    max-width: none;
   }
-  .es-pilot .copy {
-    font-size: 13px;
-    color: #4A4A4A;
-    line-height: 1.55;
-    max-width: 800px;
-  }
-  .es-pilot .copy b { color: #0A0A0A; font-weight: 600; }
-  .es-pilot .copy .label {
+  .rpt-pilot .copy { max-width: 720px; }
+  .rpt-pilot .copy .label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: #E11D26;
-    margin-right: 12px;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: #FF6B70;
+    margin-bottom: 12px;
   }
-  .es-pilot .cta {
+  .rpt-pilot .copy .body {
+    font-size: 15px;
+    color: #D5D5D5;
+    line-height: 1.6;
+  }
+  .rpt-pilot .copy .body b { color: white; font-weight: 600; }
+  .rpt-pilot .cta {
     background: #E11D26;
     color: white;
     border: none;
-    padding: 13px 22px;
+    padding: 16px 28px;
     font-family: 'Inter Tight', sans-serif;
-    font-size: 13px; font-weight: 700;
+    font-size: 14px; font-weight: 700;
     letter-spacing: 0.02em;
     cursor: pointer;
     border-radius: 2px;
     transition: background 0.15s;
+    white-space: nowrap;
   }
-  .es-pilot .cta:hover { background: #B0141B; }
+  .rpt-pilot .cta:hover { background: #B0141B; }
+
+  .rpt-foot {
+    padding: 20px 64px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #999;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    text-align: center;
+    border-top: 1px solid #EAEAEA;
+  }
+
+  /* Generating-report overlay */
+  .rpt-loading {
+    position: fixed; inset: 0; z-index: 175;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .rpt-loading.show { display: flex; }
+  .rpt-loading .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: #E11D26;
+  }
+  .rpt-loading .body {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: #0A0A0A;
+  }
+  .rpt-loading .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6B6B6B;
+    letter-spacing: 0.02em;
+  }
+  .rpt-loading .pulse {
+    width: 36px; height: 36px;
+    border: 2px solid #EAEAEA;
+    border-top-color: #E11D26;
+    border-radius: 999px;
+    animation: rptspin 0.8s linear infinite;
+  }
+  @keyframes rptspin { to { transform: rotate(360deg); } }
 
   /* ─── Insights popup ─────────────────────────────────── */
   .insights {
@@ -1113,55 +1289,129 @@
 
 <!-- ═════════════ EXECUTIVE SUMMARY ═════════════ -->
 <div id="execsum">
-  <div class="es-head">
-    <div>
-      <div class="crumb">Diagnostic · Diwali Saturday · Baseline policy</div>
-      <h2>Eight recoverable moves, <span class="accent">ranked by ₹ impact</span>.</h2>
-    </div>
-    <div class="r">
-      <button id="esBackBtn">← Back to sim</button>
-      <button class="primary" id="esRunBtn">Run again →</button>
-    </div>
-  </div>
-
-  <div class="es-hero">
-    <div class="es-opportunity">
-      <div class="eyebrow">Opportunity · per store · per peak Saturday</div>
-      <div class="number" id="esTotal">+ ₹0.00 L</div>
-      <div class="ann" id="esAnn">—</div>
-      <div class="network">
-        <div class="label">Network impact · 470 stores · 4 festive weekends / year</div>
-        <div class="v" id="esNetwork">+ ₹0 Cr / yr</div>
-        <div class="assumptions">Scaled 1:1 from the 1,000-agent simulation</div>
+  <!-- ============== REPORT HEADER ============== -->
+  <div class="rpt-head">
+    <div class="rpt-mark">
+      <span class="rpt-logo">V</span>
+      <div>
+        <div class="rpt-name">UNLIMITED · DIAGNOSTIC REPORT</div>
+        <div class="rpt-meta" id="rptMeta">Diwali Saturday · 1,000 agents · Seed 42</div>
       </div>
     </div>
-    <div class="es-kpis" id="esKpisGrid"></div>
-  </div>
-
-  <div class="es-section">
-    <div class="es-section-h">Top three levers · recover 78% of the opportunity</div>
-    <div class="es-moves" id="esMoves"></div>
-  </div>
-
-  <div class="es-method">
-    <div>
-      <h5>How we compute each number</h5>
-      <p>1,000 hand-built shopper agents walk the floor for 12 hours under your baseline operating policy. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed. <b>Same seed; baseline vs optimized differ only because of policy, not luck.</b></p>
-      <div class="src">data/agents.json · data/profiles.json · manit-notes/04-simulation-engine.md</div>
-    </div>
-    <div>
-      <h5>What we will NOT do</h5>
-      <p>Every claimed lift flows through a <b>causal chain</b> — policy change → environment change → agent reacts → revenue moves. No boost-multiplier knobs. No forced conversion rates. No fiat ATV bumps. If a finding cannot be traced back to a specific agent behaviour in this run, it is not surfaced.</p>
-      <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
+    <div class="rpt-actions">
+      <button id="esBackBtn">← Back to sim</button>
+      <button class="primary" id="esRunBtn">Re-run on same seed</button>
     </div>
   </div>
 
-  <div class="es-pilot">
+  <!-- ============== HEADLINE ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 01 · Headline result</div>
+    <h2 class="rpt-q">Same store. Same shoppers. Same Diwali Saturday.<br/><span class="muted">What changes when the operating policy changes.</span></h2>
+    <div class="rpt-hero">
+      <div class="rpt-hero-side">
+        <div class="lbl">Baseline policy</div>
+        <div class="val" id="rptHeroBase">₹—</div>
+        <div class="sub" id="rptHeroBaseSub">— memos · — conversion</div>
+      </div>
+      <div class="rpt-hero-arrow">→</div>
+      <div class="rpt-hero-side opt">
+        <div class="lbl">Optimized v1</div>
+        <div class="val" id="rptHeroOpt">₹—</div>
+        <div class="sub" id="rptHeroOptSub">— memos · — conversion</div>
+      </div>
+      <div class="rpt-hero-delta">
+        <div class="lbl">Recovered revenue · per peak Saturday</div>
+        <div class="dv" id="rptHeroDelta">+ ₹— L</div>
+        <div class="dp" id="rptHeroPct">+ —%</div>
+        <div class="net">Network · 470 stores × 4 festive weekends → <b id="rptHeroNet">+ ₹— Cr / year</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== KPI DOT-RANGE CHART ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 02 · Metric-by-metric comparison</div>
+    <h2 class="rpt-q">How every operating metric moves under Optimized v1.</h2>
+    <p class="rpt-lede">Same 1,000 agents, same arrival schedule, same RNG seed. The only thing that differs is the operating policy. Each row shows where the metric lands under baseline (dark) versus optimized (red), and the delta on the right.</p>
+    <div class="rpt-chart-wrap">
+      <svg id="rptDumbbell" viewBox="0 0 760 440" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="rpt-legend">
+      <span><span class="dot baseline"></span>Baseline</span>
+      <span><span class="dot optimized"></span>Optimized v1</span>
+      <span class="muted">— values are end-of-day totals or averages over the 12-hour day</span>
+    </div>
+  </section>
+
+  <!-- ============== BILL QUEUE TIME SERIES ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 03 · Where the revenue went</div>
+    <h2 class="rpt-q">Billing queue compresses through the evening peak.</h2>
+    <p class="rpt-lede">Under baseline, Counter 2 only opens when the queue hits 15 (and Counter 3 at 20) — by which point shoppers in the queue have already crossed their tolerance thresholds and walked out. Optimized v1 schedules Counter 2 at <b>17:00</b> and Counter 3 at <b>18:00</b>, before the evening rush. The dwell time gap is where the recovered revenue lives.</p>
+    <div class="rpt-chart-wrap">
+      <svg id="rptBillChart" viewBox="0 0 760 280" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </section>
+
+  <!-- ============== TRIAL QUEUE TIME SERIES ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 04 · Trial-room throughput</div>
+    <h2 class="rpt-q">Trial-room queue clears under attended-room enforcement.</h2>
+    <p class="rpt-lede">T01 is reassigned from "floor relief" to the women's trial bank. The 4-items-per-cubicle limit is now enforced. Cubicle turnover drops ~25% — and the queue length collapses with it, because the tail of the distribution (10-min+ waits) was driving most of the trial-room abandonments.</p>
+    <div class="rpt-chart-wrap">
+      <svg id="rptTrialChart" viewBox="0 0 760 280" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </section>
+
+  <!-- ============== PER-LEVER ATTRIBUTION ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 05 · Per-lever attribution</div>
+    <h2 class="rpt-q">Where the lift comes from.</h2>
+    <p class="rpt-lede">Three operating levers are wired in this engine. Each shifts a specific environment variable — never agent behaviour or RNG. The causal chain is auditable: policy change → environment change → agent reacts → revenue moves.</p>
+    <div class="rpt-levers" id="rptLevers"></div>
+  </section>
+
+  <!-- ============== TOP RECOVERY MOVES ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 06 · Top recovery moves</div>
+    <h2 class="rpt-q">The moves, ranked by ₹ impact.</h2>
+    <div class="rpt-moves" id="rptMoves"></div>
+  </section>
+
+  <!-- ============== METHODOLOGY ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 07 · Methodology</div>
+    <h2 class="rpt-q">How every number on this page is computed.</h2>
+    <div class="rpt-method">
+      <div>
+        <h5>Same seed · same agents · same arrivals</h5>
+        <p>1,000 hand-built shopper agents walk the floor for 12 hours, twice. Once under baseline, once under Optimized v1. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed.</p>
+        <div class="src">data/agents.json · data/profiles.json · manit-notes/04-simulation-engine.md</div>
+      </div>
+      <div>
+        <h5>Causal chain only · no fiat lift</h5>
+        <p>Every claimed lift flows through <b>policy → environment → agent reaction → revenue</b>. No boost-multipliers. No forced conversion rates. No fiat ATV bumps. If a finding can't be traced to a specific shopper behaviour in this run, it is not surfaced.</p>
+        <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
+      </div>
+      <div>
+        <h5>What is NOT wired yet</h5>
+        <p>Levers L4 (merchandising) and L5 (cross-merch / replenishment) are spec'd in the policy schema but not yet wired into the engine. Their effect is not counted in this report. Once wired, expected additional lift is +4-8% revenue.</p>
+        <div class="src">store/README.md · engine support matrix</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== PILOT CTA ============== -->
+  <section class="rpt-section rpt-pilot">
     <div class="copy">
-      <span class="label">The pilot</span>4 weeks · 1 store of your choice. We calibrate the digital twin to your POS, run the optimization, hand back A/B-ready interventions with predicted lift + confidence intervals. <b>You measure us on whether the lift we predict matches the lift you measure.</b>
+      <div class="label">The pilot · 4 weeks</div>
+      <div class="body">One V-Mart store of your choice. We calibrate the digital twin to your POS data, run the optimization loop, hand back A/B-ready interventions with predicted lift and confidence intervals. <b>You measure us on whether the lift we predict matches the lift you measure.</b></div>
     </div>
-    <button class="cta" id="esRunBtn2">Run again →</button>
-  </div>
+    <button class="cta" id="esRunBtn2">Re-run on same seed</button>
+  </section>
+
+  <div class="rpt-foot">© 2026 · V-Mart Unlimited diagnostic · confidential</div>
 </div>
 
 <!-- LOADING -->
