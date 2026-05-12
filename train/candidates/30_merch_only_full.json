@@ -1,0 +1,81 @@
+{
+  "id": "P30_merch_only_full",
+  "name": "Sweep candidate: L1=reactive · L2=clustered_no_re · L3=no_attendant · L4=both · L5=bundles_footwear",
+  "version": "sweep_v2",
+  "levers_chosen": {
+    "L1": "reactive",
+    "L2": "clustered_no_re",
+    "L3": "no_attendant",
+    "L4": "both",
+    "L5": "bundles_footwear"
+  },
+  "compliance": {
+    "causal_chain_only": true,
+    "no_forbidden_keys": true
+  },
+  "lever_1_billing": {
+    "model": "reactive",
+    "always_open": [
+      1
+    ],
+    "always_closed": [
+      4,
+      5,
+      6
+    ],
+    "reactive_rules": [
+      {
+        "counter": 2,
+        "trigger_queue_min": 15,
+        "staffing_delay_min_range": [
+          5,
+          10
+        ]
+      },
+      {
+        "counter": 3,
+        "trigger_queue_min": 20,
+        "staffing_delay_min_range": [
+          5,
+          10
+        ]
+      }
+    ]
+  },
+  "lever_2_floor_staffing": {
+    "model": "fixed_all_day",
+    "break_pattern": "clustered",
+    "mid_shift_reallocation": false
+  },
+  "lever_3_trial_rooms": {
+    "cubicle_split": {
+      "womens_bank": 7,
+      "mens_bank": 3,
+      "kids_bank": 0
+    },
+    "attendant_present": false,
+    "item_cap_enforced": false
+  },
+  "lever_4_merchandising": {
+    "power_wall": {
+      "refresh_cadence": "per_block_4h",
+      "intra_day_refresh": true,
+      "festive_concentration_pct": 80
+    },
+    "impulse_fixture": {
+      "refresh_during_day": true,
+      "curation": "festive_jewellery"
+    }
+  },
+  "lever_5_cross_merch_and_replenishment": {
+    "outfit_bundle_fixtures": true,
+    "footwear_apparel_co_location": true,
+    "replenishment_schedule": [
+      "10:00",
+      "13:00",
+      "16:00",
+      "18:30"
+    ],
+    "mid_peak_replenishment": true
+  }
+}

@@ -25,10 +25,18 @@ Deterministic via SEED.
 
 import json
 import random
+import sys
+import time
 from pathlib import Path
 
 
-SEED = 99
+# Seed: CLI arg if provided, else fresh per run. Saved into staff.json.
+if len(sys.argv) > 1:
+    SEED = int(sys.argv[1])
+else:
+    SEED = int(time.time() * 1000) % 1_000_000
+print(f"build_staff.py · using seed {SEED}")
+
 OUT_PATH = Path(__file__).resolve().parent.parent / "staff.json"
 
 
