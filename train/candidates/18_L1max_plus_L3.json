@@ -1,0 +1,97 @@
+{
+  "id": "P18_L1max_plus_L3",
+  "name": "Sweep candidate: L1=sched_15_16 · L2=clustered_no_re · L3=attendant_cap · L4=none · L5=none",
+  "version": "sweep_v2",
+  "levers_chosen": {
+    "L1": "sched_15_16",
+    "L2": "clustered_no_re",
+    "L3": "attendant_cap",
+    "L4": "none",
+    "L5": "none"
+  },
+  "compliance": {
+    "causal_chain_only": true,
+    "no_forbidden_keys": true
+  },
+  "lever_1_billing": {
+    "model": "scheduled",
+    "always_open": [
+      1
+    ],
+    "always_closed": [
+      4,
+      5,
+      6
+    ],
+    "reactive_rules": [
+      {
+        "counter": 2,
+        "trigger_queue_min": 5,
+        "staffing_delay_min_range": [
+          1,
+          2
+        ]
+      },
+      {
+        "counter": 3,
+        "trigger_queue_min": 8,
+        "staffing_delay_min_range": [
+          1,
+          2
+        ]
+      },
+      {
+        "counter": 4,
+        "trigger_queue_min": 15,
+        "staffing_delay_min_range": [
+          2,
+          4
+        ]
+      }
+    ],
+    "schedule": {
+      "15:00": [
+        2
+      ],
+      "16:00": [
+        3
+      ],
+      "17:30": [
+        4
+      ]
+    }
+  },
+  "lever_2_floor_staffing": {
+    "model": "fixed_all_day",
+    "break_pattern": "clustered",
+    "mid_shift_reallocation": false
+  },
+  "lever_3_trial_rooms": {
+    "cubicle_split": {
+      "womens_bank": 7,
+      "mens_bank": 3,
+      "kids_bank": 0
+    },
+    "attendant_present": true,
+    "item_cap_enforced": true,
+    "item_cap_count": 4
+  },
+  "lever_4_merchandising": {
+    "power_wall": {
+      "refresh_cadence": "weekly_monday_only",
+      "intra_day_refresh": false
+    },
+    "impulse_fixture": {
+      "refresh_during_day": false
+    }
+  },
+  "lever_5_cross_merch_and_replenishment": {
+    "outfit_bundle_fixtures": false,
+    "footwear_apparel_co_location": false,
+    "replenishment_schedule": [
+      "10:00",
+      "16:00"
+    ],
+    "mid_peak_replenishment": false
+  }
+}

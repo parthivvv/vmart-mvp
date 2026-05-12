@@ -7,7 +7,7 @@
   "profiles": {
     "mission_mom": {
       "label": "Mission-driven mom",
-      "weight": 0.30,
+      "weight": 0.22,
       "description": "Family group of 2-4 including 1-2 kids. Diwali-outfit-for-self-and-kids mission. Mostly arrives morning to beat the evening crowd.",
       "arrival_minute_dist": {
         "type": "chi_square_shifted",
@@ -16,7 +16,7 @@
         "shift": 30,
         "min": 0,
         "max": 720,
-        "note": "Mode ~11am, mean ~12pm. Drives the morning peak (11am-1pm)."
+        "note": "Mode ~11am, mean ~12pm."
       },
       "dwell_minute_dist": {
         "type": "chi_square_shifted",
@@ -25,54 +25,95 @@
         "shift": 25,
         "min": 15,
         "max": 180,
-        "note": "Mode ~57 min, mean ~57 min. Efficient but multiple try-ons."
+        "note": "Mode ~57 min."
       },
       "group_size_dist": [
-        {"value": 2, "weight": 0.20},
-        {"value": 3, "weight": 0.50},
-        {"value": 4, "weight": 0.30}
+        {
+          "value": 2,
+          "weight": 0.2
+        },
+        {
+          "value": 3,
+          "weight": 0.5
+        },
+        {
+          "value": 4,
+          "weight": 0.3
+        }
       ],
-      "primary_zones": ["womens_ethnic", "kids"],
-      "secondary_zones": ["womens_fa", "infants"],
-      "queue_tolerance_min": {"reduce_at": 10, "abandon_at": 20},
-      "basket_size_target": {"min": 4, "max": 7},
-      "intent_strength": 0.85
+      "primary_zones": [
+        "womens_ethnic",
+        "kids"
+      ],
+      "secondary_zones": [
+        "womens_fa",
+        "infants"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 18,
+        "abandon_at": 42
+      },
+      "basket_size_target": {
+        "min": 4,
+        "max": 7
+      },
+      "intent_strength": 0.92,
+      "responds_to_power_wall": true,
+      "impulse_prone": false,
+      "price_elasticity": 0.55
     },
-    "young_woman": {
-      "label": "Browse-and-buy young woman",
-      "weight": 0.20,
-      "description": "Solo or with a friend. Heavy trial-room use, longer dwell. Responds to power wall freshness. Zudio-poacher segment.",
+    "young_mom": {
+      "label": "Young mom with toddler",
+      "weight": 0.08,
+      "description": "First-time Diwali shopping with a 0-3 year old in tow. Exploratory, slower than mission mom. Often buying for the kid more than for herself.",
       "arrival_minute_dist": {
         "type": "chi_square_shifted",
-        "df": 5,
-        "scale": 50,
-        "shift": 150,
+        "df": 3,
+        "scale": 32,
+        "shift": 60,
         "min": 0,
         "max": 720,
-        "note": "Mode ~3pm, mean ~4:40pm. Afternoon/early-evening."
+        "note": "Slightly later than mission_mom \u2014 mode ~12pm."
       },
       "dwell_minute_dist": {
         "type": "chi_square_shifted",
-        "df": 4,
-        "scale": 8,
-        "shift": 22,
-        "min": 15,
-        "max": 120,
-        "note": "Mode ~38 min, mean ~54 min. Trial-heavy."
+        "df": 5,
+        "scale": 9,
+        "shift": 35,
+        "min": 20,
+        "max": 180,
+        "note": "Longer than mission_mom \u2014 exploratory."
       },
       "group_size_dist": [
-        {"value": 1, "weight": 0.55},
-        {"value": 2, "weight": 0.45}
+        {
+          "value": 2,
+          "weight": 1.0
+        }
       ],
-      "primary_zones": ["womens_ethnic", "womens_western"],
-      "secondary_zones": ["womens_fa", "power_wall"],
-      "queue_tolerance_min": {"reduce_at": 15, "abandon_at": 25},
-      "basket_size_target": {"min": 2, "max": 4},
-      "intent_strength": 0.70
+      "primary_zones": [
+        "infants",
+        "kids"
+      ],
+      "secondary_zones": [
+        "womens_ethnic",
+        "womens_fa"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 20,
+        "abandon_at": 40
+      },
+      "basket_size_target": {
+        "min": 2,
+        "max": 4
+      },
+      "intent_strength": 0.78,
+      "responds_to_power_wall": false,
+      "impulse_prone": true,
+      "price_elasticity": 0.7
     },
     "family_weekend": {
       "label": "Family weekend shopper",
-      "weight": 0.25,
+      "weight": 0.18,
       "description": "Group of 4-6, multi-generational, Diwali-and-wedding-season mode. Largest basket, highest absolute spend. AC-sensitive.",
       "arrival_minute_dist": {
         "type": "chi_square_shifted",
@@ -81,7 +122,7 @@
         "shift": 300,
         "min": 0,
         "max": 720,
-        "note": "Mode ~5pm, mean ~7pm. Drives the evening peak."
+        "note": "Mode ~5pm, mean ~7pm."
       },
       "dwell_minute_dist": {
         "type": "chi_square_shifted",
@@ -90,23 +131,205 @@
         "shift": 35,
         "min": 20,
         "max": 180,
-        "note": "Mode ~65 min, mean ~85 min. Big group, slow."
+        "note": "Big group, slow."
       },
       "group_size_dist": [
-        {"value": 4, "weight": 0.35},
-        {"value": 5, "weight": 0.35},
-        {"value": 6, "weight": 0.30}
+        {
+          "value": 4,
+          "weight": 0.35
+        },
+        {
+          "value": 5,
+          "weight": 0.35
+        },
+        {
+          "value": 6,
+          "weight": 0.3
+        }
       ],
-      "primary_zones": ["womens_ethnic", "mens_formal_ethnic", "kids"],
-      "secondary_zones": ["womens_fa", "mens_fa", "infants", "womens_western", "mens_casual"],
-      "queue_tolerance_min": {"reduce_at": 20, "abandon_at": 30},
-      "basket_size_target": {"min": 6, "max": 10},
-      "intent_strength": 0.90,
-      "ac_sensitive": true
+      "primary_zones": [
+        "womens_ethnic",
+        "mens_formal_ethnic",
+        "kids"
+      ],
+      "secondary_zones": [
+        "womens_fa",
+        "mens_fa",
+        "infants",
+        "womens_western",
+        "mens_casual"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 30,
+        "abandon_at": 60
+      },
+      "basket_size_target": {
+        "min": 6,
+        "max": 10
+      },
+      "intent_strength": 0.95,
+      "ac_sensitive": true,
+      "responds_to_power_wall": true,
+      "impulse_prone": true,
+      "price_elasticity": 0.3
+    },
+    "young_woman": {
+      "label": "Browse-and-buy young woman",
+      "weight": 0.13,
+      "description": "Solo or with a friend. Heavy trial-room use, longer dwell. Responds to power wall freshness. Zudio-poacher segment.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 5,
+        "scale": 50,
+        "shift": 150,
+        "min": 0,
+        "max": 720,
+        "note": "Mode ~3pm."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 8,
+        "shift": 22,
+        "min": 15,
+        "max": 120,
+        "note": "Trial-heavy."
+      },
+      "group_size_dist": [
+        {
+          "value": 1,
+          "weight": 0.55
+        },
+        {
+          "value": 2,
+          "weight": 0.45
+        }
+      ],
+      "primary_zones": [
+        "womens_ethnic",
+        "womens_western"
+      ],
+      "secondary_zones": [
+        "womens_fa",
+        "power_wall"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 25,
+        "abandon_at": 48
+      },
+      "basket_size_target": {
+        "min": 2,
+        "max": 4
+      },
+      "intent_strength": 0.82,
+      "responds_to_power_wall": true,
+      "impulse_prone": true,
+      "price_elasticity": 0.65
+    },
+    "working_woman": {
+      "label": "Working woman \u2014 time-constrained",
+      "weight": 0.08,
+      "description": "Solo female, post-work or lunch-break. Knows what she wants. Short dwell, low queue tolerance, intentional.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 50,
+        "shift": 330,
+        "min": 0,
+        "max": 720,
+        "note": "Post-work peak around 6-7pm."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 3,
+        "scale": 5,
+        "shift": 15,
+        "min": 10,
+        "max": 60,
+        "note": "Short, targeted."
+      },
+      "group_size_dist": [
+        {
+          "value": 1,
+          "weight": 1.0
+        }
+      ],
+      "primary_zones": [
+        "womens_ethnic",
+        "womens_western"
+      ],
+      "secondary_zones": [
+        "womens_fa"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 10,
+        "abandon_at": 20
+      },
+      "basket_size_target": {
+        "min": 1,
+        "max": 3
+      },
+      "intent_strength": 0.88,
+      "responds_to_power_wall": false,
+      "impulse_prone": false,
+      "price_elasticity": 0.45
+    },
+    "premium_occasion": {
+      "label": "Premium occasion shopper",
+      "weight": 0.05,
+      "description": "Solo or with one friend. Hunting for silk saree, designer lehenga, or fine jewellery for a Diwali function. Slow, advisor-dependent, low item count, very high ticket.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 5,
+        "scale": 60,
+        "shift": 240,
+        "min": 0,
+        "max": 720,
+        "note": "Afternoon-evening, peak ~5pm."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 6,
+        "scale": 15,
+        "shift": 60,
+        "min": 30,
+        "max": 200,
+        "note": "Very long \u2014 needs draping, color advice."
+      },
+      "group_size_dist": [
+        {
+          "value": 1,
+          "weight": 0.5
+        },
+        {
+          "value": 2,
+          "weight": 0.5
+        }
+      ],
+      "primary_zones": [
+        "womens_ethnic",
+        "womens_fa"
+      ],
+      "secondary_zones": [
+        "power_wall"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 35,
+        "abandon_at": 70
+      },
+      "basket_size_target": {
+        "min": 1,
+        "max": 2
+      },
+      "intent_strength": 0.95,
+      "responds_to_power_wall": true,
+      "impulse_prone": false,
+      "high_value": true,
+      "price_elasticity": 0.1
     },
     "quick_trip_male": {
       "label": "Quick-trip men's wear",
-      "weight": 0.10,
+      "weight": 0.08,
       "description": "Solo male, often dropped off by family. Minimal trial. Queue-intolerant.",
       "arrival_minute_dist": {
         "type": "chi_square_shifted",
@@ -115,7 +338,7 @@
         "shift": 280,
         "min": 0,
         "max": 720,
-        "note": "Mode ~5:20pm, mean ~8pm. Evening, post-work."
+        "note": "Mode ~5pm."
       },
       "dwell_minute_dist": {
         "type": "chi_square_shifted",
@@ -124,20 +347,145 @@
         "shift": 6,
         "min": 5,
         "max": 45,
-        "note": "Mode ~6 min (very impatient), mean ~14 min."
+        "note": "Very short."
       },
       "group_size_dist": [
-        {"value": 1, "weight": 1.0}
+        {
+          "value": 1,
+          "weight": 1.0
+        }
       ],
-      "primary_zones": ["mens_casual", "mens_formal_ethnic"],
-      "secondary_zones": ["mens_fa"],
-      "queue_tolerance_min": {"reduce_at": 5, "abandon_at": 8},
-      "basket_size_target": {"min": 1, "max": 2},
-      "intent_strength": 0.95
+      "primary_zones": [
+        "mens_casual",
+        "mens_formal_ethnic"
+      ],
+      "secondary_zones": [
+        "mens_fa"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 8,
+        "abandon_at": 16
+      },
+      "basket_size_target": {
+        "min": 1,
+        "max": 2
+      },
+      "intent_strength": 0.95,
+      "responds_to_power_wall": false,
+      "impulse_prone": false,
+      "price_elasticity": 0.5
+    },
+    "office_gifter": {
+      "label": "Office-gifting shopper",
+      "weight": 0.04,
+      "description": "Solo, buying 4-6 similar kurtas to give as Diwali gifts to office team or family. Knows sizes, doesn't trial. Bulk buyer.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 3,
+        "scale": 40,
+        "shift": 90,
+        "min": 0,
+        "max": 720,
+        "note": "Mid-morning to early afternoon."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 4,
+        "scale": 7,
+        "shift": 25,
+        "min": 15,
+        "max": 90,
+        "note": "Medium \u2014 has a list."
+      },
+      "group_size_dist": [
+        {
+          "value": 1,
+          "weight": 1.0
+        }
+      ],
+      "primary_zones": [
+        "mens_formal_ethnic",
+        "womens_ethnic"
+      ],
+      "secondary_zones": [
+        "mens_fa"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 18,
+        "abandon_at": 32
+      },
+      "basket_size_target": {
+        "min": 4,
+        "max": 6
+      },
+      "intent_strength": 0.93,
+      "responds_to_power_wall": false,
+      "impulse_prone": false,
+      "price_elasticity": 0.4
+    },
+    "visiting_relative": {
+      "label": "Visiting relative / out-of-towner",
+      "weight": 0.05,
+      "description": "Visiting Bangalore for Diwali. Treating themselves. Exploratory, higher average ticket, less price sensitive than locals.",
+      "arrival_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 5,
+        "scale": 55,
+        "shift": 180,
+        "min": 0,
+        "max": 720,
+        "note": "Afternoon, spread."
+      },
+      "dwell_minute_dist": {
+        "type": "chi_square_shifted",
+        "df": 5,
+        "scale": 11,
+        "shift": 45,
+        "min": 25,
+        "max": 150,
+        "note": "Long \u2014 exploratory."
+      },
+      "group_size_dist": [
+        {
+          "value": 1,
+          "weight": 0.35
+        },
+        {
+          "value": 2,
+          "weight": 0.45
+        },
+        {
+          "value": 3,
+          "weight": 0.2
+        }
+      ],
+      "primary_zones": [
+        "womens_ethnic",
+        "mens_formal_ethnic"
+      ],
+      "secondary_zones": [
+        "womens_fa",
+        "kids",
+        "mens_fa",
+        "power_wall"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 25,
+        "abandon_at": 48
+      },
+      "basket_size_target": {
+        "min": 3,
+        "max": 5
+      },
+      "intent_strength": 0.92,
+      "responds_to_power_wall": true,
+      "impulse_prone": true,
+      "high_value": true,
+      "price_elasticity": 0.25
     },
     "browser": {
       "label": "Browser, no purchase intent",
-      "weight": 0.15,
+      "weight": 0.09,
       "description": "Walks 1-2 zones, walks out. Influenced by power wall. ~3-5% convert opportunistically under Mahabachat.",
       "arrival_minute_dist": {
         "type": "chi_square_shifted",
@@ -146,7 +494,7 @@
         "shift": -50,
         "min": 0,
         "max": 720,
-        "note": "Spread across day with slight afternoon bias. Wider df = more spread."
+        "note": "Spread across day."
       },
       "dwell_minute_dist": {
         "type": "chi_square_shifted",
@@ -155,24 +503,48 @@
         "shift": 3,
         "min": 2,
         "max": 30,
-        "note": "Mode ~3 min, mean ~11 min. Many walk out under 5 min."
+        "note": "Many walk out under 5 min."
       },
       "group_size_dist": [
-        {"value": 1, "weight": 0.60},
-        {"value": 2, "weight": 0.40}
+        {
+          "value": 1,
+          "weight": 0.6
+        },
+        {
+          "value": 2,
+          "weight": 0.4
+        }
       ],
-      "primary_zones": ["power_wall"],
-      "secondary_zones": ["womens_ethnic", "mens_casual"],
-      "queue_tolerance_min": {"reduce_at": 3, "abandon_at": 5},
-      "basket_size_target": {"min": 0, "max": 1},
-      "intent_strength": 0.10
+      "primary_zones": [
+        "power_wall"
+      ],
+      "secondary_zones": [
+        "womens_ethnic",
+        "mens_casual"
+      ],
+      "queue_tolerance_min": {
+        "reduce_at": 3,
+        "abandon_at": 6
+      },
+      "basket_size_target": {
+        "min": 0,
+        "max": 1
+      },
+      "intent_strength": 0.18,
+      "responds_to_power_wall": true,
+      "impulse_prone": true,
+      "price_elasticity": 0.85
     }
   },
-  "notes_on_chi_square": "Each arrival/dwell distribution is sampled as `chi2(df) * scale + shift`, then clipped to [min, max]. Chi-square with df=k has mode max(0, k-2) and mean k. So mode in minutes ≈ (k-2)*scale + shift and mean ≈ k*scale + shift. Adjust df to control spread (higher df = wider tail), scale to compress/stretch, shift to anchor.",
+  "_note_v2": "Expanded from 5 to 10 personas for v2 sweep. Added: young_mom, working_woman, premium_occasion, office_gifter, visiting_relative. Three new behavioral flags introduced: responds_to_power_wall (L4 effect target), impulse_prone (L4 impulse-fixture target), high_value (basket-value multiplier).",
+  "notes_on_chi_square": "Each arrival/dwell distribution is sampled as `chi2(df) * scale + shift`, then clipped to [min, max] with resampling on overflow.",
   "qualitative_check": {
-    "morning_peak_11am_1pm_arrivals": "mostly mission_mom + a few young_woman, browser tail",
-    "lunch_dip_2pm_4pm": "tails only, no profile centered here",
-    "evening_peak_5pm_9pm": "family_weekend + young_woman + quick_trip_male + browser tail",
+    "morning_peak_11am_1pm": "mission_mom + young_mom + office_gifter + browser tail",
+    "lunch_dip_2pm_4pm": "tails only",
+    "evening_peak_5pm_9pm": "family_weekend + young_woman + working_woman + premium_occasion + quick_trip_male + visiting_relative",
     "late_evening_9pm_10pm": "tail of family_weekend + quick_trip_male"
-  }
+  },
+  "_note_v3": "Added price_elasticity per persona (0=inelastic, 1=very sensitive). Engine rejects expensive items probabilistically based on agent's elasticity \u00d7 (item_price/typical).",
+  "_note_v3_1": "v3.1 recalibration: bumped intent_strength and queue_tolerance to match real Diwali Saturday shopper behavior (festive day = more decided, more patient). Browser intent slightly raised (0.10\u21920.18) \u2014 Mahabachat pulls some browsers into conversion.",
+  "_note_v3_2": "v3.2: bumped queue tolerance significantly. Festive shoppers who came with a basket will wait 40-70 min before abandoning. Only the time-constrained personas (working_woman, quick_trip_male, browser) abandon under 20 min."
 }

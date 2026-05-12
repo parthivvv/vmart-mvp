@@ -13,12 +13,22 @@ sequence.
 
 import json
 import random
+import sys
+import time
 from pathlib import Path
 
 import numpy as np
 
 
-SEED = 42
+# Seed strategy: a CLI arg if provided, else a fresh random seed each run.
+# The seed used is saved into agents.json so any cohort is reproducible by
+# rerunning with the same number.
+if len(sys.argv) > 1:
+    SEED = int(sys.argv[1])
+else:
+    SEED = int(time.time() * 1000) % 1_000_000
+print(f"build_agents.py · using seed {SEED}")
+
 OUT_PATH = Path(__file__).resolve().parent.parent / "agents.json"
 PROFILES_PATH = Path(__file__).resolve().parent.parent / "profiles.json"
 
@@ -246,6 +256,105 @@ BROWSER_REASONS = [
     "Heard about the BOGO from a colleague; sceptical but curious.",
 ]
 
+# ── NEW v2 PERSONA PHRASE POOLS ──────────────────────────────────────────────
+
+YM_TODDLER_PHRASES = [
+    "Has a 2-year-old in the stroller who's already asking for snacks.",
+    "Has a toddler (18 months) clinging to her dupatta.",
+    "Has a 3-year-old who wants to touch every mannequin.",
+    "Has a 2-year-old daughter and is here to buy her first lehenga.",
+    "Has a 1-year-old in a carrier; husband is at home.",
+]
+YM_CONTEXT_PHRASES = [
+    "First Diwali shopping trip as a mom",
+    "Came on the train from a nearby suburb",
+    "Took the day off work for this",
+    "Mother-in-law watching the older kid back home",
+    "Squeezed this in between feeding times",
+]
+YM_MISSIONS = [
+    "Looking for a kurta-pyjama set for the baby and something simple for herself.",
+    "Wants a pattu pavadai for the daughter and matching earrings for both.",
+    "Browsing the infants section first, then maybe a saree if there's time.",
+    "Needs an infant ethnic set for the puja photos.",
+    "Just here for the baby — won't buy anything for self today.",
+]
+
+WW_CONTEXT_PHRASES = [
+    "Came straight from her shift at the IT park",
+    "Lunch-break window; cab waiting",
+    "Slipped out of a work-from-home day to grab one outfit",
+    "Has 45 minutes before a dinner with friends",
+    "Picked up from office by an Uber, going home after",
+]
+WW_MISSIONS = [
+    "Needs a kurta for the office Diwali function on Monday — knows exactly her size.",
+    "Looking for a co-ord set, will be in and out under 20 minutes.",
+    "Came for one specific Anarkali she saw on the app; will not browse.",
+    "Wants a fast pick-up of a formal trouser and a kurti — time is the binding constraint.",
+    "Buying a Diwali outfit for herself for the first time in three years.",
+]
+
+PO_OCCASION_PHRASES = [
+    "Hosting a Diwali dinner for 30 next Thursday",
+    "Attending a cousin's pre-wedding sangeet on Saturday",
+    "Going to a family wedding in two weeks — needs the saree today",
+    "Diwali pooja at the family home; expects to be photographed",
+    "Office year-end gala next month — looking for a statement piece",
+]
+PO_BUDGET_PHRASES = [
+    "Budget is open up to ₹5,000",
+    "Will spend whatever it takes for the right silk saree",
+    "Wants quality over price — checking fabric weight by hand",
+    "Has a fixed ₹3,500 budget but will stretch for the right piece",
+    "Looking for something heirloom-worthy",
+]
+PO_ADVISOR_PHRASES = [
+    "Wants a senior floor staff member to help her drape and compare",
+    "Will not buy without seeing it on a mannequin first",
+    "Came specifically because of the embroidered designer saree (SKU WS-10)",
+    "Wants to compare three sarees in different lights before deciding",
+    "Asking for the women's ethnic expert by name",
+]
+
+OG_CONTEXT_PHRASES = [
+    "Buying Diwali gifts for the 5-person office team",
+    "HR has assigned the gifting task; needs to expense it back",
+    "Bulk-buying kurtas as gifts for cousins back in his village",
+    "Office Diwali secret-santa needs three matching kurtas",
+    "Annual ritual — buys 4-6 kurtas for the in-laws every Diwali",
+]
+OG_MISSIONS = [
+    "Needs 5 identical cotton kurtas, sizes M to XL.",
+    "Looking for 4-6 kurta-pyjama sets at the ₹1,200-1,500 price point.",
+    "Wants to buy a Sherwani-style set for the manager plus 4 plain kurtas for the team.",
+    "Sizes are pre-listed; just needs availability.",
+    "Will not try anything on — wants in-and-out under 30 minutes.",
+]
+
+VR_ORIGIN_PHRASES = [
+    "visiting from Mumbai for Diwali",
+    "in Bangalore from Delhi to stay with relatives for the festive week",
+    "down from Hyderabad with the family",
+    "from Pune, visiting in-laws",
+    "from Chennai for a wedding plus Diwali",
+    "from Kolkata, first Diwali in Bangalore",
+]
+VR_CONTEXT_PHRASES = [
+    "Treating themselves to a new Diwali outfit they wouldn't buy at home",
+    "Bangalore feels different — willing to try styles they normally wouldn't",
+    "Doing a full V-Mart tour before deciding",
+    "Local cousin recommended this specific store for festive range",
+    "Has the whole day free — no rush",
+]
+VR_MISSIONS = [
+    "Wants one ethnic outfit for self plus gifts for relatives back home.",
+    "Looking at sarees, kurta sets, and accessories — full festive haul.",
+    "Will buy across women's ethnic, kids ethnic, and accessories — bigger ticket than usual.",
+    "Picking up a kurta and dhoti for the pooja plus a saree for the wife.",
+    "Open to suggestions — wants to see what's distinctive about the Bangalore festive range.",
+]
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -339,6 +448,57 @@ def make_agent(profile_name, profile_cfg, rng):
         backstory = (
             f"{name} ({age}, {neighborhood}), {occupation}. "
             f"{random.choice(QM_DROP_OFF)}. {random.choice(QM_MISSIONS)}"
+        )
+    elif profile_name == "young_mom":
+        gender = "F"
+        age = random.randint(24, 32)
+        occupation = random.choice(OCCUPATIONS_F_YOUNG)
+        name = pick_name(gender, ethnicity)
+        backstory = (
+            f"{name} ({age}, {neighborhood}), {occupation}. "
+            f"{random.choice(YM_TODDLER_PHRASES)} {random.choice(YM_CONTEXT_PHRASES)}. "
+            f"{random.choice(YM_MISSIONS)}"
+        )
+    elif profile_name == "working_woman":
+        gender = "F"
+        age = random.randint(26, 42)
+        occupation = random.choice(OCCUPATIONS_F_YOUNG if age < 33 else OCCUPATIONS_F_MATURE)
+        name = pick_name(gender, ethnicity)
+        backstory = (
+            f"{name} ({age}, {neighborhood}), {occupation}. "
+            f"{random.choice(WW_CONTEXT_PHRASES)}. {random.choice(WW_MISSIONS)}"
+        )
+    elif profile_name == "premium_occasion":
+        gender = random.choices(["F", "M"], weights=[0.85, 0.15])[0]
+        age = random.randint(32, 58)
+        occupation = random.choice(OCCUPATIONS_F_MATURE if gender == "F" else OCCUPATIONS_M)
+        name = pick_name(gender, ethnicity)
+        backstory = (
+            f"{name} ({age}, {neighborhood}), {occupation}. "
+            f"{random.choice(PO_OCCASION_PHRASES)}. {random.choice(PO_BUDGET_PHRASES)}. "
+            f"{random.choice(PO_ADVISOR_PHRASES)}."
+        )
+    elif profile_name == "office_gifter":
+        gender = random.choices(["F", "M"], weights=[0.35, 0.65])[0]
+        age = random.randint(28, 50)
+        occupation = random.choice(OCCUPATIONS_F_MATURE if gender == "F" else OCCUPATIONS_M)
+        name = pick_name(gender, ethnicity)
+        backstory = (
+            f"{name} ({age}, {neighborhood}), {occupation}. "
+            f"{random.choice(OG_CONTEXT_PHRASES)}. {random.choice(OG_MISSIONS)}"
+        )
+    elif profile_name == "visiting_relative":
+        gender = random.choice(["F", "M"])
+        age = random.randint(28, 60)
+        if gender == "F":
+            occupation = random.choice(OCCUPATIONS_F_MATURE if age >= 33 else OCCUPATIONS_F_YOUNG)
+        else:
+            occupation = random.choice(OCCUPATIONS_M)
+        name = pick_name(gender, ethnicity)
+        backstory = (
+            f"{name} ({age}, {random.choice(VR_ORIGIN_PHRASES)}), {occupation}. "
+            f"Currently in {neighborhood}. {random.choice(VR_CONTEXT_PHRASES)}. "
+            f"{random.choice(VR_MISSIONS)}"
         )
     else:  # browser
         gender = random.choice(["F", "M"])

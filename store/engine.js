@@ -32,19 +32,29 @@ const DEFAULT_BASELINE = {
 
 // Persona display colors (kept in sync with profile IDs from data/profiles.json)
 const PERSONA_COLOR = {
-  mission_mom:    { body:'#D67BAA', skin:'#F4C9A0', hair:'#3A2418', label:'Mission mom' },
-  young_woman:    { body:'#A567C9', skin:'#F8D5B5', hair:'#1A1414', label:'Young woman' },
-  family_weekend: { body:'#E5A93C', skin:'#E8BD90', hair:'#2A1A10', label:'Family group' },
-  quick_trip_male:{ body:'#4F87BD', skin:'#E0B898', hair:'#1A1A1A', label:'Quick-trip male' },
-  browser:        { body:'#898989', skin:'#F0CFA8', hair:'#3D2E20', label:'Browser' },
+  mission_mom:       { body:'#D67BAA', skin:'#F4C9A0', hair:'#3A2418', label:'Mission mom' },
+  young_mom:         { body:'#E8B0CC', skin:'#F4C9A0', hair:'#3A2418', label:'Young mom' },
+  family_weekend:    { body:'#E5A93C', skin:'#E8BD90', hair:'#2A1A10', label:'Family group' },
+  young_woman:       { body:'#A567C9', skin:'#F8D5B5', hair:'#1A1414', label:'Young woman' },
+  working_woman:     { body:'#5BA08F', skin:'#F4C9A0', hair:'#2A1A10', label:'Working woman' },
+  premium_occasion:  { body:'#C4961D', skin:'#F8D5B5', hair:'#1A1414', label:'Premium occasion' },
+  quick_trip_male:   { body:'#4F87BD', skin:'#E0B898', hair:'#1A1A1A', label:'Quick-trip male' },
+  office_gifter:     { body:'#6B7280', skin:'#E0B898', hair:'#1A1A1A', label:'Office gifter' },
+  visiting_relative: { body:'#D67A47', skin:'#F0C895', hair:'#3D2E20', label:'Visiting relative' },
+  browser:           { body:'#898989', skin:'#F0CFA8', hair:'#3D2E20', label:'Browser' },
 };
 
 // Probability of using trial rooms by profile (from manit-notes/02-shopper-agents.md)
 const TRIAL_PROB = {
   mission_mom: 0.55,
-  young_woman: 0.78,
+  young_mom: 0.50,
   family_weekend: 0.45,
+  young_woman: 0.78,
+  working_woman: 0.55,
+  premium_occasion: 0.85,
   quick_trip_male: 0.18,
+  office_gifter: 0.10,
+  visiting_relative: 0.60,
   browser: 0.04,
 };
 
@@ -134,25 +144,40 @@ const BAG_COLORS   = ['#3D2418','#5A3A20','#7A4528','#A02038','#241410'];
 
 // Per-persona shirt/outfit palette (kept varied within plausible range)
 const SHIRT_PALETTES = {
-  mission_mom:    ['#D67BAA','#E54B6A','#C8409A','#A23E78','#DC6890','#B22E5A','#FF98A8','#E89BB8','#C26389','#984A6D'],
-  young_woman:    ['#A567C9','#7E4FBD','#9A3FBC','#D67BAA','#5A3D9B','#FF9CDB','#3F88C5','#B96FE2','#7A4A9D','#D89AE0'],
-  family_weekend: ['#E5A93C','#D08F2C','#B97824','#E54B6A','#9C7438','#D04C3E','#A56500','#D87138','#B85420','#C97A30'],
-  quick_trip_male:['#4F87BD','#3D6A98','#2C4D6E','#5D7FA3','#7A4528','#465B7A','#365070','#2A3F5A','#5C7488','#3A6080'],
-  browser:        ['#898989','#A8A8A8','#6E6E6E','#897F75','#A89880','#5A554E','#9F9489','#7A6F65','#8B8378','#6A6055'],
+  mission_mom:      ['#D67BAA','#E54B6A','#C8409A','#A23E78','#DC6890','#B22E5A','#FF98A8','#E89BB8','#C26389','#984A6D'],
+  young_mom:        ['#E8B0CC','#F4A0BD','#D67BAA','#E89BB8','#FF98A8','#FFB8D2','#E54B6A','#C8409A','#FFC8DC','#E89E96'],
+  young_woman:      ['#A567C9','#7E4FBD','#9A3FBC','#D67BAA','#5A3D9B','#FF9CDB','#3F88C5','#B96FE2','#7A4A9D','#D89AE0'],
+  working_woman:    ['#5BA08F','#3F88C5','#7E4FBD','#465B7A','#5C7488','#2D3B8F','#3D6A98','#5BA66A','#D67BAA','#2C4D6E'],
+  premium_occasion: ['#C4961D','#A86E1C','#8B5A0F','#7A4528','#A02038','#9C7438','#B97824','#C97A30','#A56500','#704020'],
+  family_weekend:   ['#E5A93C','#D08F2C','#B97824','#E54B6A','#9C7438','#D04C3E','#A56500','#D87138','#B85420','#C97A30'],
+  quick_trip_male:  ['#4F87BD','#3D6A98','#2C4D6E','#5D7FA3','#7A4528','#465B7A','#365070','#2A3F5A','#5C7488','#3A6080'],
+  office_gifter:    ['#6B7280','#475472','#3D4A5C','#2A3F5A','#5C6470','#475569','#374151','#4B5563','#6B7280','#9CA3AF'],
+  visiting_relative:['#D67A47','#B85420','#9C5028','#A56500','#D08F2C','#E5A93C','#C97A30','#7A4528','#A23E78','#5A3D9B'],
+  browser:          ['#898989','#A8A8A8','#6E6E6E','#897F75','#A89880','#5A554E','#9F9489','#7A6F65','#8B8378','#6A6055'],
 };
 const PANTS_PALETTES = {
-  mission_mom:    ['#3A2A1E','#1F1611','#2C2C2C','#5A3A20','#7A5538'],
-  young_woman:    ['#1F1611','#2D3B8F','#3D2418','#2C2C2C','#475472'],
-  family_weekend: ['#3A2A1E','#1F1611','#5A3A20','#2C2C2C','#7A5538'],
-  quick_trip_male:['#1F1611','#2C2C2C','#3D2A1A','#475472','#2D3B8F'],
-  browser:        ['#3A2A1E','#1F1611','#2C2C2C','#3D2418','#5A3A20'],
+  mission_mom:      ['#3A2A1E','#1F1611','#2C2C2C','#5A3A20','#7A5538'],
+  young_mom:        ['#3A2A1E','#1F1611','#2C2C2C','#5A3A20','#7A5538'],
+  young_woman:      ['#1F1611','#2D3B8F','#3D2418','#2C2C2C','#475472'],
+  working_woman:    ['#1F1611','#2C2C2C','#2D3B8F','#3D2A1A','#475472'],
+  premium_occasion: ['#3A2A1E','#1F1611','#5A3A20','#2C2C2C','#7A5538'],
+  family_weekend:   ['#3A2A1E','#1F1611','#5A3A20','#2C2C2C','#7A5538'],
+  quick_trip_male:  ['#1F1611','#2C2C2C','#3D2A1A','#475472','#2D3B8F'],
+  office_gifter:    ['#1F1611','#2C2C2C','#3D2A1A','#374151','#475569'],
+  visiting_relative:['#3A2A1E','#1F1611','#2C2C2C','#5A3A20','#7A5538'],
+  browser:          ['#3A2A1E','#1F1611','#2C2C2C','#3D2418','#5A3A20'],
 };
 
 // Outfit type: ethnic_f / western_f / casual_m / formal_m / mixed
 function pickOutfit(profile, rng) {
   if (profile === 'quick_trip_male') return rng() < 0.45 ? 'formal_m' : 'casual_m';
+  if (profile === 'office_gifter')   return rng() < 0.70 ? 'formal_m' : 'casual_m';
   if (profile === 'mission_mom')     return rng() < 0.78 ? 'ethnic_f' : 'western_f';
+  if (profile === 'young_mom')       return rng() < 0.65 ? 'ethnic_f' : 'western_f';
   if (profile === 'young_woman')     return rng() < 0.42 ? 'ethnic_f' : 'western_f';
+  if (profile === 'working_woman')   return rng() < 0.55 ? 'western_f' : 'ethnic_f';
+  if (profile === 'premium_occasion')return 'ethnic_f';
+  if (profile === 'visiting_relative') return rng() < 0.70 ? 'ethnic_f' : 'western_f';
   if (profile === 'family_weekend')  {
     const r = rng();
     if (r < 0.55) return 'ethnic_f';
@@ -203,6 +228,71 @@ function pickSku(zone) {
   if (!pool.length) return null;
   const it = pool[Math.floor(Math.random() * pool.length)];
   return it.name || it.title || it.id || null;
+}
+
+// Like pickSku but returns {name, sub_category, id} so the caller knows what
+// kind of item it is — needed for L5 cross-merch attach logic.
+function pickSkuInfo(zone) {
+  if (!window.SKUS) return null;
+  const catalog = window.SKUS.skus || window.SKUS;
+  const arr = Array.isArray(catalog) ? catalog : Object.values(catalog).flat();
+  const filtered = arr.filter(s => (s.zone === zone) || (s.zone_id === zone) || false);
+  const pool = filtered.length ? filtered : arr;
+  if (!pool.length) return null;
+  const it = pool[Math.floor(Math.random() * pool.length)];
+  return {
+    name: it.name || it.description || it.id || null,
+    sub_category: it.sub_category || null,
+    id: it.id || null,
+  };
+}
+
+// SKU lookup by sub_category, lazily cached. Used for L5 cross-merch attach
+// where we need to pick a partner item (e.g., a dupatta for a kurti).
+let _skuBySubCatCache = null;
+function skuBySubCategory(sub_cat) {
+  if (_skuBySubCatCache === null) {
+    _skuBySubCatCache = {};
+    const arr = (window.SKUS?.skus) || (Array.isArray(window.SKUS) ? window.SKUS : []);
+    for (const s of arr) {
+      const sc = s.sub_category;
+      if (!sc) continue;
+      if (!_skuBySubCatCache[sc]) _skuBySubCatCache[sc] = [];
+      _skuBySubCatCache[sc].push(s);
+    }
+  }
+  const pool = _skuBySubCatCache[sub_cat];
+  if (!pool || !pool.length) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// Read a profile-level flag from window.PROFILES (responds_to_power_wall,
+// impulse_prone, high_value, ac_sensitive). Falls back to false if unset.
+function profileFlag(profile, flag) {
+  return !!(window.PROFILES?.profiles?.[profile]?.[flag]);
+}
+
+// Read a numeric profile attribute (e.g. price_elasticity ∈ [0, 1]). Returns
+// `dflt` if unset.
+function profileNum(profile, key, dflt = 0) {
+  const v = window.PROFILES?.profiles?.[profile]?.[key];
+  return (typeof v === 'number') ? v : dflt;
+}
+
+// ── PRICE ELASTICITY ───────────────────────────────────────────────────────
+// Returns true if this agent should REJECT an item at the given price,
+// based on the agent's price_elasticity (0 = inelastic, 1 = very sensitive).
+// Mechanism: items priced above the typical reference (~₹500 post-discount)
+// trigger rejection probability proportional to elasticity × (ratio - 1).
+// Capped at 0.70 so no agent rejects 100% of expensive items.
+const PRICE_REFERENCE = 500;
+function priceRejected(profile, value) {
+  if (value <= PRICE_REFERENCE) return false;
+  const elasticity = profileNum(profile, 'price_elasticity', 0.50);
+  if (elasticity <= 0) return false;
+  const ratio = value / PRICE_REFERENCE;
+  const rejectP = Math.min(0.70, (ratio - 1) * elasticity);
+  return Math.random() < rejectP;
 }
 function rngFromId(id) {
   // Deterministic per-agent RNG from id like "A0042"
@@ -556,16 +646,58 @@ class Sim {
         s._help_until = this.simMin + 0.6 + Math.random() * 1.2; // 0.6-1.8 sim min interaction
         s._target_x = target.x + (Math.random() - 0.5) * 10;
         s._target_y = target.y + 10;
+
+        // ── LEVER 2 (extension): staff active upsell ─────────────────────
+        // When the policy enables staff_active_upsell AND this staff member
+        // has an upsell-relevant skill (impulse_upsell or *_expert), bump
+        // the basket-add probability from 22% to 45% and additionally
+        // attempt a cross-merch partner attach during the help interaction.
+        // Causal: a skilled salesperson actively pitching complementary
+        // items mid-conversation closes more multi-item sales.
+        const upsellOn = !!this.policy?.lever_2_floor_staffing?.staff_active_upsell;
+        const hasUpsellSkill = (s.skills || []).some(sk =>
+          sk === 'impulse_upsell' || /_expert$/.test(sk));
+        const upsellThisInteraction = upsellOn && hasUpsellSkill;
+        const basketAddP = upsellThisInteraction ? 0.45 : 0.22;
+
         // Staff assistance occasionally surfaces an item the shopper picks up.
-        // Lower than before — staff help is one of many factors, not a guarantee.
-        if (target.basket.length < target.basket_size_target && Math.random() < 0.22) {
-          target.basket.push({
-            zone: target.current_zone,
-            value: generateItemPrice(target.current_zone),
-            sku: pickSku(target.current_zone),
-            _via_staff: true,
-          });
-          target.basket_value += target.basket[target.basket.length - 1].value;
+        if (target.basket.length < target.basket_size_target && Math.random() < basketAddP) {
+          const itemValue = generateItemPrice(target.current_zone);
+          if (!priceRejected(target.profile, itemValue)) {
+            const skuInfo = pickSkuInfo(target.current_zone);
+            target.basket.push({
+              zone: target.current_zone,
+              value: itemValue,
+              sku: skuInfo?.name || pickSku(target.current_zone),
+              sub_category: skuInfo?.sub_category || null,
+              _via_staff: true,
+            });
+            target.basket_value += target.basket[target.basket.length - 1].value;
+
+            // Skilled-staff cross-merch attach: salesperson actively suggests
+            // a complementary item. Only fires when upsell is on AND the
+            // shopper has another slot in their basket target.
+            if (upsellThisInteraction
+                && skuInfo?.sub_category
+                && target.basket.length < target.basket_size_target) {
+              const partners = window.SKUS?.cross_merchandising_attach_groups?.[skuInfo.sub_category];
+              if (partners && partners.length && Math.random() < 0.35) {
+                const partnerSubCat = partners[Math.floor(Math.random() * partners.length)];
+                const partnerSku = skuBySubCategory(partnerSubCat);
+                const partnerValue = generateItemPrice(target.current_zone);
+                if (partnerSku && !priceRejected(target.profile, partnerValue)) {
+                  target.basket.push({
+                    zone: target.current_zone,
+                    value: partnerValue,
+                    sku: partnerSku.description || partnerSku.id,
+                    sub_category: partnerSku.sub_category,
+                    _via_staff_upsell: true,
+                  });
+                  target.basket_value += target.basket[target.basket.length - 1].value;
+                }
+              }
+            }
+          }
         }
       } else {
         // Patrol — wander within home zone
@@ -706,6 +838,20 @@ class Sim {
     const firstZone = a.zone_plan[0];
     const target = this._pickZoneTarget(firstZone);
     a.current_zone = firstZone;
+
+    // ── LEVER 4: power-wall freshness intent boost ────────────────────────
+    // When the power wall is being refreshed intra-day with festive SKUs and
+    // this agent's profile responds to power-wall freshness, bump their intent
+    // strength for the rest of the visit. Causal mechanism: a fresh, persona-
+    // matched hero display at entry boosts what the agent picks up across the
+    // store, not just at the power wall itself.
+    const L4pw = this.policy?.lever_4_merchandising?.power_wall;
+    if (firstZone === 'power_wall'
+        && L4pw && L4pw.intra_day_refresh
+        && profileFlag(a.profile, 'responds_to_power_wall')) {
+      a.intent_strength = Math.min(1.0, a.intent_strength * 1.20);
+      a._power_wall_boosted = true;
+    }
 
     // Build full Manhattan path through aisles
     const path = this._routeManhattan(
@@ -853,13 +999,60 @@ class Sim {
       // 25% size 1, 25% size 2-3, 15% size 4-5, 5% size 6+. Combined with
       // post-discount item prices, ATV calibrates to ~₹800-₹1,000.
       if (a.basket.length < a.basket_size_target &&
-          Math.random() < dt * 0.11 * a.intent_strength) {
-        a.basket.push({
-          zone: a.current_zone,
-          value: generateItemPrice(a.current_zone),
-          sku: pickSku(a.current_zone),
-        });
-        a.basket_value += a.basket[a.basket.length - 1].value;
+          Math.random() < dt * 0.14 * a.intent_strength) {   /* v3.1: 0.11→0.14 for Diwali peak */
+        const skuInfo = pickSkuInfo(a.current_zone);
+        const itemValue = generateItemPrice(a.current_zone);
+
+        // ── AGENT LOGIC: price elasticity ─────────────────────────────────
+        // Elastic agents (high price_elasticity) reject expensive items more
+        // often. Effect: cheaper baskets for price-sensitive personas (mom,
+        // young woman, browser), richer baskets for inelastic ones (premium,
+        // visiting_relative). NOT a policy lever — pure agent decision.
+        if (priceRejected(a.profile, itemValue)) {
+          // skip this push — agent passes on the item
+        } else {
+          a.basket.push({
+            zone: a.current_zone,
+            value: itemValue,
+            sku: skuInfo?.name || pickSku(a.current_zone),
+            sub_category: skuInfo?.sub_category || null,
+          });
+          a.basket_value += a.basket[a.basket.length - 1].value;
+
+        // ── LEVER 5: cross-merch bundle attach ───────────────────────────
+        // When outfit-bundle fixtures are enabled (kurti+leggings+dupatta in
+        // one fixture, saree+jutti adjacent, etc.), the shopper who picks up
+        // an item with a known cross-merch partner has a chance to add the
+        // partner without traversing to its destination zone.
+        const L5 = this.policy?.lever_5_cross_merch_and_replenishment;
+        if (L5 && L5.outfit_bundle_fixtures
+            && skuInfo?.sub_category
+            && a.basket.length < a.basket_size_target) {
+          const attachGroups = window.SKUS?.cross_merchandising_attach_groups || {};
+          const partners = attachGroups[skuInfo.sub_category];
+          if (partners && partners.length) {
+            // Attach probability: 30% base, 35% if footwear_apparel_co_location
+            // is on and partner is footwear, 40% if accessories.
+            const partnerSubCat = partners[Math.floor(Math.random() * partners.length)];
+            let attachP = 0.30;
+            if (L5.footwear_apparel_co_location && partnerSubCat.startsWith('footwear')) attachP = 0.38;
+            if (partnerSubCat === 'jewellery' || partnerSubCat === 'dupattas') attachP = 0.36;
+            if (Math.random() < attachP) {
+              const partnerSku = skuBySubCategory(partnerSubCat);
+              if (partnerSku) {
+                a.basket.push({
+                  zone: a.current_zone,  // "as if" co-located — physical adjacency
+                  value: generateItemPrice(a.current_zone),
+                  sku: partnerSku.description || partnerSku.id,
+                  sub_category: partnerSku.sub_category,
+                  _bundle_attach: true,
+                });
+                a.basket_value += a.basket[a.basket.length - 1].value;
+              }
+            }
+          }
+        }
+        }  // closes `else` opened by priceRejected check above
       }
       if (a.dwell_remaining <= 0) {
         this._zoneDecision(a);
@@ -900,7 +1093,7 @@ class Sim {
         a._cubicle = null;
         this.metrics.trial_waits.push(a.queue_wait);
         // post-trial decision
-        if (Math.random() < 0.58) {
+        if (Math.random() < 0.72) {                          /* v3.1: 0.58→0.72 — once you trial on Diwali, you mostly buy */
           this._routeToBilling(a);
         } else {
           // drop 1 item
@@ -940,9 +1133,20 @@ class Sim {
     if (a.state === 'at_counter') {
       a.dwell_remaining -= dt;
       if (a.dwell_remaining <= 0) {
-        // Impulse buys near billing (bangles/earrings/makeup/sunglasses) — happens ~28%
-        if (Math.random() < 0.28) {
-          const it = { zone:'billing', value: 60 + Math.random() * 280 };
+        // ── LEVER 4: impulse-fixture content boost ─────────────────────
+        // When the impulse fixture near billing is curated + refreshed
+        // during the day, impulse-prone profiles (mom, young_woman, family,
+        // young_mom, visiting_relative, browser) bite harder. Baseline 28%,
+        // boosted to ~43% when refresh + impulse-prone.
+        const L4imp = this.policy?.lever_4_merchandising?.impulse_fixture;
+        let impulseRate = 0.28;
+        let valueRange = 280;
+        if (L4imp && L4imp.refresh_during_day && profileFlag(a.profile, 'impulse_prone')) {
+          impulseRate = 0.43;
+          valueRange = 360;  // curated festive jewellery > random clearance
+        }
+        if (Math.random() < impulseRate) {
+          const it = { zone:'billing', value: 60 + Math.random() * valueRange, _impulse: true };
           a.basket.push(it);
           a.basket_value += it.value;
         }
@@ -1092,7 +1296,7 @@ class Sim {
       if (this.billing_queue.length === 0) continue;
       const a = this.billing_queue.shift();
       // Service time: 2-3 min on Diwali + per-item adjustment
-      const serv = 1.8 + Math.random() * 1.4 + a.basket.length * 0.15;
+      const serv = 1.2 + Math.random() * 0.8 + a.basket.length * 0.10;   /* v3.2: modern POS, faster tag-removal — 1.5-2.5 min for typical Diwali basket */
       c.busy = a;
       c.finishAt = this.simMin + serv;
       a.state = 'at_counter';

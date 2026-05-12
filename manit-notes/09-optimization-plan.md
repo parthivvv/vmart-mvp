@@ -1,6 +1,8 @@
-# Optimization plan — baseline → optimized_v1
+# Optimization plan — baseline → optimized_v2
 
 How we go from a working baseline to a demo-able optimized run, without cheating.
+
+> **Status: executed twice.** v1 ran with L1/L2/L3 wired → +26.85% lift. v2 ran after expanding personas to 10 and wiring L4 (merchandising) + L5 (cross-merch bundles) → **+51.88% lift**. Full report in [../documents/optimization-report.md](../documents/optimization-report.md). The body of this doc is preserved as the original plan; an [execution summary](#execution-summary) section is appended at the end.
 
 ## Approach in one sentence
 
@@ -166,3 +168,72 @@ Future chapter, not for the MVP demo:
 - Pitch this as "phase 2: the framework can search for optimal operational policy automatically"
 
 This is the punchline, not the body of the demo.
+
+---
+
+## Execution summary
+
+Added after the plan ran end-to-end. The detailed report is [../documents/optimization-report.md](../documents/optimization-report.md).
+
+**What we actually did:**
+
+- Pivoted from "manual policy authoring" (the plan above) to a **trimmed grid sweep** when the first hand-crafted optimized_v1 only delivered +0.95%. The sweep infrastructure was cheap to build (~250 lines) and far more useful than iterating by hand.
+- Built `train/headless.js` to run the engine in Node with seeded `Math.random()` — full day in ~50ms.
+- Pre-generated 3 cohorts (seeds 101, 202, 303). Each is a full 1,000-agent set.
+- Generated 16 candidate policies via `train/generate_policies.js` covering 5 × L1 × 4 × L2 × 2 × L3 combinations (trimmed from the 40-cell full grid).
+- Ran 48 simulations (16 × 3) in 2.37 seconds.
+- Winner: `P13_combo_max_L1_L2` — ₹5.125 L mean, +26.85% vs baseline.
+- Saved as `data/policies/optimized_v2.json` with full `sweep_evidence` and `compliance` blocks.
+
+**Key findings beyond the original plan:**
+
+1. **L1 (billing schedule) is the dominant lever** — varies revenue from ₹4.04L (reactive) to ₹5.10L (sched_15_16). L2 and L3 add only marginal lift on top.
+2. **Opening counter 4 is the magic.** Three-counter schedules cap at +4.5%. Four-counter schedules jump to +25%.
+3. **L3 (trial-room attendant + cap) is slightly negative alone.** Forces shoppers out faster with smaller baskets. Only worth it when L1 has already opened the billing bottleneck.
+4. **Headroom is mostly captured by L1.** L4 + L5 (currently unwired) are where additional lift lives — power-wall intent, cross-merch attach, mid-peak replenishment.
+
+**Step status:**
+
+| Step | Plan | Actual | Result |
+|------|------|--------|--------|
+| 1. Baseline validation | Run baseline, check KPI bands | Baseline runs at ₹4.04L (above brief's 2.8–3.6L band). Engine over-converts vs brief. Accepted for v1; calibration in stretch list. | Acceptable |
+| 2. Diagnose leaks | Identify top 2–3 KPIs at bad end | Peak billing wait 30m, 161 abandonments/cohort, 16% walkout. Billing capacity = bottleneck. | Clear |
+| 3. Per-lever sensitivity | One policy file per lever | Built 16 candidates, full grid mini-sweep. | L1 dominant. |
+| 4. Compose optimized | Stack top wired levers | `P13_combo_max_L1_L2` selected. | +26.85% |
+| 5. Optimized run vs baseline | Same-seed comparison | Done across 3 cohorts. 4-point honesty check passes. | Demo-ready |
+
+**Demo narrative as it stands:** baseline live sim shows the queue forming at 18:00 → exec summary highlights the +₹1.08L/day opportunity → optimized_v2 live sim shows the queue dissolving → KPI comparison plot in the deliverable closes the story. The framework supports further auto-search in v2 once L4 + L5 are wired.
+
+---
+
+## v2 sweep — after expanding personas + wiring L4/L5
+
+User pushed back on three real limitations after v1 shipped:
+1. 5 broad personas missed important Bangalore Diwali segments (young moms with toddlers, working women, premium-occasion shoppers, office gifters, visiting relatives).
+2. Cross-merch bundling (L5) was spec'd but engine ignored it.
+3. Merchandising (L4) was spec'd but engine ignored it.
+
+**Engine changes made:**
+- Personas expanded from 5 → 10 with three new behavioral flags: `responds_to_power_wall`, `impulse_prone`, `high_value`.
+- L4 power-wall: when `intra_day_refresh=true` and profile has `responds_to_power_wall=true`, agent's `intent_strength` × 1.20 at spawn.
+- L4 impulse fixture: when `refresh_during_day=true` and profile has `impulse_prone=true`, billing impulse rate 28% → 43%, value range 280 → 360.
+- L5 bundle attach: when `outfit_bundle_fixtures=true` and an agent picks up an item with a known cross-merch partner (per `data/skus.json → cross_merchandising_attach_groups`), 30-38% chance to attach the partner without leaving the zone.
+
+**Candidate set expanded** 16 → 30 to span the new lever space:
+- L1: 5 levels, L2: 4, L3: 2, L4: 4 (none/powerwall/impulse/both), L5: 3 (none/bundles/bundles+footwear)
+- 30 selected from the 480-cell full grid
+
+**v2 results:**
+- Winner: `P24_combo_op_plus_full` — L1_max + staggered_2_re + attendant_cap + L4_both + L5_bundles_footwear
+- Mean revenue: ₹5.80L vs baseline ₹3.82L → **+51.88%**
+- Conversion 50.5% → 70.2%
+- Peak billing wait 30.0 → 23.3 min
+- Average billing wait 18.0 → 5.8 min
+- Billing abandonments 161 → 31 (–80.7%)
+
+**Key v2 findings beyond v1:**
+- L5 (cross-merch bundles) is now the strong secondary lever. +14% on its own. +44% stacked with L1_max.
+- L4 alone is weak (~+5%) but additive when stacked.
+- Story now has two engines: more memos (v1 story — billing capacity) AND bigger memos (v2 story — bundle attach + curated impulse).
+
+The framework now demonstrates revenue lift via both the "rescue abandoned baskets" mechanism (L1) and the "grow basket size by physical adjacency" mechanism (L5). Two independent levers, both real, both defensible. That's the pitch v2 narrative.
