@@ -1063,17 +1063,33 @@
   }
   .rpt-move {
     background: white;
-    padding: 22px 28px;
+    padding: 20px 26px;
     display: grid;
-    grid-template-columns: 50px 1fr 1fr 180px;
+    grid-template-columns: 160px 1fr;
     gap: 24px;
-    align-items: center;
+    align-items: start;
   }
   .rpt-move .rank {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 22px; font-weight: 700;
+    font-size: 11px; font-weight: 700;
     color: #1F4D4A;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-top: 4px;
+    line-height: 1.4;
+  }
+  .rpt-move .body .desc {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: #4A4A4A;
+    line-height: 1.55;
+  }
+  .rpt-move .body .lift {
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    color: #1F4D4A;
+    font-weight: 700;
   }
   .rpt-move .ttl {
     font-family: 'Inter Tight', sans-serif;
@@ -1470,7 +1486,7 @@
   <div class="cover-foot">
     <div class="cover-method-grid">
       <div class="lbl">METHOD</div><div class="body">Causal-chain only · no boost-multiplier hacks · same shoppers, same seed across every policy</div>
-      <div class="lbl">SCOPE</div><div class="body">Single store, single day. Scales 1:1 across your 470-store network · ~4 festive weekends/year</div>
+      <div class="lbl">SCOPE</div><div class="body">Single store, single day. Scales across 89 Unlimited stores · 554 total V-Mart + Unlimited stores · ~4 festive weekends/year</div>
     </div>
     <div class="cover-status">
       <div><span class="dot"></span>Sim engine ready · 1,000 agents · 18 staff</div>
@@ -1517,7 +1533,7 @@
         <div class="lbl">Recovered revenue · per peak Saturday</div>
         <div class="dv" id="rptHeroDelta">+ ₹— L</div>
         <div class="dp" id="rptHeroPct">+ —%</div>
-        <div class="net">Network · 470 stores × 4 festive weekends → <b id="rptHeroNet">+ ₹— Cr / year</b></div>
+        <div class="net">Unlimited network · 89 stores × 4 festive weekends → <b id="rptHeroNet">+ ₹— Cr / year</b></div>
       </div>
     </div>
     <p class="rpt-conv-note" style="margin-top: 14px; font-size: 12px; color: var(--ink-dim); line-height: 1.5; padding-top: 12px; border-top: 1px dashed var(--line);">
@@ -1577,45 +1593,24 @@
 
   <!-- ============== METHODOLOGY ============== -->
   <section class="rpt-section">
-    <div class="rpt-eyebrow">Section 07 · Methodology</div>
-    <h2 class="rpt-q">How every number on this page is computed.</h2>
-    <div class="rpt-method">
-      <div>
-        <h5>1,000 agents · 10 personas · same seed across every policy</h5>
-        <p>Ten Bangalore-specific persona archetypes (mission moms, young moms, working women, premium-occasion buyers, family weekenders, quick-trip men, office gifters, visiting relatives, browsers, and young women) walk the floor for 12 hours. Each agent has a backstory, arrival time, dwell, queue tolerance, basket-size target, intent strength, and price elasticity — all reproducible from a single RNG seed.</p>
-        <div class="src">data/agents.json · data/profiles.json · manit-notes/02-shopper-agents.md</div>
-      </div>
-      <div>
-        <h5>Five wired operating levers</h5>
-        <p>L1 (billing schedule), L2 (floor staffing + active upsell), L3 (trial-room attendant + item cap), L4 (power-wall freshness + impulse fixture), and L5 (cross-merch bundle fixtures + footwear adjacency) are all live in the engine. Each policy is a JSON file specifying knob values; the engine reacts; agents respond.</p>
-        <div class="src">manit-notes/08-policies-and-guardrails.md · store/engine.js (search "// LEVER")</div>
-      </div>
-      <div>
-        <h5>Auto-search · 34 candidates × 3 cohorts = 102 deterministic runs</h5>
-        <p>A trimmed grid sweep across the L1×L2×L3×L4×L5 policy space evaluates 34 candidates on three independent 1,000-agent cohorts (seeds 101, 202, 303). The winner is the highest mean revenue across cohorts — robust, not single-seed lucky.</p>
-        <div class="src">train/sweep.js · train/results/latest.json · manit-notes/09-optimization-plan.md</div>
-      </div>
-      <div>
-        <h5>Causal-chain only · no fiat lift</h5>
-        <p>Every claimed lift flows through <b>policy → environment → agent reaction → revenue</b>. No boost-multipliers. No forced conversion rates. No fiat ATV bumps. The schema rejects keys matching <code>boost_*</code>, <code>multiplier</code>, <code>override_*</code>, or <code>*_probability</code> at the top level. If a finding can't be traced to a specific shopper behaviour in a specific run, it isn't surfaced.</p>
-        <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
-      </div>
-      <div>
-        <h5>Two calibration rounds against real Diwali data</h5>
-        <p>v3.1 retuned agent-side parameters (intent, queue tolerance, basket-build rate, post-trial purchase) to match festive shopper behaviour — Diwali baseline conversion is 70-85%, not 35-40%. v3.2 cut per-memo billing service time (modern POS + festive-trained staff) so baseline abandonment dropped from 33% of basket-holders to ~12% — a defensible number. Both rounds affect baseline AND optimized identically.</p>
-        <div class="src">documents/optimization-report.md · "v3 → v3.1 → v3.2" iteration table</div>
-      </div>
-      <div>
-        <h5>Full whitepaper · methodology + results + actionable insights</h5>
-        <p>A detailed write-up of the model, the sweep, the per-lever findings, the recommended policy, and the limitations — with every plot embedded — is available as a downloadable methodology document.</p>
-        <div class="src" style="display: flex; gap: 10px; margin-top: 8px;">
-          <a id="dlWhitepaper" href="../documents/optimization-report.md"
-             download="VMart-Diwali-Methodology-Whitepaper.md"
-             style="display:inline-block; padding:8px 14px; background:#1F4D4A; color:white; border-radius:4px; text-decoration:none; font-weight:600; font-size:11.5px; letter-spacing:0.04em;">↓ Download whitepaper (.md)</a>
-          <a id="viewWhitepaper" href="../documents/optimization-report.md" target="_blank"
-             style="display:inline-block; padding:8px 14px; background:transparent; color:#1F4D4A; border:1px solid #1F4D4A; border-radius:4px; text-decoration:none; font-weight:600; font-size:11.5px; letter-spacing:0.04em;">View in browser →</a>
-        </div>
-      </div>
+    <div class="rpt-eyebrow">Section 07 · Documents</div>
+    <h2 class="rpt-q">Two reports for two audiences.</h2>
+    <p class="rpt-lede" style="max-width: 720px;">The <b>whitepaper</b> is a tight 4-page board-ready document — top-line numbers, the five recommended moves, the network-scale impact, and the pilot ask. The <b>methodology document</b> is the technical companion — model, agents, levers, sweep, calibration history, and full appendix.</p>
+    <div style="display: flex; gap: 14px; margin-top: 22px; flex-wrap: wrap;">
+      <a href="../documents/VMart-Diwali-Whitepaper.pdf"
+         download="VMart-Diwali-Whitepaper.pdf"
+         style="display:inline-flex; flex-direction:column; gap:6px; padding:18px 22px; background:#1F4D4A; color:white; border-radius:6px; text-decoration:none; min-width: 250px;">
+        <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.75;">For the board · 4 pages</div>
+        <div style="font-size:17px; font-weight:700; font-family:'Charter','Iowan Old Style',Georgia,serif;">↓ Whitepaper (PDF)</div>
+        <div style="font-size:11px; opacity:0.85;">Executive summary, recommended moves, network impact, pilot ask.</div>
+      </a>
+      <a href="../documents/VMart-Diwali-Methodology.pdf"
+         download="VMart-Diwali-Methodology.pdf"
+         style="display:inline-flex; flex-direction:column; gap:6px; padding:18px 22px; background:transparent; color:#1A1815; border:1.5px solid #1F4D4A; border-radius:6px; text-decoration:none; min-width: 250px;">
+        <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#1F4D4A;">For the data team · 24+ pages</div>
+        <div style="font-size:17px; font-weight:700; font-family:'Charter','Iowan Old Style',Georgia,serif; color:#1F4D4A;">↓ Methodology (PDF)</div>
+        <div style="font-size:11px; color:#4A4A4A;">Model, agents, all 5 levers, sweep design, calibration, appendix.</div>
+      </a>
     </div>
   </section>
 
@@ -2458,15 +2453,16 @@
     out += `<path d="${pathFor(baseSeries)}" stroke="${GRAY}" stroke-width="1.8" fill="none" opacity="0.85"/>`;
     // Optimized line
     out += `<path d="${pathFor(optSeries)}" stroke="${TEAL}" stroke-width="2" fill="none"/>`;
-    // Legend
-    out += `<g transform="translate(${padL + 4}, ${padT + 4})">
+    // Legend — right-aligned at top of chart
+    const legendX = W - padR - 175;
+    out += `<g transform="translate(${legendX}, ${padT + 4})">
       <circle cx="6" cy="6" r="4" fill="${GRAY}"/>
       <text x="16" y="10" fill="${INK_DIM}" font-size="10.5" font-family="Inter Tight">Baseline</text>
       <circle cx="92" cy="6" r="4" fill="${TEAL}"/>
       <text x="102" y="10" fill="${TEAL}" font-size="10.5" font-family="Inter Tight" font-weight="600">Optimized</text>
     </g>`;
-    // Y label
-    out += `<text x="${padL - 36}" y="${padT + 4}" fill="${INK_DIM}" font-size="9" font-family="Inter Tight" letter-spacing="0.06em">${yLabel}</text>`;
+    // Y label — top-left of plot area
+    out += `<text x="${padL}" y="${padT - 6}" fill="${INK_DIM}" font-size="9" font-family="Inter Tight" letter-spacing="0.06em" text-transform="uppercase">${yLabel}</text>`;
     svg.innerHTML = out;
   }
 
@@ -2490,7 +2486,7 @@
       const oK = optSim.kpis();
       const delta    = oK.revenue - bK.revenue;
       const deltaPct = bK.revenue ? (delta / bK.revenue) * 100 : 0;
-      const networkAnnual = delta * 470 * 4;
+      const networkAnnual = delta * 89 * 4;
 
       // ── Hero block ─────────────────────────────────────────
       _setText('rptHeroBase',    '₹' + (bK.revenue / 1e5).toFixed(2) + ' L');

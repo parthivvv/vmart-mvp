@@ -395,9 +395,11 @@ Lever 4. Targets the impulse-prone segments at the right moment (entry intent bo
 
 ## Why this matters at network scale
 
-For a single store, the lift is **₹2.01 lakh / peak day** — ₹7.62L optimized vs ₹5.61L baseline. Scaling across V-Mart's 470 Unlimited stores × 4 major festive weekends per year (Diwali, Eid, Rakhi-Independence weekend, year-end):
+For a single store, the lift is **₹2.01 lakh / peak day** — ₹7.62L optimized vs ₹5.61L baseline. Scaling across V-Mart's 89 Unlimited stores × 4 major festive weekends per year (Diwali, Eid, Rakhi-Independence weekend, year-end):
 
-**₹2.01 L × 470 × 4 = ₹37.78 Cr / year in recovered peak-festival revenue.**
+**₹2.01 L × 89 × 4 = ₹7.16 Cr / year in recovered peak-festival revenue.**
+
+V-Mart's broader footprint is 554 stores including V-Mart and Unlimited; this network-scale estimate is intentionally scoped to the 89 Unlimited stores.
 
 Five operational moves. Zero incremental capex. Zero rebranding, zero pricing change, zero hiring. Every move is reversible — if a store manager doesn't like what they see in the first hour, they revert to baseline policy mid-day.
 
