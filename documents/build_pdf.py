@@ -1,9 +1,9 @@
 """
-Build the whitepaper PDF from the markdown source.
+Build the whitepaper and methodology PDFs from the markdown sources.
 
 Pipeline:
   documents/optimization-report.md
-    → render to styled HTML (Aaru-style serif + warm bg, page-break friendly)
+    → render to styled HTML (serif + warm bg, page-break friendly)
     → headless Chrome print-to-PDF
     → documents/VMart-Diwali-Whitepaper.pdf
     → also keeps documents/whitepaper.html as a viewable artifact
@@ -45,6 +45,9 @@ DOCS = [
     },
 ]
 
+ACCENT = "#E11D26"
+ACCENT_DARK = "#B0141B"
+
 CSS = """
 @page {
   size: A4;
@@ -67,7 +70,7 @@ body {
   padding: 0;
 }
 
-/* TITLE BLOCK — first H1 acts as cover header */
+/* TITLE BLOCK - first H1 acts as cover header */
 h1 {
   font-size: 30pt;
   font-weight: 600;
@@ -85,7 +88,7 @@ h2 {
   letter-spacing: -0.005em;
   margin: 28pt 0 12pt 0;
   padding-bottom: 8pt;
-  border-bottom: 1.5pt solid #1F4D4A;
+  border-bottom: 1.5pt solid __ACCENT__;
   color: #1A1815;
   page-break-after: avoid;
 }
@@ -103,7 +106,7 @@ h4 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #1F4D4A;
+  color: __ACCENT_DARK__;
   margin: 16pt 0 6pt 0;
 }
 
@@ -146,10 +149,10 @@ pre {
 pre code { background: transparent; padding: 0; font-size: inherit; }
 
 blockquote {
-  border-left: 3pt solid #1F4D4A;
+  border-left: 3pt solid __ACCENT__;
   padding: 10pt 16pt;
   margin: 12pt 0;
-  background: rgba(31,77,74,0.05);
+  background: rgba(225,29,38,0.06);
   color: #2A2A2A;
   page-break-inside: avoid;
 }
@@ -196,21 +199,26 @@ hr {
   margin: 22pt 0;
 }
 
-a { color: #1F4D4A; text-decoration: none; border-bottom: 0.5pt dashed #1F4D4A; }
-a code { color: #1F4D4A; }
+a { color: __ACCENT_DARK__; text-decoration: none; border-bottom: 0.5pt dashed __ACCENT_DARK__; }
+a code { color: __ACCENT_DARK__; }
 
 /* Avoid orphans where possible */
 h2 + p, h3 + p, h4 + p { page-break-before: avoid; }
 
-/* Image-after-h2 — keep them together */
+/* Image-after-h2 - keep them together */
 h2 + img, h3 + img, p + img { page-break-before: avoid; }
 
 /* Footer note: published date stamp + page number rendered by Chrome */
 """
+CSS = CSS.replace("__ACCENT_DARK__", ACCENT_DARK).replace("__ACCENT__", ACCENT)
+
+
+def sanitize_text(text):
+    return text.replace("\u2014", " - ").replace("\u2013", "-")
 
 
 def build_one(spec):
-    md_text = spec["md"].read_text()
+    md_text = sanitize_text(spec["md"].read_text())
     html_body = markdown.markdown(
         md_text,
         extensions=["tables", "fenced_code", "sane_lists", "nl2br"],
@@ -224,10 +232,10 @@ def build_one(spec):
 <style>{CSS}</style>
 </head>
 <body>
-{html_body}
+{sanitize_text(html_body)}
 </body>
 </html>"""
-    spec["html"].write_text(html_doc)
+    spec["html"].write_text(sanitize_text(html_doc))
     print(f"  wrote {spec['html'].name} ({spec['html'].stat().st_size / 1024:.1f} KB)")
 
     if not Path(CHROME).exists():

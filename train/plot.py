@@ -10,7 +10,7 @@ Reads train/results/latest.json, writes 5 plots to train/plots/.
 Design:
   - serif: Charter (transitional, wide-aperture)
   - sans:  Helvetica Neue
-  - palette: muted teals + warm off-white bg
+  - palette: V-Mart reds + warm off-white bg
   - all caps small-bold for legend / labels
   - small "V-MART" mark + italic tagline at footer
 """
@@ -25,29 +25,29 @@ import matplotlib as mpl
 import numpy as np
 
 
-# ── PALETTE ────────────────────────────────────────────────────────────────
+# -- PALETTE ----------------------------------------------------------------
 BG          = '#F2EFE8'
 INK         = '#1A1815'
 INK_DIM     = '#7A746B'
 LINE        = '#D8D2C7'
 LINE_DARK   = '#B8B0A2'
 
-TEAL_DARK   = '#1F4D4A'
-TEAL        = '#2A6E63'
-TEAL_MID    = '#3E8E7E'
-SAGE        = '#8FAE9E'
-MINT        = '#B4D2C0'
+RED_DARK    = '#B0141B'
+RED         = '#E11D26'
+RED_MID     = '#EF5A63'
+ROSE        = '#F08A92'
+ROSE_LIGHT  = '#F7B7BD'
 SLATE       = '#3A3F45'
 GRAY_MID    = '#9A938A'
 GRAY_LIGHT  = '#C0B8AC'
 
-# Color coded by L1 level — the dominant signal we discovered in the sweep
+# Color coded by L1 level, the dominant signal we discovered in the sweep
 L1_COLORS = {
     'reactive':    GRAY_MID,
-    'sched_18_19': SAGE,
-    'sched_17_18': TEAL_MID,
-    'sched_16_17': TEAL,
-    'sched_15_16': TEAL_DARK,
+    'sched_18_19': ROSE_LIGHT,
+    'sched_17_18': ROSE,
+    'sched_16_17': RED_MID,
+    'sched_15_16': RED_DARK,
 }
 
 L1_LABELS = {
@@ -60,12 +60,12 @@ L1_LABELS = {
 
 # Cohort colors for dot plots
 COHORT_COLORS = {
-    'cohort_101.json': TEAL_DARK,
-    'cohort_202.json': TEAL_MID,
-    'cohort_303.json': SAGE,
+    'cohort_101.json': RED_DARK,
+    'cohort_202.json': RED,
+    'cohort_303.json': ROSE,
 }
 
-# ── FONTS ──────────────────────────────────────────────────────────────────
+# -- FONTS ------------------------------------------------------------------
 mpl.rcParams['font.serif']      = ['Charter', 'Iowan Old Style', 'Georgia', 'DejaVu Serif']
 mpl.rcParams['font.sans-serif'] = ['Helvetica Neue', 'Helvetica', 'Arial', 'DejaVu Sans']
 mpl.rcParams['font.family']     = 'sans-serif'
@@ -81,7 +81,7 @@ mpl.rcParams['text.color']      = INK
 mpl.rcParams['legend.frameon']  = False
 
 
-# ── LOAD ───────────────────────────────────────────────────────────────────
+# -- LOAD -------------------------------------------------------------------
 HERE     = Path(__file__).resolve().parent
 RESULTS  = json.loads((HERE / 'results' / 'latest.json').read_text())
 OUT_DIR  = HERE / 'plots'
@@ -110,7 +110,7 @@ def l1_of(pid: str) -> str:
     return json.loads(f.read_text())['levers_chosen']['L1']
 
 
-# ── FRAMING ────────────────────────────────────────────────────────────────
+# -- FRAMING ----------------------------------------------------------------
 def aaru_frame(fig, title, subtitle=None, footer_y=0.035):
     """Apply standard Aaru-esque framing: title top-left, footer bottom-center."""
     fig.text(0.065, 0.93, title, fontsize=32, family='serif', color=INK,
@@ -155,7 +155,7 @@ def l1_legend(fig, y=0.07):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PLOT 1 — POLICY RANKING (horizontal bars, sorted desc)
+# PLOT 1 - POLICY RANKING (horizontal bars, sorted desc)
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_ranking():
     sorted_aggs = sorted(aggregates, key=lambda a: -a['mean_revenue'])
@@ -209,7 +209,7 @@ def plot_ranking():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PLOT 2 — LEVER DECOMPOSITION (the L1 signal)
+# PLOT 2 - LEVER DECOMPOSITION (the L1 signal)
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_lever_decomposition():
     l1_groups = {}
@@ -273,7 +273,7 @@ def plot_lever_decomposition():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PLOT 3 — COHORT CONSISTENCY (dot plot like the Aaru citibike example)
+# PLOT 3 - COHORT CONSISTENCY
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_cohort_consistency():
     # Top 10 policies
@@ -341,7 +341,7 @@ def plot_cohort_consistency():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PLOT 4 — KPI COMPARISON BASELINE vs WINNER (slope/before-after)
+# PLOT 4 - KPI COMPARISON BASELINE vs WINNER (slope/before-after)
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_kpi_comparison():
     base = agg_by_id.get('P01_pure_baseline')
@@ -364,7 +364,7 @@ def plot_kpi_comparison():
     fig = plt.figure(figsize=(13, 11))
     aaru_frame(
         fig,
-        'Before & after — baseline policy vs sweep winner',
+        'Before & after: baseline policy vs sweep winner',
         f'Same 3 cohorts × 1,000 agents · same sim seed · only the policy changed.',
     )
     ax = fig.add_axes([0.085, 0.13, 0.83, 0.70])
@@ -377,8 +377,7 @@ def plot_kpi_comparison():
     for y, (label, b, w, fmt, direction) in zip(y_positions, rows):
         # Determine if "better" is up or down
         better = (direction == 'up' and w > b) or (direction == 'down' and w < b)
-        line_color = TEAL_DARK if better else GRAY_MID
-        slope_arrow = '▲' if w > b else ('▼' if w < b else '—')
+        line_color = RED_DARK if better else GRAY_MID
         pct_change = ((w - b) / b * 100) if b != 0 else 0
         sign = '+' if pct_change >= 0 else ''
 
@@ -387,7 +386,7 @@ def plot_kpi_comparison():
                 alpha=0.85, zorder=2)
         # Dots
         ax.scatter(x_left,  y, s=200, color=GRAY_MID,   zorder=3, edgecolor=BG, linewidth=2)
-        ax.scatter(x_right, y, s=200, color=TEAL_DARK,  zorder=3, edgecolor=BG, linewidth=2)
+        ax.scatter(x_right, y, s=200, color=RED_DARK,  zorder=3, edgecolor=BG, linewidth=2)
 
         # Label on left
         ax.text(-0.04, y, label, ha='right', va='center', fontsize=11,
@@ -401,14 +400,14 @@ def plot_kpi_comparison():
         # % change in the middle (above line)
         ax.text((x_left + x_right) / 2, y + 0.30, f'{sign}{pct_change:.1f}%',
                 ha='center', va='bottom', fontsize=10.5,
-                color=TEAL_DARK if better else SLATE,
+                color=RED_DARK if better else SLATE,
                 family='sans-serif', weight='bold')
 
     # Headers
     ax.text(x_left,  n - 0.2, 'B A S E L I N E', ha='center', va='bottom',
             fontsize=10, color=INK_DIM, weight='bold', family='sans-serif')
     ax.text(x_right, n - 0.2, 'O P T I M I Z E D   V 2', ha='center', va='bottom',
-            fontsize=10, color=TEAL_DARK, weight='bold', family='sans-serif')
+            fontsize=10, color=RED_DARK, weight='bold', family='sans-serif')
 
     ax.set_xlim(-0.38, 1.18)
     ax.set_ylim(-0.8, n + 0.1)
@@ -424,7 +423,7 @@ def plot_kpi_comparison():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# PLOT 5 — TRADEOFF SCATTER (revenue vs peak billing wait)
+# PLOT 5 - TRADEOFF SCATTER (revenue vs peak billing wait)
 # ─────────────────────────────────────────────────────────────────────────────
 def plot_tradeoff_scatter():
     fig = plt.figure(figsize=(13, 9.5))
@@ -468,11 +467,9 @@ def plot_tradeoff_scatter():
     print(f'wrote {out.name}')
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # MAIN
-# ─────────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
-    # Removed: plot_tradeoff_scatter() — points clumped at the right edge,
+    # Removed: plot_tradeoff_scatter() - points clumped at the right edge,
     # adds no insight beyond what policy_ranking + lever_decomposition show.
     plot_ranking()
     plot_lever_decomposition()
