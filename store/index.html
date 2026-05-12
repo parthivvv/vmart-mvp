@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    /* v3 Aaru-style palette: warm off-white + teals, dark ink */
+    /* V-Mart palette: warm off-white + red, dark ink */
     --bg:          #F2EFE8;
     --panel:       #FAF7F0;
     --panel-l:     #FFFFFF;
@@ -18,13 +18,15 @@
     --ink:         #1A1815;
     --ink-mid:     rgba(26,24,21,0.72);
     --ink-dim:     rgba(26,24,21,0.45);
-    --red:         #1F4D4A;   /* primary accent — teal-dark (was crimson) */
-    --red-d:       #16352F;
-    --teal:        #2A6E63;
-    --teal-mid:    #3E8E7E;
-    --sage:        #8FAE9E;
-    --mint:        #B4D2C0;
-    --green:       #2E7D52;
+    --red:         #E11D26;   /* primary accent — V-Mart red */
+    --red-d:       #B0141B;
+    --red-mid:     #C91822;
+    --red-soft:    #F04A52;
+    --red-pale:    #F58A90;
+    --red-wash:    #F8B8BC;
+    --positive:    #2E7D52;
+    --positive-d:  #1F5F3D;
+    --positive-bg: rgba(46,125,82,0.12);
     --gold:        #C4961D;
     --slate:       #3A3F45;
     --p-mom:       #D67BAA;
@@ -105,8 +107,8 @@
   .chip .v { color: var(--ink); font-weight: 700; }
   .chip.alert { background: rgba(225,29,38,0.18); border-color: rgba(225,29,38,0.50); }
   .chip.alert .v { color: var(--red); }
-  .chip.good { background: rgba(61,220,132,0.12); border-color: rgba(61,220,132,0.40); }
-  .chip.good .v { color: var(--green); }
+  .chip.good { background: rgba(225,29,38,0.12); border-color: rgba(225,29,38,0.40); }
+  .chip.good .v { color: var(--red); }
   /* ─── POLICY PICKER (v3: replaces old toggle) ──────────────── */
   .policy-picker {
     position: relative;
@@ -136,7 +138,7 @@
     transition: all 0.15s;
   }
   .policy-picker .pp-pill:hover {
-    border-color: var(--teal); color: var(--ink);
+    border-color: var(--red); color: var(--ink);
   }
   .policy-picker .pp-pill.active {
     background: var(--red); color: white; border-color: var(--red);
@@ -153,7 +155,7 @@
     transition: all 0.15s;
   }
   .policy-picker .pp-more:hover {
-    color: var(--ink); border-color: var(--teal-mid); border-style: solid;
+    color: var(--ink); border-color: var(--red-soft); border-style: solid;
   }
   .policy-picker .pp-more.open {
     background: var(--ink); color: white; border: 1px solid var(--ink);
@@ -208,8 +210,8 @@
     cursor: pointer;
     transition: background 0.12s;
   }
-  .pp-row:hover { background: rgba(31,77,74,0.06); }
-  .pp-row.selected { background: rgba(31,77,74,0.12); }
+  .pp-row:hover { background: rgba(225,29,38,0.06); }
+  .pp-row.selected { background: rgba(225,29,38,0.12); }
   .pp-row .pid {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9.5px;
@@ -236,7 +238,7 @@
     font-weight: 700;
     text-align: right;
   }
-  .pp-row .delta.pos  { color: var(--teal); }
+  .pp-row .delta.pos  { color: var(--red); }
   .pp-row .delta.neg  { color: #B5392D; }
   .pp-row .delta.zero { color: var(--ink-dim); }
 
@@ -270,7 +272,7 @@
     line-height: 1.55;
     padding: 10px 12px;
     background: white;
-    border-left: 3px solid var(--teal);
+    border-left: 3px solid var(--red);
     border-radius: 2px;
     margin-bottom: 14px;
     font-family: 'Charter', 'Iowan Old Style', Georgia, serif;
@@ -316,7 +318,7 @@
     font-size: 17px;
     color: var(--ink);
   }
-  #ppDetail .kpis .v.pos { color: var(--teal); }
+  #ppDetail .kpis .v.pos { color: var(--red); }
   #ppDetail .kpis .v.neg { color: #B5392D; }
 
   /* ─── STAGE (canvas) ──────────────────────────── */
@@ -360,7 +362,7 @@
   .zd-row .bar > div { height: 100%; background: var(--red); transition: width 0.3s; }
   .zd-row .ct { font-family: 'JetBrains Mono', monospace; color: var(--ink); text-align: right; font-weight: 700; }
 
-  /* ─── SIDE PANEL (inspector + events) ─────────── */
+  /* ─── SIDE PANEL ─────────── */
   .side {
     grid-area: side;
     background: var(--panel);
@@ -378,103 +380,6 @@
     color: var(--red);
     margin-bottom: 8px;
   }
-
-  /* Inspector */
-  #inspector .empty {
-    color: var(--ink-dim);
-    font-size: 12px;
-    font-style: italic;
-    padding: 14px 0;
-    text-align: center;
-  }
-  .insp-head {
-    display: flex; align-items: center; gap: 10px;
-    padding-bottom: 8px;
-  }
-  .insp-avatar {
-    width: 36px; height: 36px;
-    border-radius: 4px;
-    display: inline-flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 14px;
-    border: 2px solid rgba(26,24,21,0.15);
-  }
-  .insp-name {
-    font-size: 14px; font-weight: 700;
-  }
-  .insp-meta {
-    font-size: 11px; color: var(--ink-dim); margin-top: 1px;
-  }
-  .insp-state {
-    background: rgba(225,29,38,0.20);
-    color: var(--red);
-    padding: 3px 8px;
-    border-radius: 2px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-left: auto;
-  }
-  .insp-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 6px;
-    padding: 4px 0;
-    font-size: 11px;
-    border-bottom: 1px dashed rgba(26,24,21,0.10);
-  }
-  .insp-row .k { color: var(--ink-dim); }
-  .insp-row .v { color: var(--ink); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-  .insp-story {
-    margin-top: 10px;
-    padding: 9px 11px;
-    background: rgba(255,217,102,0.08);
-    border-left: 3px solid var(--gold);
-    font-size: 11px;
-    color: var(--ink-mid);
-    line-height: 1.45;
-    font-style: italic;
-  }
-  .insp-basket {
-    margin-top: 9px;
-    background: var(--panel-l);
-    padding: 8px 10px;
-    border-radius: 2px;
-  }
-  .insp-basket-head {
-    display: flex; justify-content: space-between;
-    font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
-    text-transform: uppercase; color: var(--gold);
-    margin-bottom: 4px;
-  }
-  .insp-basket-list {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--ink-mid);
-  }
-  .insp-basket-list div { padding: 1px 0; }
-
-  /* Events feed */
-  #events {
-    flex: 1;
-    overflow-y: auto;
-  }
-  .ev {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    gap: 6px;
-    padding: 6px 0;
-    font-size: 11px;
-    border-bottom: 1px solid rgba(26,24,21,0.04);
-  }
-  .ev .tm { color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-  .ev .msg { color: var(--ink); }
-  .ev .nm { color: var(--gold); font-weight: 600; }
-  .ev.purchase .msg { color: var(--green); }
-  .ev.abandon_trial .msg, .ev.abandon_bill .msg { color: #FF9899; }
-  .ev.walk_out .msg { color: #FF9899; }
-  .ev.counter_open .msg { color: var(--gold); font-weight: 700; }
-  .ev.arrive { opacity: 0.55; }
 
   /* ─── BOTTOM (timeline + speed) ──────────────── */
   .bottom {
@@ -548,7 +453,7 @@
   }
   .btn:hover { background: rgba(225,29,38,0.25); }
   .btn.primary { background: var(--red); border-color: var(--red); font-weight: 700; color: white; min-width: 70px; text-align: center; }
-  .btn.primary:hover { background: #16352F; }
+  .btn.primary:hover { background: #B0141B; }
   .btn.active { background: rgba(225,29,38,0.55); border-color: var(--red); color: white; }
   .speed-group {
     display: flex; border: 1px solid rgba(26,24,21,0.15);
@@ -635,7 +540,7 @@
   .cover-mark { display: flex; align-items: center; gap: 12px; }
   .cover-mark .logo {
     width: 38px; height: 38px;
-    background: #1F4D4A; color: white;
+    background: #E11D26; color: white;
     display: inline-flex; align-items: center; justify-content: center;
     font-family: 'Inter Tight', sans-serif;
     font-weight: 800; font-size: 22px;
@@ -673,7 +578,7 @@
   .cover-tag {
     display: inline-block; margin-top: 10px;
     background: #E8F2EE;
-    color: #103330;
+    color: #8F1016;
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.18em;
     padding: 4px 9px;
@@ -689,7 +594,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: #1F4D4A;
+    color: #E11D26;
     margin-bottom: 24px;
     display: flex; gap: 14px; align-items: center;
   }
@@ -704,7 +609,7 @@
     max-width: 1000px;
     margin-bottom: 24px;
   }
-  .cover-title .accent { color: #1F4D4A; }
+  .cover-title .accent { color: #E11D26; }
   .cover-lede {
     font-size: 17px;
     color: #4A4A4A;
@@ -716,7 +621,7 @@
   .cover-lede b { color: #1A1815; font-weight: 600; }
   .cover-cta {
     display: inline-flex; align-items: center; gap: 10px;
-    background: #1F4D4A;
+    background: #E11D26;
     border: none;
     color: white;
     padding: 14px 24px;
@@ -728,7 +633,7 @@
     border-radius: 2px;
     transition: background 0.15s, transform 0.15s;
   }
-  .cover-cta:hover { background: #103330; transform: translateY(-1px); }
+  .cover-cta:hover { background: #8F1016; transform: translateY(-1px); }
   .cover-cta:active { transform: translateY(0); }
   .cover-cta .arrow {
     font-size: 16px; line-height: 1;
@@ -755,7 +660,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.14em;
-    color: #1F4D4A;
+    color: #E11D26;
     text-transform: uppercase;
   }
   .cover-method-grid .body {
@@ -773,7 +678,7 @@
   .cover-status .dot {
     display: inline-block;
     width: 7px; height: 7px;
-    background: #2E7D52;
+    background: #E11D26;
     border-radius: 50%;
     margin-right: 8px;
     vertical-align: middle;
@@ -808,7 +713,7 @@
   .rpt-mark { display: flex; align-items: center; gap: 12px; }
   .rpt-logo {
     width: 32px; height: 32px;
-    background: #1F4D4A; color: white;
+    background: #E11D26; color: white;
     display: flex; align-items: center; justify-content: center;
     font-weight: 800; font-size: 18px;
     letter-spacing: -0.02em;
@@ -841,9 +746,9 @@
   }
   .rpt-actions button:hover { border-color: #1A1815; }
   .rpt-actions button.primary {
-    background: #1F4D4A; border-color: #1F4D4A; color: white;
+    background: #E11D26; border-color: #E11D26; color: white;
   }
-  .rpt-actions button.primary:hover { background: #103330; border-color: #103330; }
+  .rpt-actions button.primary:hover { background: #8F1016; border-color: #8F1016; }
 
   /* Section */
   .rpt-section {
@@ -860,7 +765,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.20em; text-transform: uppercase;
-    color: #1F4D4A;
+    color: #E11D26;
     margin-bottom: 18px;
   }
   .rpt-q {
@@ -904,7 +809,7 @@
     color: #6B6B6B;
     margin-bottom: 10px;
   }
-  .rpt-hero-side.opt .lbl { color: #1F4D4A; }
+  .rpt-hero-side.opt .lbl { color: var(--positive); }
   .rpt-hero-side .val {
     font-family: 'Inter Tight', sans-serif;
     font-size: 48px;
@@ -914,7 +819,7 @@
     color: #1A1815;
     margin-bottom: 8px;
   }
-  .rpt-hero-side.opt .val { color: #1F4D4A; }
+  .rpt-hero-side.opt .val { color: var(--positive); }
   .rpt-hero-side .sub {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
@@ -944,14 +849,14 @@
     font-size: 32px;
     font-weight: 700;
     letter-spacing: -0.022em;
-    color: #1F4D4A;
+    color: var(--positive);
     line-height: 1;
     margin-bottom: 4px;
   }
   .rpt-hero-delta .dp {
     font-family: 'JetBrains Mono', monospace;
     font-size: 14px;
-    color: #1F4D4A;
+    color: var(--positive);
     font-weight: 700;
     margin-bottom: 14px;
     letter-spacing: 0.02em;
@@ -991,7 +896,7 @@
     display: inline-block;
   }
   .rpt-legend .dot.baseline { background: #1A1815; }
-  .rpt-legend .dot.optimized { background: #1F4D4A; }
+  .rpt-legend .dot.optimized { background: var(--positive); }
 
   /* Per-lever cards */
   .rpt-levers {
@@ -1010,7 +915,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: #1F4D4A;
+    color: var(--positive);
     margin-bottom: 8px;
   }
   .rpt-lever h4 {
@@ -1048,7 +953,7 @@
     line-height: 1.7;
   }
   .rpt-lever .metric .v {
-    color: #1F4D4A;
+    color: var(--positive);
     font-weight: 700;
   }
 
@@ -1072,7 +977,7 @@
   .rpt-move .rank {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; font-weight: 700;
-    color: #1F4D4A;
+    color: var(--positive);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     padding-top: 4px;
@@ -1088,7 +993,7 @@
     margin-top: 6px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13.5px;
-    color: #1F4D4A;
+    color: var(--positive);
     font-weight: 700;
   }
   .rpt-move .ttl {
@@ -1108,7 +1013,7 @@
   .rpt-move .lift {
     font-family: 'JetBrains Mono', monospace;
     font-size: 18px;
-    color: #1F4D4A;
+    color: var(--positive);
     font-weight: 700;
     text-align: right;
     letter-spacing: -0.01em;
@@ -1151,46 +1056,6 @@
     letter-spacing: 0.04em;
   }
 
-  /* Pilot CTA */
-  .rpt-pilot {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 32px;
-    align-items: center;
-    background: #1A1815;
-    color: white;
-    padding: 40px 64px;
-    max-width: none;
-  }
-  .rpt-pilot .copy { max-width: 720px; }
-  .rpt-pilot .copy .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.20em; text-transform: uppercase;
-    color: #FF6B70;
-    margin-bottom: 12px;
-  }
-  .rpt-pilot .copy .body {
-    font-size: 15px;
-    color: #D5D5D5;
-    line-height: 1.6;
-  }
-  .rpt-pilot .copy .body b { color: white; font-weight: 600; }
-  .rpt-pilot .cta {
-    background: #1F4D4A;
-    color: white;
-    border: none;
-    padding: 16px 28px;
-    font-family: 'Inter Tight', sans-serif;
-    font-size: 14px; font-weight: 700;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.15s;
-    white-space: nowrap;
-  }
-  .rpt-pilot .cta:hover { background: #103330; }
-
   .rpt-foot {
     padding: 20px 64px;
     font-family: 'JetBrains Mono', monospace;
@@ -1216,7 +1081,7 @@
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px; font-weight: 700;
     letter-spacing: 0.20em; text-transform: uppercase;
-    color: #1F4D4A;
+    color: #E11D26;
   }
   .rpt-loading .body {
     font-family: 'Inter Tight', sans-serif;
@@ -1234,7 +1099,7 @@
   .rpt-loading .pulse {
     width: 36px; height: 36px;
     border: 2px solid #EAEAEA;
-    border-top-color: #1F4D4A;
+    border-top-color: #E11D26;
     border-radius: 999px;
     animation: rptspin 0.8s linear infinite;
   }
@@ -1321,13 +1186,13 @@
   }
   .kpi-card.alert { border-left: 3px solid var(--red); }
   .kpi-card.alert .v { color: #FF9899; }
-  .kpi-card.good { border-left: 3px solid var(--green); }
-  .kpi-card.good .v { color: var(--green); }
+  .kpi-card.good { border-left: 3px solid var(--positive); }
+  .kpi-card.good .v { color: var(--positive); }
 
   /* Hero recoverable banner */
   .recoverable {
-    background: linear-gradient(90deg, rgba(225,29,38,0.18) 0%, rgba(255,217,102,0.14) 60%, rgba(61,220,132,0.10) 100%);
-    border: 1px solid rgba(255,217,102,0.30);
+    background: linear-gradient(90deg, rgba(46,125,82,0.16) 0%, rgba(46,125,82,0.10) 60%, rgba(46,125,82,0.05) 100%);
+    border: 1px solid rgba(46,125,82,0.30);
     border-radius: 4px;
     padding: 14px 18px;
     display: flex; align-items: center; justify-content: space-between;
@@ -1345,7 +1210,7 @@
   .recoverable .total {
     font-family: 'JetBrains Mono', monospace;
     font-size: 28px; font-weight: 800;
-    color: var(--gold);
+    color: var(--positive);
     line-height: 1.0; letter-spacing: -0.01em;
   }
   .recoverable .rh {
@@ -1353,7 +1218,7 @@
     font-size: 11px; color: var(--ink-mid);
     line-height: 1.4;
   }
-  .recoverable .rh b { color: var(--green); font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+  .recoverable .rh b { color: var(--positive); font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
 
   /* Trend chart strip */
   .trend-strip {
@@ -1509,7 +1374,6 @@
     </div>
     <div class="rpt-actions">
       <button id="esBackBtn">← Back to sim</button>
-      <button class="primary" id="esRunBtn">Re-run on same seed</button>
     </div>
   </div>
 
@@ -1545,7 +1409,7 @@
   <section class="rpt-section">
     <div class="rpt-eyebrow">Section 02 · Metric-by-metric comparison</div>
     <h2 class="rpt-q">How every operating metric moves under <b>Optimized v2</b>.</h2>
-    <p class="rpt-lede">Same 1,000 agents, same arrival schedule, same RNG seed. The only thing that differs is the operating policy. Each row shows where the metric lands under baseline (gray) versus optimized (teal), and the delta on the right.</p>
+    <p class="rpt-lede">Same 1,000 agents, same arrival schedule, same RNG seed. The only thing that differs is the operating policy. Each row shows where the metric lands under baseline (gray) versus optimized (green), and the delta on the right.</p>
     <div class="rpt-chart-wrap">
       <svg id="rptDumbbell" viewBox="0 0 760 440" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
@@ -1595,32 +1459,23 @@
   <section class="rpt-section">
     <div class="rpt-eyebrow">Section 07 · Documents</div>
     <h2 class="rpt-q">Two reports for two audiences.</h2>
-    <p class="rpt-lede" style="max-width: 720px;">The <b>whitepaper</b> is a tight 4-page board-ready document — top-line numbers, the five recommended moves, the network-scale impact, and the pilot ask. The <b>methodology document</b> is the technical companion — model, agents, levers, sweep, calibration history, and full appendix.</p>
+    <p class="rpt-lede" style="max-width: 720px;">The <b>whitepaper</b> is a tight 4-page board-ready document — top-line numbers, the five recommended moves, and the network-scale impact. The <b>methodology document</b> is the technical companion — model, agents, levers, sweep, calibration history, and full appendix.</p>
     <div style="display: flex; gap: 14px; margin-top: 22px; flex-wrap: wrap;">
       <a href="../documents/VMart-Diwali-Whitepaper.pdf"
          download="VMart-Diwali-Whitepaper.pdf"
-         style="display:inline-flex; flex-direction:column; gap:6px; padding:18px 22px; background:#1F4D4A; color:white; border-radius:6px; text-decoration:none; min-width: 250px;">
+         style="display:inline-flex; flex-direction:column; gap:6px; padding:18px 22px; background:#E11D26; color:white; border-radius:6px; text-decoration:none; min-width: 250px;">
         <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.75;">For the board · 4 pages</div>
         <div style="font-size:17px; font-weight:700; font-family:'Charter','Iowan Old Style',Georgia,serif;">↓ Whitepaper (PDF)</div>
-        <div style="font-size:11px; opacity:0.85;">Executive summary, recommended moves, network impact, pilot ask.</div>
+        <div style="font-size:11px; opacity:0.85;">Executive summary, recommended moves, network impact.</div>
       </a>
       <a href="../documents/VMart-Diwali-Methodology.pdf"
          download="VMart-Diwali-Methodology.pdf"
-         style="display:inline-flex; flex-direction:column; gap:6px; padding:18px 22px; background:transparent; color:#1A1815; border:1.5px solid #1F4D4A; border-radius:6px; text-decoration:none; min-width: 250px;">
-        <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#1F4D4A;">For the data team · 24+ pages</div>
-        <div style="font-size:17px; font-weight:700; font-family:'Charter','Iowan Old Style',Georgia,serif; color:#1F4D4A;">↓ Methodology (PDF)</div>
+         style="display:inline-flex; flex-direction:column; gap:6px; padding:18px 22px; background:transparent; color:#1A1815; border:1.5px solid #E11D26; border-radius:6px; text-decoration:none; min-width: 250px;">
+        <div style="font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#E11D26;">For the data team · 24+ pages</div>
+        <div style="font-size:17px; font-weight:700; font-family:'Charter','Iowan Old Style',Georgia,serif; color:#E11D26;">↓ Methodology (PDF)</div>
         <div style="font-size:11px; color:#4A4A4A;">Model, agents, all 5 levers, sweep design, calibration, appendix.</div>
       </a>
     </div>
-  </section>
-
-  <!-- ============== PILOT CTA ============== -->
-  <section class="rpt-section rpt-pilot">
-    <div class="copy">
-      <div class="label">The pilot · 4 weeks</div>
-      <div class="body">One V-Mart store of your choice. We calibrate the digital twin to your POS data, run the optimization loop, hand back A/B-ready interventions with predicted lift and confidence intervals. <b>You measure us on whether the lift we predict matches the lift you measure.</b></div>
-    </div>
-    <button class="cta" id="esRunBtn2">Re-run on same seed</button>
   </section>
 
   <div class="rpt-foot">© 2026 · V-Mart Unlimited diagnostic · confidential</div>
@@ -1640,7 +1495,7 @@
     <span class="logo">V</span>
     <div>
       <div class="t">UNLIMITED</div>
-      <div class="s">Diwali Saturday simulation · baseline policy · 1,000 agents</div>
+      <div class="s" id="policySub">Diwali Saturday simulation · optimized v2 policy · 1,000 agents</div>
     </div>
   </div>
   <div class="metrics" id="topMetrics">
@@ -1678,7 +1533,6 @@
   <canvas id="map"></canvas>
 
   <div class="stage-controls">
-    <button id="btn-heat" title="Heatmap overlay">HEATMAP</button>
     <button id="btn-staff" class="active" title="Show staff sprites">STAFF</button>
     <button id="btn-queue" class="active" title="Highlight queue floor zones">QUEUES</button>
     <button id="btn-paths" title="Show selected agent's path">PATH</button>
@@ -1688,16 +1542,8 @@
 
 <!-- ═════════════ SIDE ═════════════ -->
 <div class="side">
-  <div class="side-section">
-    <h4>▶ INSPECTOR · click any shopper</h4>
-    <div id="inspector"><div class="empty">No shopper selected.<br/>Click a sprite on the map to inspect.</div></div>
-  </div>
   <div class="side-section" id="zoneDensity">
     <h4>▶ ZONE DENSITY · live</h4>
-  </div>
-  <div class="side-section" style="flex: 1; display: flex; flex-direction: column;">
-    <h4>▶ LIVE EVENTS</h4>
-    <div id="events"></div>
   </div>
 </div>
 
@@ -1719,8 +1565,8 @@
   <div class="controls-cluster">
     <button id="btn-play" class="btn primary">▶ START</button>
     <div class="speed-group">
-      <button class="btn speed" data-speed="1">1×</button>
-      <button class="btn speed active" data-speed="5">5×</button>
+      <button class="btn speed active" data-speed="2">2×</button>
+      <button class="btn speed" data-speed="5">5×</button>
       <button class="btn speed" data-speed="15">15×</button>
       <button class="btn speed" data-speed="60">60×</button>
     </div>
@@ -1796,20 +1642,7 @@
       tla.appendChild(b);
     });
 
-    // Renderer click → inspector + auto-pause so detail is readable
-    renderer.onSelect = (a) => {
-      updateInspector(a);
-      if (a && running) {
-        running = false;
-        document.getElementById('btn-play').textContent = '▶ RESUME · inspecting';
-      }
-    };
-
     // UI controls
-    document.getElementById('btn-heat').addEventListener('click', e => {
-      renderer.showHeatmap = !renderer.showHeatmap;
-      e.target.classList.toggle('active', renderer.showHeatmap);
-    });
     document.getElementById('btn-staff').addEventListener('click', e => {
       renderer.showStaff = !renderer.showStaff;
       e.target.classList.toggle('active', renderer.showStaff);
@@ -1853,14 +1686,13 @@
       window.renderer.selected = null;
       window.renderer._heatLast = -1;
       window.renderer._lastEventCount = 0;
-      lastEventCount = 0;
       insightsShown = false;
-      updateInspector(null);
-      document.getElementById('events').innerHTML = '';
       document.getElementById('insights').classList.remove('show');
       running = false;
       document.getElementById('btn-play').textContent = '▶ START';
       window._activePolicyId = pid;
+      const policySub = document.getElementById('policySub');
+      if (policySub) policySub.textContent = `Diwali Saturday simulation · ${policyLabel(pid).toLowerCase()} policy · 1,000 agents`;
     }
     window._activePolicyId = 'optimized_v2';
     // Two main pills
@@ -1954,6 +1786,7 @@
     window.l4Label       = l4Label;
     window.l5Label       = l5Label;
     window.policyEnglish = policyEnglish;
+    warmExecSimCache();
 
     const ppDetail = document.getElementById('ppDetail');
     function renderPpDetail(p) {
@@ -2069,10 +1902,7 @@
       window.renderer.selected = null;
       window.renderer._heatLast = -1;
       window.renderer._lastEventCount = 0;
-      lastEventCount = 0;
       insightsShown = false;
-      updateInspector(null);
-      document.getElementById('events').innerHTML = '';
       document.getElementById('insights').classList.remove('show');
       running = false;
       document.getElementById('btn-play').textContent = '▶ START';
@@ -2092,8 +1922,6 @@
         window.sim = new Sim(policyByPid(window._activePolicyId || 'optimized_v2'));
         window.renderer.sim = window.sim;
         renderer.selected = null;
-        updateInspector(null);
-        document.getElementById('events').innerHTML = '';
         // fast forward
         running = true;
         speedMul = 600;
@@ -2129,7 +1957,6 @@
       renderer.draw();
       updateHud();
       updateZoneDensity();
-      updateEventsFeed();
       // Done? → populate + show the exec-summary (the polished post-sim
       // result screen) AND the legacy insights modal (the detailed-cards
       // one). User sees exec summary first; clicking "Back to sim" returns
@@ -2179,31 +2006,8 @@
       document.getElementById('execsum').classList.remove('show');
     });
 
-    // Exec summary "Run again" → reset and re-run sim
-    const rerunSim = () => {
-      document.getElementById('execsum').classList.remove('show');
-      const pid = window._activePolicyId || 'optimized_v2';
-      window.sim = new Sim(policyByPid(pid));
-      window.renderer.sim = window.sim;
-      window.renderer.selected = null;
-      window.renderer._heatLast = -1;
-      window.renderer._lastEventCount = 0;
-      lastEventCount = 0;
-      insightsShown = false;
-      updateInspector(null);
-      document.getElementById('events').innerHTML = '';
-      document.getElementById('insights').classList.remove('show');
-      running = true;
-      speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
-      document.getElementById('btn-play').textContent = '⏸ PAUSE';
-    };
-    document.getElementById('esRunBtn').addEventListener('click', rerunSim);
-    document.getElementById('esRunBtn2').addEventListener('click', rerunSim);
-
-    // SUMMARY button — always clickable, always works. Branches:
-    //   (a) live sim already complete → use its KPIs immediately
-    //   (b) not complete → run a fast headless on the CURRENT policy
-    // Adds inline style fallback in case class toggling has any quirk.
+    // SUMMARY button — reads from the precomputed policy cache. If the
+    // requested policy is still warming, wait for that one cached run.
     const summaryBtn = document.getElementById('btn-show-summary');
     if (summaryBtn) {
       // Defensively clear any disabled / aria state
@@ -2214,18 +2018,12 @@
         evt.preventDefault();
         const execEl = document.getElementById('execsum');
         if (!execEl) { console.warn('execsum element missing'); return; }
-        const liveDone = window.sim
-          && window.sim.simMin >= window.sim.totalMin
-          && window.sim.activeAgents.length === 0;
         try {
-          if (liveDone) {
-            populateExecSummary(window.sim);
-          } else {
-            summaryBtn.textContent = 'COMPUTING…';
-            summaryBtn.disabled = true;
-            const pid = window._activePolicyId || 'optimized_v2';
-            await runHeadlessForSummary(policyByPid(pid));
-          }
+          summaryBtn.textContent = 'LOADING…';
+          summaryBtn.disabled = true;
+          const pid = window._activePolicyId || 'optimized_v2';
+          const cachedSim = await _simForPolicy(pid);
+          await populateExecSummary(cachedSim);
           // Force-show with both class + inline style (belt + suspenders)
           execEl.classList.add('show');
           execEl.style.display = 'flex';
@@ -2253,7 +2051,7 @@
   function runHeadless(policyObj) {
     return new Promise((resolve) => {
       const pol = policyObj
-        || policyByPid(window._activePolicyId || 'optimized_v2')
+        || (window.policyByPid && window.policyByPid(window._activePolicyId || 'optimized_v2'))
         || window.POLICY_OPTIMIZED_V2 || window.POLICY_BASELINE;
       const headlessSim = new Sim(pol);
       const totalMin = headlessSim.totalMin;
@@ -2285,7 +2083,7 @@
   function _legacyRunHeadless(policyObj) {
     return new Promise((resolve) => {
       const pol = policyObj
-        || policyByPid(window._activePolicyId || 'optimized_v2')
+        || (window.policyByPid && window.policyByPid(window._activePolicyId || 'optimized_v2'))
         || window.POLICY_OPTIMIZED_V2 || window.POLICY_BASELINE;
       const headlessSim = new Sim(pol);
       const totalMin = headlessSim.totalMin;
@@ -2331,24 +2129,54 @@
   // Cache of headless-sim results by policy id, so re-opening the SUMMARY
   // doesn't trigger 200ms+ re-computation each time.
   window._execSimCache = window._execSimCache || {};
+  window._execSimCachePromises = window._execSimCachePromises || {};
+  window._execSimCacheWarming = false;
 
-  async function _simForPolicy(pid) {
-    if (window._execSimCache[pid]) return window._execSimCache[pid];
+  function _policyIdsForCache() {
+    const ids = ['baseline', 'optimized_v1', 'optimized_v2'];
+    for (const p of (window.POLICY_CANDIDATES || [])) {
+      if (p && p.id) ids.push(p.id);
+    }
+    return Array.from(new Set(ids));
+  }
+
+  function _cachePolicyRun(pid) {
+    if (window._execSimCache[pid]) return Promise.resolve(window._execSimCache[pid]);
+    if (window._execSimCachePromises[pid]) return window._execSimCachePromises[pid];
     const policyObj = (window.policyByPid && window.policyByPid(pid))
       || (pid === 'baseline' ? window.POLICY_BASELINE
           : pid === 'optimized_v2' ? window.POLICY_OPTIMIZED_V2
           : pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1
           : window.POLICY_BASELINE);
-    const s = await runHeadless(policyObj);
-    window._execSimCache[pid] = s;
-    return s;
+    window._execSimCachePromises[pid] = runHeadless(policyObj).then(s => {
+      window._execSimCache[pid] = s;
+      delete window._execSimCachePromises[pid];
+      return s;
+    });
+    return window._execSimCachePromises[pid];
+  }
+
+  async function warmExecSimCache() {
+    if (window._execSimCacheWarming) return;
+    window._execSimCacheWarming = true;
+    for (const pid of _policyIdsForCache()) {
+      try {
+        await _cachePolicyRun(pid);
+      } catch (err) {
+        console.warn('policy cache failed:', pid, err);
+      }
+    }
+  }
+
+  async function _simForPolicy(pid) {
+    return _cachePolicyRun(pid);
   }
 
   // ── SVG chart helpers for the exec summary ─────────────────────────
-  // Aaru-style: warm off-white bg, dashed gridlines, teal-dark vs gray dots.
+  // Aaru-style: warm off-white bg, dashed gridlines, green vs gray dots.
 
   // Dumbbell comparison chart — N metric rows, each row shows baseline (gray)
-  // vs optimized (teal) on its OWN scale (each metric is independent units).
+  // vs optimized (green) on its OWN scale (each metric is independent units).
   function _drawDumbbell(svg, bK, oK, baseSim, optSim) {
     if (!svg) return;
     const peakBillBase = Math.max(...(baseSim.metrics.bill_waits || [0]));
@@ -2369,7 +2197,7 @@
     const padL = 156, padR = 92, padT = 14, padB = 22;
     const innerW = W - padL - padR;
     const rowH = (H - padT - padB) / rows.length;
-    const TEAL = '#1F4D4A', GRAY = '#9A938A', LINE = '#D8D2C7', INK = '#1A1815', INK_DIM = '#7A746B';
+    const POS = '#2E7D52', GRAY = '#9A938A', LINE = '#D8D2C7', INK = '#1A1815', INK_DIM = '#7A746B';
 
     let out = '';
     rows.forEach(([label, b, o, fmt, dir], i) => {
@@ -2384,9 +2212,9 @@
       out += `<line x1="${Math.min(xB,xO)}" y1="${yRow}" x2="${Math.max(xB,xO)}" y2="${yRow}" stroke="${LINE}" stroke-width="2"/>`;
       // Baseline dot
       out += `<circle cx="${xB}" cy="${yRow}" r="6.5" fill="${GRAY}"/>`;
-      // Optimized dot (teal if direction is correct, else gray)
+      // Optimized dot (green if direction is correct, else gray)
       const better = (dir === 'up' && o > b) || (dir === 'down' && o < b);
-      out += `<circle cx="${xO}" cy="${yRow}" r="6.5" fill="${better ? TEAL : GRAY}"/>`;
+      out += `<circle cx="${xO}" cy="${yRow}" r="6.5" fill="${better ? POS : GRAY}"/>`;
       // Row label on left
       out += `<text x="${padL - 12}" y="${yRow + 4}" text-anchor="end" fill="${INK}" font-size="13" font-family="Inter Tight, system-ui">${label}</text>`;
       // Baseline value (under-dot)
@@ -2396,12 +2224,12 @@
       // Delta on right
       const deltaPct = b !== 0 ? ((o - b) / Math.abs(b) * 100) : 0;
       const sign = deltaPct >= 0 ? '+' : '';
-      out += `<text x="${W - padR + 78}" y="${yRow + 4}" text-anchor="end" fill="${better ? TEAL : '#B5392D'}" font-size="12" font-family="JetBrains Mono, monospace" font-weight="700">${sign}${deltaPct.toFixed(1)}%</text>`;
+      out += `<text x="${W - padR + 78}" y="${yRow + 4}" text-anchor="end" fill="${better ? POS : '#B5392D'}" font-size="12" font-family="JetBrains Mono, monospace" font-weight="700">${sign}${deltaPct.toFixed(1)}%</text>`;
     });
 
     // Column headers
     out += `<text x="${padL + innerW * 0.16}" y="10" fill="${INK_DIM}" font-size="9" font-family="Inter Tight" letter-spacing="0.12em">BASELINE</text>`;
-    out += `<text x="${padL + innerW * 0.84}" y="10" fill="${TEAL}" font-size="9" font-family="Inter Tight" font-weight="700" letter-spacing="0.12em">OPTIMIZED</text>`;
+    out += `<text x="${padL + innerW * 0.84}" y="10" fill="${POS}" font-size="9" font-family="Inter Tight" font-weight="700" letter-spacing="0.12em">OPTIMIZED</text>`;
     svg.innerHTML = out;
   }
 
@@ -2420,7 +2248,7 @@
     const innerH = H - padT - padB;
     const totalMin = Math.max(baseSeries.length, optSeries.length, 720);
     const yMax = Math.max(1, Math.max(...baseSeries, ...optSeries) * 1.10);
-    const TEAL = '#1F4D4A', GRAY = '#9A938A', LINE = '#D8D2C7', INK_DIM = '#7A746B';
+    const POS = '#2E7D52', GRAY = '#9A938A', LINE = '#D8D2C7', INK_DIM = '#7A746B';
 
     // Path builder — downsample to ~145 points so the SVG is light
     const stride = Math.max(1, Math.floor(totalMin / 145));
@@ -2452,14 +2280,14 @@
     // Baseline line + dot fill area
     out += `<path d="${pathFor(baseSeries)}" stroke="${GRAY}" stroke-width="1.8" fill="none" opacity="0.85"/>`;
     // Optimized line
-    out += `<path d="${pathFor(optSeries)}" stroke="${TEAL}" stroke-width="2" fill="none"/>`;
+    out += `<path d="${pathFor(optSeries)}" stroke="${POS}" stroke-width="2" fill="none"/>`;
     // Legend — right-aligned at top of chart
     const legendX = W - padR - 175;
     out += `<g transform="translate(${legendX}, ${padT + 4})">
       <circle cx="6" cy="6" r="4" fill="${GRAY}"/>
       <text x="16" y="10" fill="${INK_DIM}" font-size="10.5" font-family="Inter Tight">Baseline</text>
-      <circle cx="92" cy="6" r="4" fill="${TEAL}"/>
-      <text x="102" y="10" fill="${TEAL}" font-size="10.5" font-family="Inter Tight" font-weight="600">Optimized</text>
+      <circle cx="92" cy="6" r="4" fill="${POS}"/>
+      <text x="102" y="10" fill="${POS}" font-size="10.5" font-family="Inter Tight" font-weight="600">Optimized</text>
     </g>`;
     // Y label — top-left of plot area
     out += `<text x="${padL}" y="${padT - 6}" fill="${INK_DIM}" font-size="9" font-family="Inter Tight" letter-spacing="0.06em" text-transform="uppercase">${yLabel}</text>`;
@@ -2678,8 +2506,6 @@
     document.getElementById('tlProgress').style.width = (sim.simMin / sim.totalMin * 100) + '%';
     document.getElementById('tlCursor').style.left = (sim.simMin / sim.totalMin * 100) + '%';
 
-    // Update inspector live if a shopper is selected
-    if (renderer.selected) updateInspector(renderer.selected);
   }
 
   function updateZoneDensity() {
@@ -2692,70 +2518,6 @@
       if (bar) bar.style.width = ((dens[k] / max) * 100) + '%';
       if (ct) ct.textContent = dens[k];
     }
-  }
-
-  function updateInspector(a) {
-    const ins = document.getElementById('inspector');
-    if (!a) {
-      ins.innerHTML = '<div class="empty">No shopper selected.<br/>Click a sprite on the map to inspect.</div>';
-      return;
-    }
-    const initials = a.name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
-    const minutesIn = (sim.simMin - (a.entered_at || sim.simMin)).toFixed(1);
-    const basketHtml = a.basket.length === 0 ? '<div style="color:var(--ink-dim);">empty</div>' :
-      a.basket.map(b => `<div>· ${b.zone || 'item'} — ₹${Math.round(b.value)}</div>`).join('');
-    ins.innerHTML = `
-      <div class="insp-head">
-        <div class="insp-avatar" style="background:${a.color}">${initials}</div>
-        <div>
-          <div class="insp-name">${a.name}</div>
-          <div class="insp-meta">${a.persona.label} · age ${a.age} · ${a.neighborhood}</div>
-        </div>
-        <span class="insp-state">${a.state.replace(/_/g, ' ')}</span>
-      </div>
-      <div class="insp-row"><span class="k">Group size</span><span class="v">${a.group_size}</span></div>
-      <div class="insp-row"><span class="k">Arrived</span><span class="v">${a.arrival_time}</span></div>
-      <div class="insp-row"><span class="k">Minutes in</span><span class="v">${minutesIn}</span></div>
-      <div class="insp-row"><span class="k">Current zone</span><span class="v">${a.current_zone || '—'}</span></div>
-      <div class="insp-row"><span class="k">Queue wait</span><span class="v">${a.queue_wait.toFixed(1)} m</span></div>
-      <div class="insp-row"><span class="k">Patience (reduce/abandon)</span><span class="v">${a.queue_tolerance_min.reduce_at}m / ${a.queue_tolerance_min.abandon_at}m</span></div>
-      <div class="insp-row"><span class="k">Intent strength</span><span class="v">${(a.intent_strength * 100).toFixed(0)}%</span></div>
-      <div class="insp-basket">
-        <div class="insp-basket-head"><span>Basket · ${a.basket.length} item${a.basket.length === 1 ? '' : 's'}</span><span>₹${Math.round(a.basket_value)}</span></div>
-        <div class="insp-basket-list">${basketHtml}</div>
-      </div>
-      <div class="insp-story">${a.backstory}</div>
-    `;
-  }
-
-  function updateEventsFeed() {
-    const ef = document.getElementById('events');
-    const evs = sim.events;
-    if (evs.length === lastEventCount) return;
-    lastEventCount = evs.length;
-    // Show ALL recent events most-recent-first; arrivals are rendered with
-    // a dimmer style (the .ev.arrive CSS rule already handles this).
-    const slice = evs.slice(-60).reverse();
-    ef.innerHTML = slice.map(e => {
-      const m = Math.floor(e.simMin);
-      const h = Math.floor(m / 60) + 10;
-      const mm = m % 60;
-      const hh12 = ((h - 1) % 12) + 1;
-      const t = `${hh12}:${String(mm).padStart(2,'0')}`;
-      const labels = {
-        arrive: 'arrived',
-        start_trial: 'entered trial',
-        purchase: 'PURCHASED',
-        abandon_trial: 'abandoned · trial wait',
-        abandon_bill: 'abandoned · bill wait',
-        walk_out: 'walked out',
-        tried_no_buy: 'tried, didn\'t buy',
-        counter_open: 'COUNTER OPENED',
-        staff_reallocation: 'staff moved',
-      };
-      const nm = e.agentName ? `<span class="nm">${e.agentName}</span> ` : '';
-      return `<div class="ev ${e.type}"><span class="tm">${t}</span><span class="msg">${nm}${labels[e.type] || e.type} ${e.detail ? '· ' + e.detail : ''}</span></div>`;
-    }).join('');
   }
 
   function showInsights() {
@@ -2854,7 +2616,7 @@
         <stop offset="100%" stop-color="rgba(225,29,38,0)"/>
       </linearGradient></defs>
       <path d="${fillD}" fill="url(#qGrad)"/>
-      <path d="${pathD}" fill="none" stroke="#1F4D4A" stroke-width="1.5"/>
+      <path d="${pathD}" fill="none" stroke="#2E7D52" stroke-width="1.5"/>
       <text x="6" y="14" font-family="JetBrains Mono" font-size="9" fill="rgba(26,24,21,0.5)">peak ${maxQ} deep</text>
       <text x="6" y="${H60 - 4}" font-family="JetBrains Mono" font-size="9" fill="rgba(26,24,21,0.4)">10 AM</text>
       <text x="${W720 - 40}" y="${H60 - 4}" font-family="JetBrains Mono" font-size="9" fill="rgba(26,24,21,0.4)">10 PM</text>
@@ -3184,9 +2946,8 @@
 
   // ── globals ──────────────────────────────────────
   let running = false;
-  let speedMul = 5;
+  let speedMul = 2;
   let insightsShown = false;
-  let lastEventCount = 0;
 
   // Wait for canvas to be sized before boot
   window.addEventListener('load', () => setTimeout(boot, 60));

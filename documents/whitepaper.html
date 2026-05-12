@@ -220,12 +220,6 @@ h2 + img, h3 + img, p + img { page-break-before: avoid; }
 <h2>Validation methodology in one paragraph</h2>
 <p>1,000 individually-modeled shoppers — ten Bangalore-specific persona archetypes (mission moms, family weekenders, working women, young women, premium-occasion buyers, quick-trip men, office gifters, young moms, visiting relatives, browsers) — walk through a digital twin of the store for the full 12-hour Diwali Saturday. Each agent has intent, queue tolerance, basket targets, and price elasticity calibrated to festive shopper behaviour. We tested 34 candidate policies across 3 independent shopper cohorts (102 deterministic simulation runs), holding the RNG seed constant so that baseline vs optimized is a clean A/B — only the operating policy differs. Every claimed lift is traced through a causal chain (policy → environment change → agent reaction → revenue), with explicit guard-rails against tuning outcomes directly. <strong>The methodology document accompanying this whitepaper has the full technical detail.</strong></p>
 <hr>
-<h2>The pilot</h2>
-<p><strong>Four weeks · one V-Mart store of your choice · three festive weekends.</strong></p>
-<p>We calibrate the digital twin against your store's POS data from previous festive weekends, run the optimization loop, and hand back A/B-ready interventions with predicted lift and confidence intervals.</p>
-<p><strong>Your commit</strong>: floor-set + ops-playbook changes on one Saturday per weekend during the pilot. ~6 hours of visual-merchandising labour. Standard A/B reporting from POS.</p>
-<p><strong>Our commit</strong>: we predict the lift before the Saturday; we hand back the variance analysis after. We do not bill if the measured lift falls short of the predicted range.</p>
-<hr>
 <h2>Network-scale impact</h2>
 <table>
 <thead>

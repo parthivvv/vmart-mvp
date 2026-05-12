@@ -75,18 +75,6 @@ Targets impulse-prone shopper segments at the right moment (entry intent boost v
 
 ---
 
-## The pilot
-
-**Four weeks · one V-Mart store of your choice · three festive weekends.**
-
-We calibrate the digital twin against your store's POS data from previous festive weekends, run the optimization loop, and hand back A/B-ready interventions with predicted lift and confidence intervals.
-
-**Your commit**: floor-set + ops-playbook changes on one Saturday per weekend during the pilot. ~6 hours of visual-merchandising labour. Standard A/B reporting from POS.
-
-**Our commit**: we predict the lift before the Saturday; we hand back the variance analysis after. We do not bill if the measured lift falls short of the predicted range.
-
----
-
 ## Network-scale impact
 
 | Metric | Per peak day, per store | Annualised (89 Unlimited stores × 4 weekends) |

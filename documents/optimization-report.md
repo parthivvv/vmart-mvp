@@ -403,8 +403,6 @@ V-Mart's broader footprint is 554 stores including V-Mart and Unlimited; this ne
 
 Five operational moves. Zero incremental capex. Zero rebranding, zero pricing change, zero hiring. Every move is reversible — if a store manager doesn't like what they see in the first hour, they revert to baseline policy mid-day.
 
-The pilot in the next section is designed to validate the predicted ₹2 L/store lift against actual POS data at three pilot stores. We measure the difference between predicted lift and measured lift; we don't bill if the measured lift falls short of the predicted range.
-
 ---
 
 ## Limitations and next steps
