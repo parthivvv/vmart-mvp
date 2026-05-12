@@ -999,7 +999,7 @@ class Sim {
       // 25% size 1, 25% size 2-3, 15% size 4-5, 5% size 6+. Combined with
       // post-discount item prices, ATV calibrates to ~₹800-₹1,000.
       if (a.basket.length < a.basket_size_target &&
-          Math.random() < dt * 0.11 * a.intent_strength) {
+          Math.random() < dt * 0.14 * a.intent_strength) {   /* v3.1: 0.11→0.14 for Diwali peak */
         const skuInfo = pickSkuInfo(a.current_zone);
         const itemValue = generateItemPrice(a.current_zone);
 
@@ -1093,7 +1093,7 @@ class Sim {
         a._cubicle = null;
         this.metrics.trial_waits.push(a.queue_wait);
         // post-trial decision
-        if (Math.random() < 0.58) {
+        if (Math.random() < 0.72) {                          /* v3.1: 0.58→0.72 — once you trial on Diwali, you mostly buy */
           this._routeToBilling(a);
         } else {
           // drop 1 item

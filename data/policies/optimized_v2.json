@@ -1,8 +1,8 @@
 {
   "id": "optimized_v2",
-  "name": "Optimized V2 — sweep winner (P24_combo_op_plus_full)",
+  "name": "Optimized V2 — sweep winner (P23_combo_op_plus_merch)",
   "version": "2.0",
-  "description": "Selected from a 16-policy sweep across 3 cohorts (48 runs). Best mean revenue: ₹5.435L vs baseline ₹3.641L (+49.26%). Levers chosen: L1=sched_15_16, L2=staggered_2_re, L3=attendant_cap. L4 and L5 deliberately untouched — engine doesn't act on them yet (see manit-notes/08).",
+  "description": "Selected from a 16-policy sweep across 3 cohorts (48 runs). Best mean revenue: ₹6.404L vs baseline ₹4.209L (+52.14%). Levers chosen: L1=sched_15_16, L2=staggered_2_re, L3=attendant_cap. L4 and L5 deliberately untouched — engine doesn't act on them yet (see manit-notes/08).",
   "source_docs": [
     "manit-notes/08-policies-and-guardrails.md",
     "manit-notes/09-optimization-plan.md",
@@ -22,13 +22,13 @@
     ]
   },
   "sweep_evidence": {
-    "mean_revenue": 543511.6219275935,
-    "std_revenue": 19183.029938276053,
-    "mean_conversion": 0.6920381409550611,
-    "mean_peak_bill_wait": 24.666666666666668,
-    "mean_abandon_pct": 0.2953333333333333,
-    "delta_vs_baseline_pct": 49.25854886238608,
-    "delta_bill_wait_min": -6,
+    "mean_revenue": 640364.9468357278,
+    "std_revenue": 12592.433642767199,
+    "mean_conversion": 0.6945428223605504,
+    "mean_peak_bill_wait": 35.333333333333336,
+    "mean_abandon_pct": 0.2993333333333333,
+    "delta_vs_baseline_pct": 52.1374128226813,
+    "delta_bill_wait_min": -5.333333333333329,
     "rank_in_sweep": 1
   },
   "levers_chosen": {
@@ -36,7 +36,7 @@
     "L2": "staggered_2_re",
     "L3": "attendant_cap",
     "L4": "both",
-    "L5": "bundles_footwear"
+    "L5": "bundles"
   },
   "lever_1_billing": {
     "model": "scheduled",
@@ -129,7 +129,7 @@
   },
   "lever_5_cross_merch_and_replenishment": {
     "outfit_bundle_fixtures": true,
-    "footwear_apparel_co_location": true,
+    "footwear_apparel_co_location": false,
     "replenishment_schedule": [
       "10:00",
       "13:00",

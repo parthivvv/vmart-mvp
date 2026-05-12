@@ -36,6 +36,11 @@ ENTRIES = [
     (POLICY_DIR / "optimized_v2.json", "POLICY_OPTIMIZED_V2"),
 ]
 
+# Sweep candidates — bundled as one array so the UI's policy picker can list
+# them all without ~34 separate window globals.
+CANDIDATES_DIR = DATA_DIR.parent / "train" / "candidates"
+RESULTS_PATH   = DATA_DIR.parent / "train" / "results" / "latest.json"
+
 
 def main():
     chunks = ["// Auto-bundled from /data/*.json — do not edit by hand\n"]
@@ -48,6 +53,37 @@ def main():
         compact = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
         chunks.append(f"\nwindow.{global_name} = {compact};")
         print(f"  bundled {path.relative_to(DATA_DIR.parent)} → window.{global_name}")
+
+    # Bundle the sweep candidates (~34 small policy JSONs) + their measured
+    # mean revenues / deltas from latest.json so the UI can show them all.
+    candidates = []
+    aggs_by_id = {}
+    if RESULTS_PATH.exists():
+        for a in json.loads(RESULTS_PATH.read_text()).get("aggregates", []):
+            aggs_by_id[a["policy_id"]] = a
+    if CANDIDATES_DIR.exists():
+        for f in sorted(CANDIDATES_DIR.glob("*.json")):
+            p = json.loads(f.read_text())
+            pid = p.get("id")
+            agg = aggs_by_id.get(pid, {})
+            candidates.append({
+                "id": pid,
+                "name": p.get("name"),
+                "version": p.get("version"),
+                "levers_chosen": p.get("levers_chosen", {}),
+                "lever_1_billing": p.get("lever_1_billing"),
+                "lever_2_floor_staffing": p.get("lever_2_floor_staffing"),
+                "lever_3_trial_rooms": p.get("lever_3_trial_rooms"),
+                "lever_4_merchandising": p.get("lever_4_merchandising"),
+                "lever_5_cross_merch_and_replenishment": p.get("lever_5_cross_merch_and_replenishment"),
+                "mean_revenue": agg.get("mean_revenue"),
+                "delta_revenue_pct": agg.get("delta_revenue_pct"),
+                "mean_conversion": agg.get("mean_conversion"),
+                "mean_peak_bill_wait": agg.get("mean_peak_bill_wait"),
+            })
+        compact = json.dumps(candidates, ensure_ascii=False, separators=(",", ":"))
+        chunks.append(f"\nwindow.POLICY_CANDIDATES = {compact};")
+        print(f"  bundled {len(candidates)} candidates → window.POLICY_CANDIDATES")
 
     OUT_PATH.write_text("".join(chunks))
     size_kb = OUT_PATH.stat().st_size / 1024
