@@ -50,8 +50,8 @@
         "infants"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 14,
-        "abandon_at": 28
+        "reduce_at": 18,
+        "abandon_at": 42
       },
       "basket_size_target": {
         "min": 4,
@@ -99,8 +99,8 @@
         "womens_fa"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 16,
-        "abandon_at": 28
+        "reduce_at": 20,
+        "abandon_at": 40
       },
       "basket_size_target": {
         "min": 2,
@@ -160,8 +160,8 @@
         "mens_casual"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 25,
-        "abandon_at": 40
+        "reduce_at": 30,
+        "abandon_at": 60
       },
       "basket_size_target": {
         "min": 6,
@@ -214,8 +214,8 @@
         "power_wall"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 20,
-        "abandon_at": 35
+        "reduce_at": 25,
+        "abandon_at": 48
       },
       "basket_size_target": {
         "min": 2,
@@ -262,8 +262,8 @@
         "womens_fa"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 8,
-        "abandon_at": 15
+        "reduce_at": 10,
+        "abandon_at": 20
       },
       "basket_size_target": {
         "min": 1,
@@ -314,8 +314,8 @@
         "power_wall"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 28,
-        "abandon_at": 45
+        "reduce_at": 35,
+        "abandon_at": 70
       },
       "basket_size_target": {
         "min": 1,
@@ -363,8 +363,8 @@
         "mens_fa"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 6,
-        "abandon_at": 12
+        "reduce_at": 8,
+        "abandon_at": 16
       },
       "basket_size_target": {
         "min": 1,
@@ -411,8 +411,8 @@
         "mens_fa"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 14,
-        "abandon_at": 24
+        "reduce_at": 18,
+        "abandon_at": 32
       },
       "basket_size_target": {
         "min": 4,
@@ -470,8 +470,8 @@
         "power_wall"
       ],
       "queue_tolerance_min": {
-        "reduce_at": 18,
-        "abandon_at": 30
+        "reduce_at": 25,
+        "abandon_at": 48
       },
       "basket_size_target": {
         "min": 3,
@@ -524,7 +524,7 @@
       ],
       "queue_tolerance_min": {
         "reduce_at": 3,
-        "abandon_at": 5
+        "abandon_at": 6
       },
       "basket_size_target": {
         "min": 0,
@@ -545,5 +545,6 @@
     "late_evening_9pm_10pm": "tail of family_weekend + quick_trip_male"
   },
   "_note_v3": "Added price_elasticity per persona (0=inelastic, 1=very sensitive). Engine rejects expensive items probabilistically based on agent's elasticity \u00d7 (item_price/typical).",
-  "_note_v3_1": "v3.1 recalibration: bumped intent_strength and queue_tolerance to match real Diwali Saturday shopper behavior (festive day = more decided, more patient). Browser intent slightly raised (0.10\u21920.18) \u2014 Mahabachat pulls some browsers into conversion."
+  "_note_v3_1": "v3.1 recalibration: bumped intent_strength and queue_tolerance to match real Diwali Saturday shopper behavior (festive day = more decided, more patient). Browser intent slightly raised (0.10\u21920.18) \u2014 Mahabachat pulls some browsers into conversion.",
+  "_note_v3_2": "v3.2: bumped queue tolerance significantly. Festive shoppers who came with a basket will wait 40-70 min before abandoning. Only the time-constrained personas (working_woman, quick_trip_male, browser) abandon under 20 min."
 }

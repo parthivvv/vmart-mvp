@@ -1296,7 +1296,7 @@ class Sim {
       if (this.billing_queue.length === 0) continue;
       const a = this.billing_queue.shift();
       // Service time: 2-3 min on Diwali + per-item adjustment
-      const serv = 1.8 + Math.random() * 1.4 + a.basket.length * 0.15;
+      const serv = 1.2 + Math.random() * 0.8 + a.basket.length * 0.10;   /* v3.2: modern POS, faster tag-removal — 1.5-2.5 min for typical Diwali basket */
       c.busy = a;
       c.finishAt = this.simMin + serv;
       a.state = 'at_counter';

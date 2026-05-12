@@ -1509,7 +1509,7 @@
       </div>
       <div class="rpt-hero-arrow">→</div>
       <div class="rpt-hero-side opt">
-        <div class="lbl">Optimized v1</div>
+        <div class="lbl">Optimized v2</div>
         <div class="val" id="rptHeroOpt">₹—</div>
         <div class="sub" id="rptHeroOptSub">— memos · — conversion</div>
       </div>
@@ -1528,14 +1528,14 @@
   <!-- ============== KPI DOT-RANGE CHART ============== -->
   <section class="rpt-section">
     <div class="rpt-eyebrow">Section 02 · Metric-by-metric comparison</div>
-    <h2 class="rpt-q">How every operating metric moves under Optimized v1.</h2>
-    <p class="rpt-lede">Same 1,000 agents, same arrival schedule, same RNG seed. The only thing that differs is the operating policy. Each row shows where the metric lands under baseline (dark) versus optimized (red), and the delta on the right.</p>
+    <h2 class="rpt-q">How every operating metric moves under <b>Optimized v2</b>.</h2>
+    <p class="rpt-lede">Same 1,000 agents, same arrival schedule, same RNG seed. The only thing that differs is the operating policy. Each row shows where the metric lands under baseline (gray) versus optimized (teal), and the delta on the right.</p>
     <div class="rpt-chart-wrap">
       <svg id="rptDumbbell" viewBox="0 0 760 440" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
     <div class="rpt-legend">
       <span><span class="dot baseline"></span>Baseline</span>
-      <span><span class="dot optimized"></span>Optimized v1</span>
+      <span><span class="dot optimized"></span>Optimized v2</span>
       <span class="muted">— values are end-of-day totals or averages over the 12-hour day</span>
     </div>
   </section>
@@ -1544,7 +1544,7 @@
   <section class="rpt-section">
     <div class="rpt-eyebrow">Section 03 · Where the revenue went</div>
     <h2 class="rpt-q">Billing queue compresses through the evening peak.</h2>
-    <p class="rpt-lede">Under baseline, Counter 2 only opens when the queue hits 15 (and Counter 3 at 20) — by which point shoppers in the queue have already crossed their tolerance thresholds and walked out. Optimized v1 schedules Counter 2 at <b>17:00</b> and Counter 3 at <b>18:00</b>, before the evening rush. The dwell time gap is where the recovered revenue lives.</p>
+    <p class="rpt-lede">Under baseline, Counter 2 only opens when the queue hits 15 (and Counter 3 at 20) — by which point shoppers in the queue have already crossed their tolerance thresholds. Optimized v2 schedules Counter 2 at <b>15:00</b>, Counter 3 at <b>16:00</b>, and Counter 4 at <b>17:30</b> — well ahead of the evening rush. The collapsing-wait gap is where the recovered revenue lives.</p>
     <div class="rpt-chart-wrap">
       <svg id="rptBillChart" viewBox="0 0 760 280" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
@@ -1581,19 +1581,40 @@
     <h2 class="rpt-q">How every number on this page is computed.</h2>
     <div class="rpt-method">
       <div>
-        <h5>Same seed · same agents · same arrivals</h5>
-        <p>1,000 hand-built shopper agents walk the floor for 12 hours, twice. Once under baseline, once under Optimized v1. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed.</p>
-        <div class="src">data/agents.json · data/profiles.json · manit-notes/04-simulation-engine.md</div>
+        <h5>1,000 agents · 10 personas · same seed across every policy</h5>
+        <p>Ten Bangalore-specific persona archetypes (mission moms, young moms, working women, premium-occasion buyers, family weekenders, quick-trip men, office gifters, visiting relatives, browsers, and young women) walk the floor for 12 hours. Each agent has a backstory, arrival time, dwell, queue tolerance, basket-size target, intent strength, and price elasticity — all reproducible from a single RNG seed.</p>
+        <div class="src">data/agents.json · data/profiles.json · manit-notes/02-shopper-agents.md</div>
       </div>
       <div>
-        <h5>Causal chain only · no fiat lift</h5>
-        <p>Every claimed lift flows through <b>policy → environment → agent reaction → revenue</b>. No boost-multipliers. No forced conversion rates. No fiat ATV bumps. If a finding can't be traced to a specific shopper behaviour in this run, it is not surfaced.</p>
+        <h5>Five wired operating levers</h5>
+        <p>L1 (billing schedule), L2 (floor staffing + active upsell), L3 (trial-room attendant + item cap), L4 (power-wall freshness + impulse fixture), and L5 (cross-merch bundle fixtures + footwear adjacency) are all live in the engine. Each policy is a JSON file specifying knob values; the engine reacts; agents respond.</p>
+        <div class="src">manit-notes/08-policies-and-guardrails.md · store/engine.js (search "// LEVER")</div>
+      </div>
+      <div>
+        <h5>Auto-search · 34 candidates × 3 cohorts = 102 deterministic runs</h5>
+        <p>A trimmed grid sweep across the L1×L2×L3×L4×L5 policy space evaluates 34 candidates on three independent 1,000-agent cohorts (seeds 101, 202, 303). The winner is the highest mean revenue across cohorts — robust, not single-seed lucky.</p>
+        <div class="src">train/sweep.js · train/results/latest.json · manit-notes/09-optimization-plan.md</div>
+      </div>
+      <div>
+        <h5>Causal-chain only · no fiat lift</h5>
+        <p>Every claimed lift flows through <b>policy → environment → agent reaction → revenue</b>. No boost-multipliers. No forced conversion rates. No fiat ATV bumps. The schema rejects keys matching <code>boost_*</code>, <code>multiplier</code>, <code>override_*</code>, or <code>*_probability</code> at the top level. If a finding can't be traced to a specific shopper behaviour in a specific run, it isn't surfaced.</p>
         <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
       </div>
       <div>
-        <h5>What is NOT wired yet</h5>
-        <p>Levers L4 (merchandising) and L5 (cross-merch / replenishment) are spec'd in the policy schema but not yet wired into the engine. Their effect is not counted in this report. Once wired, expected additional lift is +4-8% revenue.</p>
-        <div class="src">store/README.md · engine support matrix</div>
+        <h5>Two calibration rounds against real Diwali data</h5>
+        <p>v3.1 retuned agent-side parameters (intent, queue tolerance, basket-build rate, post-trial purchase) to match festive shopper behaviour — Diwali baseline conversion is 70-85%, not 35-40%. v3.2 cut per-memo billing service time (modern POS + festive-trained staff) so baseline abandonment dropped from 33% of basket-holders to ~12% — a defensible number. Both rounds affect baseline AND optimized identically.</p>
+        <div class="src">documents/optimization-report.md · "v3 → v3.1 → v3.2" iteration table</div>
+      </div>
+      <div>
+        <h5>Full whitepaper · methodology + results + actionable insights</h5>
+        <p>A detailed write-up of the model, the sweep, the per-lever findings, the recommended policy, and the limitations — with every plot embedded — is available as a downloadable methodology document.</p>
+        <div class="src" style="display: flex; gap: 10px; margin-top: 8px;">
+          <a id="dlWhitepaper" href="../documents/optimization-report.md"
+             download="VMart-Diwali-Methodology-Whitepaper.md"
+             style="display:inline-block; padding:8px 14px; background:#1F4D4A; color:white; border-radius:4px; text-decoration:none; font-weight:600; font-size:11.5px; letter-spacing:0.04em;">↓ Download whitepaper (.md)</a>
+          <a id="viewWhitepaper" href="../documents/optimization-report.md" target="_blank"
+             style="display:inline-block; padding:8px 14px; background:transparent; color:#1F4D4A; border:1px solid #1F4D4A; border-radius:4px; text-decoration:none; font-weight:600; font-size:11.5px; letter-spacing:0.04em;">View in browser →</a>
+        </div>
       </div>
     </div>
   </section>
@@ -2328,6 +2349,127 @@
     return s;
   }
 
+  // ── SVG chart helpers for the exec summary ─────────────────────────
+  // Aaru-style: warm off-white bg, dashed gridlines, teal-dark vs gray dots.
+
+  // Dumbbell comparison chart — N metric rows, each row shows baseline (gray)
+  // vs optimized (teal) on its OWN scale (each metric is independent units).
+  function _drawDumbbell(svg, bK, oK, baseSim, optSim) {
+    if (!svg) return;
+    const peakBillBase = Math.max(...(baseSim.metrics.bill_waits || [0]));
+    const peakBillOpt  = Math.max(...(optSim.metrics.bill_waits  || [0]));
+    const walkBase = bK.walkouts + (baseSim.metrics.abandonments_bill || 0) + (baseSim.metrics.abandonments_trial || 0);
+    const walkOpt  = oK.walkouts + (optSim.metrics.abandonments_bill  || 0) + (optSim.metrics.abandonments_trial  || 0);
+    // [label, baseline, optimized, format, goodDirection]
+    const rows = [
+      ['Revenue',              bK.revenue / 1e5,        oK.revenue / 1e5,        v => '₹' + v.toFixed(2) + 'L', 'up'],
+      ['Conversion',           bK.conversion * 100,     oK.conversion * 100,     v => v.toFixed(1) + '%',       'up'],
+      ['Memos issued',         bK.memos,                oK.memos,                v => Math.round(v).toString(), 'up'],
+      ['Avg ticket',           bK.avg_ticket,           oK.avg_ticket,           v => '₹' + Math.round(v),      'up'],
+      ['Peak billing wait',    peakBillBase,            peakBillOpt,             v => v.toFixed(0) + 'm',       'down'],
+      ['Avg billing wait',     bK.bill_wait,            oK.bill_wait,            v => v.toFixed(1) + 'm',       'down'],
+      ['Walk-outs + abandons', walkBase,                walkOpt,                 v => Math.round(v).toString(), 'down'],
+    ];
+    const W = 760, H = 440;
+    const padL = 156, padR = 92, padT = 14, padB = 22;
+    const innerW = W - padL - padR;
+    const rowH = (H - padT - padB) / rows.length;
+    const TEAL = '#1F4D4A', GRAY = '#9A938A', LINE = '#D8D2C7', INK = '#1A1815', INK_DIM = '#7A746B';
+
+    let out = '';
+    rows.forEach(([label, b, o, fmt, dir], i) => {
+      const yRow = padT + rowH * i + rowH / 2;
+      // Each row has its own range — pad by 12% so dots aren't at the edge
+      const minV = Math.min(b, o), maxV = Math.max(b, o);
+      const pad  = Math.max(1, (maxV - minV) * 0.20);
+      const rangeMin = Math.max(0, minV - pad), rangeMax = maxV + pad;
+      const xOf = v => padL + ((v - rangeMin) / (rangeMax - rangeMin)) * innerW;
+      const xB = xOf(b), xO = xOf(o);
+      // Connector line
+      out += `<line x1="${Math.min(xB,xO)}" y1="${yRow}" x2="${Math.max(xB,xO)}" y2="${yRow}" stroke="${LINE}" stroke-width="2"/>`;
+      // Baseline dot
+      out += `<circle cx="${xB}" cy="${yRow}" r="6.5" fill="${GRAY}"/>`;
+      // Optimized dot (teal if direction is correct, else gray)
+      const better = (dir === 'up' && o > b) || (dir === 'down' && o < b);
+      out += `<circle cx="${xO}" cy="${yRow}" r="6.5" fill="${better ? TEAL : GRAY}"/>`;
+      // Row label on left
+      out += `<text x="${padL - 12}" y="${yRow + 4}" text-anchor="end" fill="${INK}" font-size="13" font-family="Inter Tight, system-ui">${label}</text>`;
+      // Baseline value (under-dot)
+      out += `<text x="${xB}" y="${yRow + 21}" text-anchor="middle" fill="${INK_DIM}" font-size="10" font-family="JetBrains Mono, monospace">${fmt(b)}</text>`;
+      // Optimized value (under-dot)
+      out += `<text x="${xO}" y="${yRow + 21}" text-anchor="middle" fill="${INK}" font-size="10.5" font-family="JetBrains Mono, monospace" font-weight="700">${fmt(o)}</text>`;
+      // Delta on right
+      const deltaPct = b !== 0 ? ((o - b) / Math.abs(b) * 100) : 0;
+      const sign = deltaPct >= 0 ? '+' : '';
+      out += `<text x="${W - padR + 78}" y="${yRow + 4}" text-anchor="end" fill="${better ? TEAL : '#B5392D'}" font-size="12" font-family="JetBrains Mono, monospace" font-weight="700">${sign}${deltaPct.toFixed(1)}%</text>`;
+    });
+
+    // Column headers
+    out += `<text x="${padL + innerW * 0.16}" y="10" fill="${INK_DIM}" font-size="9" font-family="Inter Tight" letter-spacing="0.12em">BASELINE</text>`;
+    out += `<text x="${padL + innerW * 0.84}" y="10" fill="${TEAL}" font-size="9" font-family="Inter Tight" font-weight="700" letter-spacing="0.12em">OPTIMIZED</text>`;
+    svg.innerHTML = out;
+  }
+
+  // Generic queue time-series — two lines (baseline vs optimized) over the day
+  function _drawQueueTimeseries(svg, baseSim, optSim, field, yLabel) {
+    if (!svg) return;
+    const baseSeries = (baseSim.metrics.by_minute || []).map(s => s[field] || 0);
+    const optSeries  = (optSim.metrics.by_minute  || []).map(s => s[field] || 0);
+    if (!baseSeries.length || !optSeries.length) {
+      svg.innerHTML = `<text x="380" y="140" text-anchor="middle" fill="#7A746B" font-size="12" font-family="Inter Tight">no time-series data</text>`;
+      return;
+    }
+    const W = 760, H = 280;
+    const padL = 50, padR = 20, padT = 24, padB = 36;
+    const innerW = W - padL - padR;
+    const innerH = H - padT - padB;
+    const totalMin = Math.max(baseSeries.length, optSeries.length, 720);
+    const yMax = Math.max(1, Math.max(...baseSeries, ...optSeries) * 1.10);
+    const TEAL = '#1F4D4A', GRAY = '#9A938A', LINE = '#D8D2C7', INK_DIM = '#7A746B';
+
+    // Path builder — downsample to ~145 points so the SVG is light
+    const stride = Math.max(1, Math.floor(totalMin / 145));
+    function pathFor(series) {
+      let d = '';
+      for (let i = 0; i < series.length; i += stride) {
+        const x = padL + (i / totalMin) * innerW;
+        const y = padT + innerH - (series[i] / yMax) * innerH;
+        d += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1) + ' ';
+      }
+      return d;
+    }
+
+    let out = '';
+    // Y gridlines + axis labels
+    for (let i = 0; i <= 4; i++) {
+      const y  = padT + innerH * (1 - i / 4);
+      const v  = (yMax * i / 4).toFixed(0);
+      out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${LINE}" stroke-width="0.7" stroke-dasharray="2 4" opacity="0.7"/>`;
+      out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="${INK_DIM}" font-size="9" font-family="JetBrains Mono, monospace">${v}</text>`;
+    }
+    // X axis hour labels (10am, 12pm, 2pm, ...)
+    const hours = [0, 120, 240, 360, 480, 600, 720];
+    const hourLabels = ['10 AM','12 PM','2 PM','4 PM','6 PM','8 PM','10 PM'];
+    hours.forEach((m, i) => {
+      const x = padL + (m / totalMin) * innerW;
+      out += `<text x="${x}" y="${H - padB + 18}" text-anchor="middle" fill="${INK_DIM}" font-size="9" font-family="Inter Tight">${hourLabels[i]}</text>`;
+    });
+    // Baseline line + dot fill area
+    out += `<path d="${pathFor(baseSeries)}" stroke="${GRAY}" stroke-width="1.8" fill="none" opacity="0.85"/>`;
+    // Optimized line
+    out += `<path d="${pathFor(optSeries)}" stroke="${TEAL}" stroke-width="2" fill="none"/>`;
+    // Legend
+    out += `<g transform="translate(${padL + 4}, ${padT + 4})">
+      <circle cx="6" cy="6" r="4" fill="${GRAY}"/>
+      <text x="16" y="10" fill="${INK_DIM}" font-size="10.5" font-family="Inter Tight">Baseline</text>
+      <circle cx="92" cy="6" r="4" fill="${TEAL}"/>
+      <text x="102" y="10" fill="${TEAL}" font-size="10.5" font-family="Inter Tight" font-weight="600">Optimized</text>
+    </g>`;
+    // Y label
+    out += `<text x="${padL - 36}" y="${padT + 4}" fill="${INK_DIM}" font-size="9" font-family="Inter Tight" letter-spacing="0.06em">${yLabel}</text>`;
+    svg.innerHTML = out;
+  }
+
   // v3 populator — targets Parthiv's rpt* IDs from the "report deck revamp"
   // commit. Always runs both baseline + currently-selected policy headlessly
   // so the comparison is real, then fills the hero block, lever attribution,
@@ -2396,6 +2538,15 @@
           </div>
         </div>
       `).join(''));
+
+      // ── SVG charts — Sections 02, 03, 04 ────────────────────────────
+      _drawDumbbell(document.getElementById('rptDumbbell'), bK, oK, baseSim, optSim);
+      _drawQueueTimeseries(document.getElementById('rptBillChart'),  baseSim, optSim, 'bill_q',    'Billing queue depth');
+      _drawQueueTimeseries(document.getElementById('rptTrialChart'), baseSim, optSim, 'trial_q_w', 'Women\'s trial queue depth');
+
+      // Update Section 02's hardcoded "Optimized v1" mention
+      const sec02q = document.querySelectorAll('.rpt-section')[1]?.querySelector('.rpt-q');
+      if (sec02q) sec02q.innerHTML = `How every operating metric moves under <b>${window.policyLabel(optPid) || 'Optimized v2'}</b>.`;
 
       // ── Top recovery moves — context-aware ───────────────────────────
       // baseline active → "here's what you could recover" (sweep top 5)

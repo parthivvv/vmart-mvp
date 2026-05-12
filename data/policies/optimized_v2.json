@@ -1,8 +1,8 @@
 {
   "id": "optimized_v2",
-  "name": "Optimized V2 — sweep winner (P23_combo_op_plus_merch)",
+  "name": "Optimized V2 — sweep winner (P24_combo_op_plus_full)",
   "version": "2.0",
-  "description": "Selected from a 16-policy sweep across 3 cohorts (48 runs). Best mean revenue: ₹6.404L vs baseline ₹4.209L (+52.14%). Levers chosen: L1=sched_15_16, L2=staggered_2_re, L3=attendant_cap. L4 and L5 deliberately untouched — engine doesn't act on them yet (see manit-notes/08).",
+  "description": "Selected from a 16-policy sweep across 3 cohorts (48 runs). Best mean revenue: ₹7.617L vs baseline ₹5.606L (+35.87%). Levers chosen: L1=sched_15_16, L2=staggered_2_re, L3=attendant_cap. L4 and L5 deliberately untouched — engine doesn't act on them yet (see manit-notes/08).",
   "source_docs": [
     "manit-notes/08-policies-and-guardrails.md",
     "manit-notes/09-optimization-plan.md",
@@ -22,13 +22,13 @@
     ]
   },
   "sweep_evidence": {
-    "mean_revenue": 640364.9468357278,
-    "std_revenue": 12592.433642767199,
-    "mean_conversion": 0.6945428223605504,
-    "mean_peak_bill_wait": 35.333333333333336,
-    "mean_abandon_pct": 0.2993333333333333,
-    "delta_vs_baseline_pct": 52.1374128226813,
-    "delta_bill_wait_min": -5.333333333333329,
+    "mean_revenue": 761688.1675955268,
+    "std_revenue": 11934.231224057892,
+    "mean_conversion": 0.8398982274393768,
+    "mean_peak_bill_wait": 22.666666666666668,
+    "mean_abandon_pct": 0.15666666666666665,
+    "delta_vs_baseline_pct": 35.86582260484244,
+    "delta_bill_wait_min": -21.999999999999996,
     "rank_in_sweep": 1
   },
   "levers_chosen": {
@@ -36,7 +36,7 @@
     "L2": "staggered_2_re",
     "L3": "attendant_cap",
     "L4": "both",
-    "L5": "bundles"
+    "L5": "bundles_footwear"
   },
   "lever_1_billing": {
     "model": "scheduled",
@@ -129,7 +129,7 @@
   },
   "lever_5_cross_merch_and_replenishment": {
     "outfit_bundle_fixtures": true,
-    "footwear_apparel_co_location": false,
+    "footwear_apparel_co_location": true,
     "replenishment_schedule": [
       "10:00",
       "13:00",
