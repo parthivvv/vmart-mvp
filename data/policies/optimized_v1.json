@@ -1,0 +1,98 @@
+{
+  "id": "optimized_v1",
+  "name": "Optimized V1 — proactive billing, staggered breaks, attended trial rooms",
+  "version": "0.1",
+  "description": "First optimized policy. Diffs ONLY baseline by tuning the three levers Parthiv's engine has wired today: L1 billing schedule, L2 floor-staff break pattern + one mid-shift reallocation, L3 trial-room attendant + item-cap enforcement. L4 (merchandising) and L5 (cross-merch / replenishment) are spec'd in manit-notes/08 but the engine doesn't yet read those knobs (see engine support matrix). Same agents, same seed, same arrivals — only the environment differs.",
+
+  "source_docs": [
+    "manit-notes/01-mvp-scope.md",
+    "manit-notes/08-policies-and-guardrails.md",
+    "manit-notes/09-optimization-plan.md"
+  ],
+
+  "compliance": {
+    "causal_chain_only": true,
+    "no_forbidden_keys": true,
+    "diffs_baseline_keys_only": ["lever_1_billing.model", "lever_1_billing.always_open", "lever_1_billing.schedule", "lever_2_floor_staffing.break_pattern", "lever_2_floor_staffing.mid_shift_reallocation", "lever_2_floor_staffing.reallocations", "lever_3_trial_rooms.attendant_present", "lever_3_trial_rooms.item_cap_enforced"]
+  },
+
+  "lever_1_billing": {
+    "model": "scheduled",
+    "always_open": [1],
+    "always_closed": [4, 5, 6],
+    "reactive_rules": [
+      { "counter": 2, "trigger_queue_min": 8, "staffing_delay_min_range": [1, 3] },
+      { "counter": 3, "trigger_queue_min": 12, "staffing_delay_min_range": [1, 3] }
+    ],
+    "schedule": {
+      "17:00": [2],
+      "18:00": [3]
+    },
+    "rationale": "Counter 2 opens proactively at 17:00 (well before evening peak), Counter 3 at 18:00. Reactive rules are kept as a safety net but with much tighter staffing-delay (B03/B04 stationed at counter, not 'called from floor'). Closes the 8-minute abandonment window in the baseline."
+  },
+
+  "lever_2_floor_staffing": {
+    "model": "fixed_with_one_reallocation",
+    "break_pattern": "staggered",
+    "break_concurrency_max": 2,
+    "mid_shift_reallocation": true,
+    "reallocations": [
+      {
+        "at": "17:00",
+        "staff_id": "F09",
+        "from_zone": "infants",
+        "to_zone": "womens_ethnic",
+        "rationale": "Infants zone gets ~4× fewer planned visits than women's ethnic. Evening peak demand is concentrated in W-ethnic. F09 reallocates at 17:00 and returns at close. Causal mechanism: more staff in the busy zone → more shoppers assisted → higher basket-build rate via _tickStaff."
+      }
+    ],
+    "rationale": "Stagger the lunch and dinner break windows so no more than 2 staff are off at once (vs 5 baseline). Spreads the same total break hours across 12:30-15:00 and 18:30-21:00 windows. No new headcount."
+  },
+
+  "lever_3_trial_rooms": {
+    "cubicle_split": { "womens_bank": 7, "mens_bank": 3, "kids_bank": 0 },
+    "attendant_present": true,
+    "item_cap_enforced": true,
+    "item_cap_count": 4,
+    "rationale": "T01 stations at the women's trial bank (was doing floor relief in baseline). Enforces the 4-items-per-cubicle limit. Per brief, this drops cubicle turnover ~25% (the engine applies trial_service_mul = 0.75). Causal mechanism: shorter trial-room queue → fewer abandonment-by-wait events → more memos."
+  },
+
+  "lever_4_merchandising": {
+    "_wiring_status": "NOT WIRED — engine support matrix in manit-notes/08 marks L4 as not-wired. Keys retained for schema completeness, engine ignores them.",
+    "power_wall": {
+      "refresh_cadence": "daily_morning",
+      "festive_concentration_pct": 80
+    },
+    "promo_islands": {
+      "curation": "impulse_curated"
+    },
+    "impulse_fixture": {
+      "refresh_during_day": true
+    }
+  },
+
+  "lever_5_cross_merch_and_replenishment": {
+    "_wiring_status": "NOT WIRED — engine support matrix in manit-notes/08 marks L5 as not-wired. Keys retained for schema completeness, engine ignores them.",
+    "outfit_bundle_fixtures": true,
+    "replenishment_schedule": ["10:00", "13:00", "16:00", "18:30"],
+    "mid_peak_replenishment": true,
+    "stockout_response": "proactive",
+    "footwear_apparel_co_location": true
+  },
+
+  "do_not_touch": {
+    "agent_data": "data/agents.json — frozen across baseline & optimized runs",
+    "profile_data": "data/profiles.json — frozen",
+    "rng_seed": 42,
+    "purchase_probability_after_trial": "engine constant",
+    "queue_tolerance_thresholds": "from profiles.json"
+  },
+
+  "expected_lift_vs_baseline_1000_agents": {
+    "revenue_pct_range": [10, 20],
+    "peak_billing_wait_pct_drop": [40, 60],
+    "peak_trial_wait_pct_drop": [30, 50],
+    "walkout_pct_drop": [25, 40],
+    "conversion_pct_lift_points": [4, 8],
+    "source": "manit-notes/09-optimization-plan.md · 'What success looks like'"
+  }
+}

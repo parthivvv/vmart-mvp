@@ -4,6 +4,32 @@
  * Pure logic, no DOM. Render layer reads sim.activeAgents, sim.counters, etc.
  * ─────────────────────────────────────────────────────────────────────────── */
 
+// ── DEFAULT BASELINE POLICY ─────────────────────────────────────────────────
+// Fallback when neither a policy is passed to Sim() nor window.POLICY_BASELINE
+// is defined. Matches the structure (and values) of data/policies/baseline.json
+// so behaviour is identical with or without the data bundle.
+const DEFAULT_BASELINE = {
+  id: 'baseline_fallback',
+  lever_1_billing: {
+    model: 'reactive',
+    always_open: [1],
+    always_closed: [4, 5, 6],
+    reactive_rules: [
+      { counter: 2, trigger_queue_min: 15, staffing_delay_min_range: [5, 10] },
+      { counter: 3, trigger_queue_min: 20, staffing_delay_min_range: [5, 10] },
+    ],
+  },
+  lever_2_floor_staffing: {
+    break_pattern: 'clustered',
+    mid_shift_reallocation: false,
+  },
+  lever_3_trial_rooms: {
+    cubicle_split: { womens_bank: 7, mens_bank: 3, kids_bank: 0 },
+    attendant_present: false,
+    item_cap_enforced: false,
+  },
+};
+
 // Persona display colors (kept in sync with profile IDs from data/profiles.json)
 const PERSONA_COLOR = {
   mission_mom:    { body:'#D67BAA', skin:'#F4C9A0', hair:'#3A2418', label:'Mission mom' },
@@ -138,6 +164,46 @@ function pickOutfit(profile, rng) {
 }
 
 function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
+
+// Realistic item-price distribution (POST-discount, BOGO+30%-off REALIZED price).
+// Calibrated against data/skus.json: kurti ₹329, polo ₹409, tee ₹239, saree
+// ₹489-819, suit ₹614-737, lehenga ₹1,199-1,799, mojari ₹479, dupatta ₹163,
+// onesie ₹319, kids tee ₹239, infant ₹319. Average per item ~₹250 once you
+// account for BOGO-2 (every 3rd item free in ethnic) pulling avg paid down.
+function generateItemPrice(zone) {
+  const r = Math.random();
+  const zoneMul = {
+    womens_ethnic: 0.95,
+    womens_western: 0.70,
+    womens_fa: 0.32,     // accessories: dupatta ₹163, bangles ₹99, hair ₹74
+    mens_casual: 0.65,
+    mens_formal_ethnic: 0.80,
+    mens_fa: 0.48,
+    kids: 0.40,
+    infants: 0.36,
+    power_wall: 0.75,
+    billing: 0.22,       // impulse: bangles ₹99, lipstick, candy
+  }[zone] || 0.55;
+
+  let base;
+  if (r < 0.55)      base = 100 + Math.random() * 180;   // 100-280 basics (55%)
+  else if (r < 0.85) base = 250 + Math.random() * 250;   // 250-500 mid (30%)
+  else if (r < 0.97) base = 450 + Math.random() * 450;   // 450-900 premium (12%)
+  else               base = 850 + Math.random() * 1200;  // 850-2050 hero (3%)
+  return Math.round(base * zoneMul);
+}
+
+// Pick a representative SKU label from the SKU catalog for the zone
+function pickSku(zone) {
+  if (!window.SKUS) return null;
+  const catalog = window.SKUS.skus || window.SKUS;
+  const arr = Array.isArray(catalog) ? catalog : Object.values(catalog).flat();
+  const filtered = arr.filter(s => (s.zone === zone) || (s.zone_id === zone) || false);
+  const pool = filtered.length ? filtered : arr;
+  if (!pool.length) return null;
+  const it = pool[Math.floor(Math.random() * pool.length)];
+  return it.name || it.title || it.id || null;
+}
 function rngFromId(id) {
   // Deterministic per-agent RNG from id like "A0042"
   const n = parseInt(String(id).replace(/\D/g, '')) || 1;
@@ -150,21 +216,19 @@ function rngFromId(id) {
   };
 }
 
-// Trial cubicle visual positions (matches the SVG store-model fixtures)
-// Original SVG: trial bank starts at (530, 110), each cubicle 36px wide, divider after 7th
+// Trial cubicle visual positions — matches render.js _drawTrialBank
+// Bank: 7W at x=520→744, divider, 3M at x=752→816, all at y=110, height 68
 const TRIAL_CUBICLES = [
-  // 7 women's cubicles (W1..W7)
-  { x:546, y:158, bank:'w' },
-  { x:582, y:158, bank:'w' },
-  { x:618, y:158, bank:'w' },
-  { x:654, y:158, bank:'w' },
-  { x:690, y:158, bank:'w' },
-  { x:726, y:158, bank:'w' },
-  { x:762, y:158, bank:'w' },
-  // 3 men's cubicles (M1..M3)
-  { x:810, y:158, bank:'m' },
-  { x:846, y:158, bank:'m' },
-  { x:876, y:158, bank:'m' },
+  { x:535, y:158, bank:'w' },  // W1
+  { x:567, y:158, bank:'w' },  // W2
+  { x:599, y:158, bank:'w' },  // W3
+  { x:631, y:158, bank:'w' },  // W4
+  { x:663, y:158, bank:'w' },  // W5
+  { x:695, y:158, bank:'w' },  // W6
+  { x:727, y:158, bank:'w' },  // W7
+  { x:767, y:158, bank:'m' },  // M1
+  { x:799, y:158, bank:'m' },  // M2
+  { x:831, y:158, bank:'m' },  // M3
 ];
 
 // Billing queue snake — single straight queue feeding counters (BASELINE policy)
@@ -281,10 +345,16 @@ class Agent {
 
 // ─────────────────────────── Sim ───────────────────────────
 class Sim {
-  constructor() {
+  // policy: optional object matching data/policies/*.json schema.
+  // If omitted, falls back to window.POLICY_BASELINE, else hardcoded defaults.
+  // This is the adapter Manit specified in manit-notes/08.
+  constructor(policy = null) {
     const A = window.AGENTS;
     const Z = window.ZONES;
     const SF = window.STAFF;
+
+    this.policy = policy || window.POLICY_BASELINE || DEFAULT_BASELINE;
+    const P = this.policy;
 
     this.agents = A.agents.map(a => new Agent(a));
     this.activeAgents = [];
@@ -293,18 +363,47 @@ class Sim {
     this.zonesMeta = {};
     Z.zones.forEach(z => { this.zonesMeta[z.id] = z; });
 
-    // Trial banks
-    this.trial_cubicles = TRIAL_CUBICLES.map((c, i) => ({
-      ...c, idx:i, busy:null, finishAt:0,
-    }));
+    // ── LEVER 3: trial rooms ─────────────────────────────────
+    // Cubicle split + attendant + item-cap come from policy.
+    const trialL = P.lever_3_trial_rooms || {};
+    const split = trialL.cubicle_split || { womens_bank:7, mens_bank:3, kids_bank:0 };
+    // Build cubicles based on split, keeping visual positions from TRIAL_CUBICLES list
+    this.trial_cubicles = TRIAL_CUBICLES.slice(0, (split.womens_bank + split.mens_bank))
+      .map((c, i) => ({
+        ...c,
+        idx: i,
+        bank: i < split.womens_bank ? 'w' : 'm',
+        busy: null,
+        finishAt: 0,
+      }));
     this.trial_queue_w = [];
     this.trial_queue_m = [];
-    this.trial_attendant_present = false; // baseline: false (T01 is doing floor relief)
+    this.trial_attendant_present = !!trialL.attendant_present;       // baseline: false
+    this.trial_item_cap_enforced  = !!trialL.item_cap_enforced;      // baseline: false
+    this.trial_item_cap           = trialL.item_cap_count || 4;
+    // With attendant + cap enforced, brief says cubicle turnover speeds up ~25%
+    this.trial_service_mul        = (this.trial_attendant_present && this.trial_item_cap_enforced) ? 0.75 : 1.0;
 
-    // Billing counters
-    this.counters = COUNTER_POS.map((p, i) => ({
-      ...p, idx:i, open: i === 0, busy:null, finishAt:0, openedAt: i === 0 ? 0 : null,
+    // ── LEVER 1: billing schedule ────────────────────────────
+    const billL = P.lever_1_billing || {};
+    const alwaysOpen   = billL.always_open || [1];
+    const alwaysClosed = billL.always_closed || [];
+    this.billing_mode = billL.model || 'reactive';
+    this.counters = COUNTER_POS.map((p, i) => {
+      const cid = i + 1;
+      const isOpen = alwaysOpen.includes(cid);
+      return { ...p, idx:i, cid, open:isOpen, busy:null, finishAt:0, openedAt: isOpen ? 0 : null };
+    });
+    // Reactive opening rules (baseline) — list of { counter, trigger_queue_min, staffing_delay_min_range }
+    this.billing_reactive_rules = (billL.reactive_rules || []).map(r => ({
+      ...r,
+      _staffing_delay_min: r.staffing_delay_min_range
+        ? r.staffing_delay_min_range[0] + Math.random() * (r.staffing_delay_min_range[1] - r.staffing_delay_min_range[0])
+        : 8,
+      _triggered_at: null,
     }));
+    // Scheduled opening (optimized) — { slot: [counter_ids] } or { hh_mm: [counter_ids] }
+    this.billing_schedule = billL.schedule || null;  // { "17:00": [2], "18:00": [3] }
     this.billing_queue = [];
 
     // Staff (visualisation only — fixed positions, lunch/dinner breaks toggle visibility)
@@ -360,9 +459,120 @@ class Sim {
     };
     for (const s of this.staff) {
       const p = zonePos[s.zone] || zonePos.floor;
-      // Add jitter so multiple staff in same zone don't stack
+      s.home_x = p[0];
+      s.home_y = p[1];
       s.x = p[0] + (Math.random() - 0.5) * 20;
       s.y = p[1] + (Math.random() - 0.5) * 12;
+      s.activity = 'idle';      // idle | patrol | help | break | bill
+      s._target_x = null;
+      s._target_y = null;
+      s._helping = null;        // agent currently being helped
+      s._help_until = 0;        // sim minute when current help ends
+      s._next_decision = Math.random() * 2;
+    }
+  }
+
+  _tickStaff(dt) {
+    for (const s of this.staff) {
+      this._applyMidShiftReallocation(s);
+      const isBilling = (s.role === 'billing' || (s.zone && s.zone.startsWith('billing')));
+      const isManager = (s.role === 'manager' || s.role === 'assistant_manager' || s.role === 'security');
+
+      // Break logic — applies to floor + trial-room roles
+      const breakState = this.staffOnBreak(s);
+      if (breakState && s.activity !== 'break') {
+        s.activity = 'break';
+        // Walk to back-of-store break area
+        s._target_x = 940 + Math.random() * 60;
+        s._target_y = 130 + Math.random() * 20;
+        s._helping = null;
+      } else if (!breakState && s.activity === 'break') {
+        s.activity = 'idle';
+        s._target_x = s.home_x + (Math.random() - 0.5) * 20;
+        s._target_y = s.home_y + (Math.random() - 0.5) * 12;
+      }
+
+      // Movement step
+      if (s._target_x != null) {
+        const dx = s._target_x - s.x;
+        const dy = s._target_y - s.y;
+        const d = Math.hypot(dx, dy);
+        if (d < 1.5) {
+          s._target_x = null;
+          s._target_y = null;
+        } else {
+          const speed = 35; // px / sim minute
+          s.x += (dx / d) * speed * dt;
+          s.y += (dy / d) * speed * dt;
+        }
+        continue;
+      }
+
+      // Fixed roles (manager, security, billing) just patrol within zone
+      if (isManager || isBilling) {
+        s._next_decision -= dt;
+        if (s._next_decision <= 0) {
+          s._next_decision = 1.5 + Math.random() * 3;
+          s._target_x = s.home_x + (Math.random() - 0.5) * 30;
+          s._target_y = s.home_y + (Math.random() - 0.5) * 14;
+        }
+        continue;
+      }
+
+      // FLOOR + TRIAL_ROOM staff — proactive help behaviour
+      if (s.activity === 'help') {
+        // Currently helping; check if duration done
+        if (this.simMin >= s._help_until) {
+          s.activity = 'idle';
+          s._helping = null;
+          // walk back near home
+          s._target_x = s.home_x + (Math.random() - 0.5) * 18;
+          s._target_y = s.home_y + (Math.random() - 0.5) * 10;
+        }
+        continue;
+      }
+
+      // Look for nearby shoppers in the same zone to help
+      s._next_decision -= dt;
+      if (s._next_decision > 0) continue;
+      s._next_decision = 0.8 + Math.random() * 1.5;
+
+      // Find a browsing shopper in this staff's zone, prefer one with empty/light basket
+      let target = null, bestScore = Infinity;
+      for (const a of this.activeAgents) {
+        if (a.state !== 'browsing') continue;
+        if (a.current_zone !== s.zone) continue;
+        const d = Math.hypot(a.x - s.home_x, a.y - s.home_y);
+        if (d > 110) continue;
+        // Prefer agents with smaller basket relative to target — they need help more
+        const need = (a.basket_size_target - a.basket.length) - d * 0.005;
+        const score = -need;
+        if (score < bestScore) { bestScore = score; target = a; }
+      }
+
+      if (target) {
+        s.activity = 'help';
+        s._helping = target;
+        s._help_until = this.simMin + 0.6 + Math.random() * 1.2; // 0.6-1.8 sim min interaction
+        s._target_x = target.x + (Math.random() - 0.5) * 10;
+        s._target_y = target.y + 10;
+        // Staff assistance occasionally surfaces an item the shopper picks up.
+        // Lower than before — staff help is one of many factors, not a guarantee.
+        if (target.basket.length < target.basket_size_target && Math.random() < 0.22) {
+          target.basket.push({
+            zone: target.current_zone,
+            value: generateItemPrice(target.current_zone),
+            sku: pickSku(target.current_zone),
+            _via_staff: true,
+          });
+          target.basket_value += target.basket[target.basket.length - 1].value;
+        }
+      } else {
+        // Patrol — wander within home zone
+        s.activity = 'patrol';
+        s._target_x = s.home_x + (Math.random() - 0.5) * 50;
+        s._target_y = s.home_y + (Math.random() - 0.5) * 26;
+      }
     }
   }
 
@@ -373,13 +583,65 @@ class Sim {
   }
 
   staffOnBreak(staff) {
-    // baseline: lunch ~13:00-15:00 cluster, dinner ~19:00-20:30
+    // ── LEVER 2: break pattern ──────────────────────────────
+    // Clustered (baseline): take breaks at the exact times in staff.json
+    //   (5 off simultaneously 13:00-15:00, 4 off 19:00-20:30 — drags peak).
+    // Staggered (optimized): shift each staff member's break to a unique
+    //   slot inside the same window, max 2 off concurrently.
     if (!staff.lunch_break || !staff.dinner_break) return false;
+    const pattern = this.policy?.lever_2_floor_staffing?.break_pattern || 'clustered';
+
+    if (pattern === 'staggered') {
+      // Deterministic stagger: each staff gets a unique offset based on id hash
+      // Lunch window 12:30–15:00 (150 min), dinner 18:30–21:00 (150 min).
+      // Cap concurrent absences at 2 by spacing offsets by 15 min.
+      const idNum = parseInt(String(staff.id).replace(/\D/g, '')) || 0;
+      const lunchStart = 150 + (idNum * 15) % 150;   // 150-min window starts at sim min 150 (=12:30)
+      const lunchEnd   = lunchStart + 30;
+      const dinnerStart = 510 + (idNum * 15) % 150;
+      const dinnerEnd   = dinnerStart + 30;
+      if (this.simMin >= lunchStart && this.simMin < lunchEnd)   return 'lunch';
+      if (this.simMin >= dinnerStart && this.simMin < dinnerEnd) return 'dinner';
+      return false;
+    }
+
+    // Clustered (baseline)
     const [ls, le] = staff.lunch_break.split('-').map(t => this.parseClock(t));
     const [ds, de] = staff.dinner_break.split('-').map(t => this.parseClock(t));
     if (this.simMin >= ls && this.simMin < le) return 'lunch';
     if (this.simMin >= ds && this.simMin < de) return 'dinner';
     return false;
+  }
+
+  // ── LEVER 2: mid-shift reallocation ────────────────────────
+  // Called from _tickStaff. When the policy allows mid-shift moves and the
+  // sim time crosses a reallocation point, this physically shifts a staff
+  // member's home zone (so future patrols and help-targeting move with them).
+  _applyMidShiftReallocation(staff) {
+    const cfg = this.policy?.lever_2_floor_staffing;
+    if (!cfg || !cfg.mid_shift_reallocation || !cfg.reallocations) return;
+    if (staff._reallocated) return;
+    for (const reloc of cfg.reallocations) {
+      const tMin = this.parseClock(reloc.at);
+      if (this.simMin < tMin) continue;
+      if (reloc.from_zone === staff.zone || reloc.staff_id === staff.id) {
+        staff.zone = reloc.to_zone;
+        const zonePos = {
+          power_wall: [810, 940], womens_ethnic: [310, 460], womens_western: [310, 800],
+          womens_fa: [380, 925], mens_casual: [830, 530], mens_formal_ethnic: [1100, 460],
+          mens_fa: [1100, 790], kids: [1350, 460], infants: [1560, 690],
+          billing: [1090, 950], floor: [690, 540],
+        };
+        const p = zonePos[staff.zone] || zonePos.floor;
+        staff.home_x = p[0] + (Math.random() - 0.5) * 18;
+        staff.home_y = p[1] + (Math.random() - 0.5) * 12;
+        staff._target_x = staff.home_x;
+        staff._target_y = staff.home_y;
+        staff._reallocated = true;
+        this.emit('staff_reallocation', null, staff.name + ' → ' + staff.zone);
+        return;
+      }
+    }
   }
 
   emit(type, agent, detail) {
@@ -414,6 +676,9 @@ class Sim {
 
     // 4. Resolve billing
     this._tickBilling(dtMin);
+
+    // 4b. Staff behaviour — patrol, help, break
+    this._tickStaff(dtMin);
 
     // 5. Remove finished
     const stillActive = [];
@@ -456,38 +721,46 @@ class Sim {
   }
 
   // Build a Manhattan path from current pos → zone target, going via aisles.
-  // Adds a small jitter to each waypoint so paths through the same corridor
-  // don't visually overlap.
+  // Picks the horizontal aisle (south/middle/north) closest to BOTH endpoints
+  // so paths through the upper store don't have to dip all the way to south.
   _routeManhattan(fromXY, toZoneId, finalTarget, fromOutside) {
     const path = [];
-    // Step 0: if outside, enter through door
+    const doorJ = (Math.random() - 0.5) * 80;
     if (fromOutside) {
-      path.push({ x: fromXY.x, y: 1015 });          // through doorway
-      path.push({ x: fromXY.x, y: 985 });           // vestibule
+      path.push({ x: fromXY.x, y: 1015 });
+      path.push({ x: fromXY.x + doorJ * 0.3, y: 985 });
     }
-    // Step 1: pick the agent's "current aisle X" — depending on where they are now
-    const fromAisleKey = this._nearestAisleX(fromXY.x);
-    const fromAisleX = AISLE['S_' + fromAisleKey].x;
-    // Step 2: get to the south aisle Y if not already there
-    const onAnyAisle = this._isOnAisleY(fromXY.y);
-    if (!onAnyAisle) {
-      // come out of zone onto nearest aisle Y
-      const aisleY = this._nearestAisleY(fromXY.y);
-      path.push({ x: fromXY.x, y: aisleY });
-    }
-    // Step 3: horizontal travel along the chosen aisle to the target zone's aisle column
+
+    const fromCol = AISLE['S_' + this._nearestAisleX(fromXY.x)].x;
     const tgtAisleKey = ZONE_AISLE_ENTRY[toZoneId] || 'S_C';
-    const tgtAisle = AISLE[tgtAisleKey];
-    // Use south aisle for horizontal travel (the main racetrack)
-    path.push({ x: fromAisleX, y: 870 });          // get on south aisle
-    // jitter
-    const jitter = (Math.random() - 0.5) * 12;
-    path.push({ x: tgtAisle.x + jitter, y: 870 }); // travel along south aisle
-    // Step 4: vertical travel up the target aisle
-    if (tgtAisle.y !== 870) {
-      path.push({ x: tgtAisle.x + jitter, y: tgtAisle.y });
+    const tgtCol = AISLE[tgtAisleKey].x;
+    const tgtRowY = AISLE[tgtAisleKey].y;
+
+    // Choose horizontal aisle for the cross-store travel.
+    // If both endpoints are in the upper half AND not coming from outside, use the
+    // middle or north aisle. Otherwise default to the south racetrack.
+    let crossY = 870;
+    if (!fromOutside) {
+      const fromY = fromXY.y, toY = finalTarget.y;
+      if (fromY < 260 && toY < 260)            crossY = 210;
+      else if (fromY < 600 && toY < 600)       crossY = 540;
+      else if (Math.random() < 0.18)           crossY = 540; // 18% chance of middle aisle for variety
     }
-    // Step 5: walk to the actual browse target inside the zone
+
+    // Step into the chosen aisle Y
+    if (Math.abs(fromXY.y - crossY) > 40) {
+      // come out of zone onto the cross aisle
+      path.push({ x: fromXY.x, y: crossY });
+    }
+    const jitter = (Math.random() - 0.5) * 14;
+    path.push({ x: fromCol, y: crossY });        // get on aisle
+    path.push({ x: tgtCol + jitter, y: crossY }); // travel along
+
+    // Step into the target row Y
+    if (Math.abs(tgtRowY - crossY) > 40) {
+      path.push({ x: tgtCol + jitter, y: tgtRowY });
+    }
+    // Final approach to actual browse target inside zone
     path.push({ x: finalTarget.x, y: finalTarget.y });
     return path;
   }
@@ -575,15 +848,18 @@ class Sim {
     }
     if (a.state === 'browsing') {
       a.dwell_remaining -= dt;
-      // Basket builds probabilistically
+      // Basket-build is probabilistic and INTENT-SCALED. Calibrated so that the
+      // distribution of basket sizes lands close to: 30% size 0 (walkout),
+      // 25% size 1, 25% size 2-3, 15% size 4-5, 5% size 6+. Combined with
+      // post-discount item prices, ATV calibrates to ~₹800-₹1,000.
       if (a.basket.length < a.basket_size_target &&
-          Math.random() < dt * 0.22 * a.intent_strength) {
-        const item = {
+          Math.random() < dt * 0.11 * a.intent_strength) {
+        a.basket.push({
           zone: a.current_zone,
-          value: 180 + Math.random() * 980,
-        };
-        a.basket.push(item);
-        a.basket_value += item.value;
+          value: generateItemPrice(a.current_zone),
+          sku: pickSku(a.current_zone),
+        });
+        a.basket_value += a.basket[a.basket.length - 1].value;
       }
       if (a.dwell_remaining <= 0) {
         this._zoneDecision(a);
@@ -687,11 +963,14 @@ class Sim {
   _zoneDecision(a) {
     a.zone_idx++;
     const remaining = a.zone_plan.length - a.zone_idx;
-    const continueProb = a.profile === 'browser' ? 0.40
-                      : a.profile === 'quick_trip_male' ? 0.30
-                      : a.profile === 'mission_mom' ? 0.75
+    // Tuned so total conversion lands near spec's 36-42% band:
+    //   - browsers churn fast (most leave by zone 2)
+    //   - intentful shoppers complete most of their plan but not always all
+    const continueProb = a.profile === 'browser' ? 0.28
+                      : a.profile === 'quick_trip_male' ? 0.42
+                      : a.profile === 'mission_mom' ? 0.72
                       : a.profile === 'young_woman' ? 0.62
-                      : 0.80;
+                      : 0.78; // family weekend
     if (remaining > 0 && Math.random() < continueProb) {
       const next = a.zone_plan[a.zone_idx];
       a.current_zone = next;
@@ -752,10 +1031,10 @@ class Sim {
       const q = c.bank === 'w' ? this.trial_queue_w : this.trial_queue_m;
       if (q.length === 0) continue;
       const a = q.shift();
-      // baseline: cubicle turnover 4-7 normal, 8-12 at peak
-      // peak ≈ 6:00-9:00 PM (sim min 480-660)
+      // LEVER 3 effect: with attendant + item cap, turnover ~25% faster
       const isPeak = this.simMin >= 480 && this.simMin <= 660;
-      const dwell = isPeak ? (8 + Math.random() * 4) : (4 + Math.random() * 3);
+      let dwell = isPeak ? (8 + Math.random() * 4) : (4 + Math.random() * 3);
+      dwell *= this.trial_service_mul;
       c.busy = a;
       c.finishAt = this.simMin + dwell;
       a.state = 'trial';
@@ -768,16 +1047,39 @@ class Sim {
   }
 
   _tickBilling(dt) {
-    // Reactively open counters per baseline policy
-    if (this.billing_queue.length >= 15 && !this.counters[1].open) {
-      this.counters[1].open = true;
-      this.counters[1].openedAt = this.simMin;
-      this.emit('counter_open', null, 'C2 opened (queue ≥ 15)');
+    // ── LEVER 1: billing schedule resolution ─────────────────
+    // Policy can specify reactive rules (baseline) or scheduled opens (optimized).
+    // Both are honoured; an optimized policy can use either or both.
+    //
+    // Reactive: when queue ≥ trigger, mark _triggered_at; after staffing-delay,
+    // counter actually opens. Matches baseline brief: "5-10 min staffing delay".
+    for (const r of this.billing_reactive_rules) {
+      const c = this.counters[r.counter - 1];
+      if (!c || c.open) continue;
+      if (r._triggered_at === null && this.billing_queue.length >= r.trigger_queue_min) {
+        r._triggered_at = this.simMin;
+      } else if (r._triggered_at !== null && this.simMin - r._triggered_at >= r._staffing_delay_min) {
+        c.open = true;
+        c.openedAt = this.simMin;
+        this.emit('counter_open', null, 'C' + r.counter + ' opened (reactive · queue ≥ ' + r.trigger_queue_min + ')');
+      }
     }
-    if (this.billing_queue.length >= 20 && !this.counters[2].open) {
-      this.counters[2].open = true;
-      this.counters[2].openedAt = this.simMin;
-      this.emit('counter_open', null, 'C3 opened (queue ≥ 20)');
+    // Scheduled: open counter at fixed clock time (optimized policy).
+    if (this.billing_schedule) {
+      for (const hhmm in this.billing_schedule) {
+        const targetMin = this.parseClock(hhmm);
+        if (this.simMin >= targetMin) {
+          const counters = this.billing_schedule[hhmm];
+          for (const cid of counters) {
+            const c = this.counters[cid - 1];
+            if (c && !c.open) {
+              c.open = true;
+              c.openedAt = this.simMin;
+              this.emit('counter_open', null, 'C' + cid + ' opened (scheduled · ' + hhmm + ')');
+            }
+          }
+        }
+      }
     }
 
     // Assign queue head to free open counter

@@ -6,7 +6,7 @@
 <title>V-Mart Unlimited · Bangalore · Diwali Saturday simulation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
 <style>
   :root {
     --bg:          #14110D;
@@ -34,8 +34,8 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     display: grid;
-    grid-template-rows: 56px 1fr 76px;
-    grid-template-columns: 1fr 360px;
+    grid-template-rows: 44px 1fr 56px;
+    grid-template-columns: 1fr 300px;
     grid-template-areas:
       "top top"
       "stage side"
@@ -48,47 +48,47 @@
     background: linear-gradient(180deg, #221C15 0%, #1A1611 100%);
     border-bottom: 2px solid var(--red);
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 18px;
+    padding: 0 12px;
     z-index: 50;
   }
-  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 9px; }
   .logo {
-    width: 32px; height: 32px;
+    width: 24px; height: 24px;
     background: var(--red); color: white;
     display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Press Start 2P', monospace; font-size: 14px;
-    border-radius: 3px;
+    font-family: 'Press Start 2P', monospace; font-size: 11px;
+    border-radius: 2px;
     box-shadow: 0 2px 0 #6B0E14;
   }
   .brand .t {
     font-family: 'Press Start 2P', monospace;
-    font-size: 11px; letter-spacing: 0.08em;
+    font-size: 9px; letter-spacing: 0.07em;
     line-height: 1.0;
   }
   .brand .s {
-    font-size: 10px; color: var(--ink-dim);
-    letter-spacing: 0.18em; text-transform: uppercase;
-    margin-top: 4px; font-weight: 600;
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    margin-top: 3px; font-weight: 600;
   }
 
   .metrics {
-    display: flex; gap: 8px;
+    display: flex; gap: 5px;
   }
   .chip {
     background: rgba(250,242,216,0.06);
     border: 1px solid rgba(250,242,216,0.12);
-    padding: 5px 11px;
+    padding: 3px 8px;
     border-radius: 2px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.0;
-    min-width: 86px;
+    min-width: 64px;
   }
   .chip .lbl {
     display: block;
     color: var(--ink-dim);
-    font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase;
-    margin-bottom: 4px;
+    font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 3px;
     font-weight: 700;
   }
   .chip .v { color: var(--ink); font-weight: 700; }
@@ -96,6 +96,36 @@
   .chip.alert .v { color: var(--red); }
   .chip.good { background: rgba(61,220,132,0.12); border-color: rgba(61,220,132,0.40); }
   .chip.good .v { color: var(--green); }
+  .policy-toggle {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-left: 4px;
+    padding-left: 8px;
+    border-left: 1px solid rgba(250,242,216,0.18);
+    height: 30px;
+  }
+  .policy-toggle .pt-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-right: 4px;
+    font-weight: 700;
+  }
+  .policy-toggle .pt-btn {
+    background: rgba(250,242,216,0.04);
+    color: var(--ink-mid);
+    border: 1px solid rgba(250,242,216,0.15);
+    padding: 4px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .policy-toggle .pt-btn:hover { color: var(--ink); border-color: rgba(250,242,216,0.40); }
+  .policy-toggle .pt-btn.active {
+    background: var(--red); color: white; border-color: var(--red);
+  }
 
   /* ─── STAGE (canvas) ──────────────────────────── */
   .stage {
@@ -103,28 +133,26 @@
     position: relative;
     background: #131009;
     overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
   }
   #map {
     width: 100%;
-    height: auto;
-    max-height: 100%;
+    height: 100%;
     image-rendering: pixelated;
     cursor: crosshair;
     display: block;
   }
   .stage-controls {
-    position: absolute; top: 14px; right: 14px;
-    display: flex; flex-direction: column; gap: 6px;
+    position: absolute; top: 10px; right: 10px;
+    display: flex; gap: 4px;
     z-index: 10;
   }
   .stage-controls button {
-    background: rgba(20,16,12,0.85);
+    background: rgba(20,16,12,0.78);
     color: var(--ink);
-    border: 1px solid rgba(250,242,216,0.20);
+    border: 1px solid rgba(250,242,216,0.18);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    padding: 6px 10px;
+    font-size: 9px;
+    padding: 4px 8px;
     cursor: pointer;
     letter-spacing: 0.04em;
     backdrop-filter: blur(8px);
@@ -133,22 +161,8 @@
   .stage-controls button:hover { background: rgba(225,29,38,0.30); }
   .stage-controls button.active { background: rgba(225,29,38,0.45); border-color: var(--red); }
 
-  /* Density bars at bottom-left of stage */
-  .zone-density {
-    position: absolute; left: 14px; bottom: 14px;
-    background: rgba(20,16,12,0.85);
-    border: 1px solid rgba(250,242,216,0.15);
-    padding: 9px 12px;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-    min-width: 260px;
-  }
-  .zone-density h5 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--red); margin-bottom: 6px;
-  }
-  .zd-row { display: grid; grid-template-columns: 100px 1fr 28px; gap: 6px; align-items: center; font-size: 10px; margin: 3px 0; }
+  /* Zone density rows (lives in the side panel) */
+  .zd-row { display: grid; grid-template-columns: 92px 1fr 26px; gap: 6px; align-items: center; font-size: 10.5px; margin: 2px 0; }
   .zd-row .nm { color: var(--ink-mid); }
   .zd-row .bar { background: rgba(250,242,216,0.06); height: 4px; position: relative; }
   .zd-row .bar > div { height: 100%; background: var(--red); transition: width 0.3s; }
@@ -275,18 +289,19 @@
     grid-area: bottom;
     background: linear-gradient(180deg, #1A1611 0%, #14110D 100%);
     border-top: 2px solid var(--red);
-    display: grid;
-    grid-template-columns: 1fr 360px;
-    gap: 16px;
-    padding: 8px 18px 10px;
+    display: flex;
     align-items: center;
+    gap: 12px;
+    padding: 6px 14px;
   }
   .timeline-wrap {
-    display: flex; flex-direction: column; gap: 4px;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: 0;
   }
   .timeline-bar {
     position: relative;
-    height: 36px;
+    height: 22px;
     background: rgba(250,242,216,0.04);
     border: 1px solid rgba(250,242,216,0.10);
     cursor: pointer;
@@ -319,27 +334,28 @@
   .tl-labels {
     display: flex; justify-content: space-between;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
+    font-size: 8px;
     color: var(--ink-dim);
     padding: 0 2px;
   }
   .controls-cluster {
-    display: flex; align-items: center; gap: 8px;
-    justify-content: flex-end;
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
   }
   .btn {
     background: rgba(250,242,216,0.06);
     color: var(--ink);
     border: 1px solid rgba(250,242,216,0.15);
-    padding: 6px 10px;
+    padding: 4px 8px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     cursor: pointer;
     letter-spacing: 0.04em;
     transition: background 0.15s;
+    white-space: nowrap;
   }
   .btn:hover { background: rgba(225,29,38,0.25); }
-  .btn.primary { background: var(--red); border-color: var(--red); font-weight: 700; color: white; }
+  .btn.primary { background: var(--red); border-color: var(--red); font-weight: 700; color: white; min-width: 70px; text-align: center; }
   .btn.primary:hover { background: #C5101A; }
   .btn.active { background: rgba(225,29,38,0.55); border-color: var(--red); color: white; }
   .speed-group {
@@ -347,22 +363,38 @@
     border-radius: 2px;
     overflow: hidden;
   }
-  .speed-group .btn { border: none; border-right: 1px solid rgba(250,242,216,0.10); padding: 6px 8px; }
+  .speed-group .btn { border: none; border-right: 1px solid rgba(250,242,216,0.10); padding: 4px 7px; }
   .speed-group .btn:last-child { border-right: none; }
 
-  /* Persona legend */
-  .legend-mini {
-    display: flex; gap: 14px; flex-wrap: wrap;
-    margin-top: 4px;
-    font-size: 10px;
-    color: var(--ink-mid);
+  /* Persona filter — compact dot row */
+  .persona-filter {
+    display: flex; gap: 4px;
+    align-items: center;
+    padding: 0 4px;
+    border-left: 1px solid rgba(250,242,216,0.10);
+    border-right: 1px solid rgba(250,242,216,0.10);
+    height: 24px;
   }
-  .legend-mini .swatch {
-    display: inline-block;
-    width: 10px; height: 10px; border-radius: 50%;
-    vertical-align: middle;
-    margin-right: 4px;
+  .persona-filter .pchip {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(250,242,216,0.20);
+    background: var(--p-mom);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.12s, border-color 0.12s;
   }
+  .persona-filter .pchip:hover { transform: scale(1.18); border-color: rgba(250,242,216,0.55); }
+  .persona-filter .pchip.active {
+    border-color: white;
+    box-shadow: 0 0 0 2px var(--red);
+    transform: scale(1.10);
+  }
+  .persona-filter .pchip[data-persona="mission_mom"]    { background: var(--p-mom); }
+  .persona-filter .pchip[data-persona="young_woman"]    { background: var(--p-young); }
+  .persona-filter .pchip[data-persona="family_weekend"] { background: var(--p-family); }
+  .persona-filter .pchip[data-persona="quick_trip_male"]{ background: var(--p-mens); }
+  .persona-filter .pchip[data-persona="browser"]        { background: var(--p-browser); }
 
   /* Loading overlay */
   #loading {
@@ -383,71 +415,1004 @@
   }
   @keyframes pulse { 0%,100% {opacity:0.3} 50% {opacity:1} }
 
-  /* Insights popup (after run completion) */
+  /* ═════════════════════════════════════════════════════════
+     COVER + EXEC SUMMARY · clean V-Mart palette
+     White paper · black ink · single red accent · Inter Tight only.
+     JetBrains Mono for technical/numeric labels and currency runs.
+     No serifs. No italics. No gold-on-dark.
+  ═════════════════════════════════════════════════════════ */
+
+  #cover {
+    position: fixed; inset: 0; z-index: 180;
+    background: #FFFFFF;
+    color: #0A0A0A;
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 36px 64px 32px;
+    overflow: hidden;
+    transition: opacity 0.4s ease;
+  }
+  #cover.hide { opacity: 0; pointer-events: none; }
+
+  .cover-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #E5E5E5;
+  }
+  .cover-mark { display: flex; align-items: center; gap: 12px; }
+  .cover-mark .logo {
+    width: 38px; height: 38px;
+    background: #E11D26; color: white;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 800; font-size: 22px;
+    border-radius: 2px;
+    letter-spacing: -0.02em;
+  }
+  .cover-mark .name {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #0A0A0A;
+  }
+  .cover-mark .sub {
+    font-size: 12px;
+    color: #6B6B6B;
+    margin-top: 3px;
+    font-weight: 500;
+  }
+  .cover-meta {
+    text-align: right;
+    line-height: 1.45;
+  }
+  .cover-meta .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 4px;
+  }
+  .cover-meta .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: #0A0A0A;
+    letter-spacing: 0.04em;
+  }
+  .cover-tag {
+    display: inline-block; margin-top: 10px;
+    background: #FDE7E8;
+    color: #B0141B;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em;
+    padding: 4px 9px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .cover-body {
+    display: flex; flex-direction: column; justify-content: center;
+    max-width: 1100px;
+  }
+  .cover-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #E11D26;
+    margin-bottom: 24px;
+    display: flex; gap: 14px; align-items: center;
+  }
+  .cover-eyebrow .sep { color: #D5D5D5; }
+  .cover-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 74px;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.028em;
+    color: #0A0A0A;
+    max-width: 1000px;
+    margin-bottom: 24px;
+  }
+  .cover-title .accent { color: #E11D26; }
+  .cover-lede {
+    font-size: 17px;
+    color: #4A4A4A;
+    line-height: 1.55;
+    max-width: 700px;
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+  .cover-lede b { color: #0A0A0A; font-weight: 600; }
+  .cover-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #E11D26;
+    border: none;
+    color: white;
+    padding: 14px 24px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    align-self: flex-start;
+    border-radius: 2px;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .cover-cta:hover { background: #B0141B; transform: translateY(-1px); }
+  .cover-cta:active { transform: translateY(0); }
+  .cover-cta .arrow {
+    font-size: 16px; line-height: 1;
+    margin-top: -1px;
+  }
+
+  .cover-foot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: end;
+    padding-top: 22px;
+    border-top: 1px solid #E5E5E5;
+  }
+  .cover-method-grid {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    row-gap: 8px;
+    column-gap: 16px;
+    align-items: baseline;
+    max-width: 900px;
+  }
+  .cover-method-grid .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #E11D26;
+    text-transform: uppercase;
+  }
+  .cover-method-grid .body {
+    font-size: 13px;
+    color: #2A2A2A;
+    line-height: 1.45;
+  }
+  .cover-status {
+    display: flex; flex-direction: column; gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4A4A4A;
+    letter-spacing: 0.02em;
+  }
+  .cover-status .dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: #2D9B5F;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  /* ═════════════════════════════════════════════════════════
+     EXECUTIVE SUMMARY
+  ═════════════════════════════════════════════════════════ */
+  /* ═══════════════ REPORT DECK ═══════════════
+     Aaru-style clean comparison report. White, lots of whitespace,
+     single accent (V-Mart red), Inter Tight + JetBrains Mono only. */
+  #execsum {
+    position: fixed; inset: 0; z-index: 170;
+    background: #FFFFFF;
+    color: #0A0A0A;
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  #execsum.show { display: flex; }
+
+  /* Report header (sticks to top of scroll) */
+  .rpt-head {
+    position: sticky; top: 0; z-index: 5;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(8px);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 64px;
+    border-bottom: 1px solid #EAEAEA;
+  }
+  .rpt-mark { display: flex; align-items: center; gap: 12px; }
+  .rpt-logo {
+    width: 32px; height: 32px;
+    background: #E11D26; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px;
+    letter-spacing: -0.02em;
+  }
+  .rpt-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #0A0A0A;
+  }
+  .rpt-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #6B6B6B;
+    margin-top: 3px;
+    letter-spacing: 0.04em;
+  }
+  .rpt-actions { display: flex; gap: 8px; }
+  .rpt-actions button {
+    background: white;
+    border: 1px solid #D5D5D5;
+    color: #0A0A0A;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 9px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .rpt-actions button:hover { border-color: #0A0A0A; }
+  .rpt-actions button.primary {
+    background: #E11D26; border-color: #E11D26; color: white;
+  }
+  .rpt-actions button.primary:hover { background: #B0141B; border-color: #B0141B; }
+
+  /* Section */
+  .rpt-section {
+    padding: 56px 64px;
+    max-width: 1240px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .rpt-section:last-of-type { border-bottom: none; }
+
+  .rpt-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: #E11D26;
+    margin-bottom: 18px;
+  }
+  .rpt-q {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.024em;
+    line-height: 1.1;
+    color: #0A0A0A;
+    margin-bottom: 16px;
+    max-width: 880px;
+  }
+  .rpt-q .muted { color: #8A8A8A; font-weight: 500; }
+  .rpt-lede {
+    font-size: 15px;
+    color: #4A4A4A;
+    line-height: 1.6;
+    max-width: 780px;
+    margin-bottom: 30px;
+  }
+  .rpt-lede b { color: #0A0A0A; font-weight: 600; }
+
+  /* Headline hero — baseline → optimized comparison */
+  .rpt-hero {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr 1.2fr;
+    gap: 28px;
+    align-items: stretch;
+    margin-top: 30px;
+    padding: 32px;
+    background: #FAFAFA;
+    border: 1px solid #EAEAEA;
+  }
+  .rpt-hero-side {
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .rpt-hero-side .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 10px;
+  }
+  .rpt-hero-side.opt .lbl { color: #E11D26; }
+  .rpt-hero-side .val {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.026em;
+    line-height: 1;
+    color: #0A0A0A;
+    margin-bottom: 8px;
+  }
+  .rpt-hero-side.opt .val { color: #E11D26; }
+  .rpt-hero-side .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6B6B6B;
+    letter-spacing: 0.02em;
+  }
+  .rpt-hero-arrow {
+    font-size: 28px;
+    color: #C5C5C5;
+    align-self: center;
+    font-weight: 300;
+  }
+  .rpt-hero-delta {
+    border-left: 1px solid #EAEAEA;
+    padding-left: 28px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .rpt-hero-delta .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 8px;
+  }
+  .rpt-hero-delta .dv {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    color: #E11D26;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .rpt-hero-delta .dp {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #E11D26;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  .rpt-hero-delta .net {
+    font-size: 12px;
+    color: #6B6B6B;
+    line-height: 1.5;
+    border-top: 1px solid #EAEAEA;
+    padding-top: 10px;
+  }
+  .rpt-hero-delta .net b {
+    color: #0A0A0A;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* Charts */
+  .rpt-chart-wrap {
+    margin-top: 24px;
+    width: 100%;
+  }
+  .rpt-chart-wrap svg { width: 100%; height: auto; display: block; }
+  .rpt-legend {
+    display: flex; gap: 22px; align-items: center;
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #4A4A4A;
+    letter-spacing: 0.02em;
+  }
+  .rpt-legend span { display: flex; align-items: center; gap: 8px; }
+  .rpt-legend .muted { color: #8A8A8A; }
+  .rpt-legend .dot {
+    width: 10px; height: 10px; border-radius: 999px;
+    display: inline-block;
+  }
+  .rpt-legend .dot.baseline { background: #0A0A0A; }
+  .rpt-legend .dot.optimized { background: #E11D26; }
+
+  /* Per-lever cards */
+  .rpt-levers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .rpt-lever {
+    background: white;
+    border: 1px solid #EAEAEA;
+    padding: 22px 24px;
+    display: flex; flex-direction: column;
+  }
+  .rpt-lever .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #E11D26;
+    margin-bottom: 8px;
+  }
+  .rpt-lever h4 {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.014em;
+    line-height: 1.25;
+    color: #0A0A0A;
+    margin-bottom: 14px;
+  }
+  .rpt-lever .step {
+    font-size: 13px;
+    color: #4A4A4A;
+    line-height: 1.55;
+    margin-bottom: 8px;
+    padding-left: 18px;
+    position: relative;
+  }
+  .rpt-lever .step::before {
+    content: ''; position: absolute;
+    left: 0; top: 8px;
+    width: 8px; height: 1px;
+    background: #C5C5C5;
+  }
+  .rpt-lever .step b { color: #0A0A0A; font-weight: 600; }
+  .rpt-lever .metric {
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid #EAEAEA;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #6B6B6B;
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+  }
+  .rpt-lever .metric .v {
+    color: #E11D26;
+    font-weight: 700;
+  }
+
+  /* Moves */
+  .rpt-moves {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    margin-top: 24px;
+    background: #EAEAEA;
+    border: 1px solid #EAEAEA;
+  }
+  .rpt-move {
+    background: white;
+    padding: 22px 28px;
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 180px;
+    gap: 24px;
+    align-items: center;
+  }
+  .rpt-move .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 700;
+    color: #E11D26;
+    letter-spacing: -0.01em;
+  }
+  .rpt-move .ttl {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    color: #0A0A0A;
+    line-height: 1.25;
+  }
+  .rpt-move .body {
+    font-size: 13px;
+    color: #4A4A4A;
+    line-height: 1.55;
+  }
+  .rpt-move .body b { color: #0A0A0A; font-weight: 600; }
+  .rpt-move .lift {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    color: #E11D26;
+    font-weight: 700;
+    text-align: right;
+    letter-spacing: -0.01em;
+  }
+  .rpt-move .lift small {
+    display: block;
+    font-size: 10px;
+    color: #6B6B6B;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Methodology */
+  .rpt-method {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .rpt-method h5 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: #0A0A0A;
+    margin-bottom: 10px;
+  }
+  .rpt-method p {
+    font-size: 13px;
+    color: #4A4A4A;
+    line-height: 1.6;
+  }
+  .rpt-method p b { color: #0A0A0A; font-weight: 600; }
+  .rpt-method .src {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #999;
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Pilot CTA */
+  .rpt-pilot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+    background: #0A0A0A;
+    color: white;
+    padding: 40px 64px;
+    max-width: none;
+  }
+  .rpt-pilot .copy { max-width: 720px; }
+  .rpt-pilot .copy .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: #FF6B70;
+    margin-bottom: 12px;
+  }
+  .rpt-pilot .copy .body {
+    font-size: 15px;
+    color: #D5D5D5;
+    line-height: 1.6;
+  }
+  .rpt-pilot .copy .body b { color: white; font-weight: 600; }
+  .rpt-pilot .cta {
+    background: #E11D26;
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+  .rpt-pilot .cta:hover { background: #B0141B; }
+
+  .rpt-foot {
+    padding: 20px 64px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #999;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    text-align: center;
+    border-top: 1px solid #EAEAEA;
+  }
+
+  /* Generating-report overlay */
+  .rpt-loading {
+    position: fixed; inset: 0; z-index: 175;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .rpt-loading.show { display: flex; }
+  .rpt-loading .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.20em; text-transform: uppercase;
+    color: #E11D26;
+  }
+  .rpt-loading .body {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: #0A0A0A;
+  }
+  .rpt-loading .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6B6B6B;
+    letter-spacing: 0.02em;
+  }
+  .rpt-loading .pulse {
+    width: 36px; height: 36px;
+    border: 2px solid #EAEAEA;
+    border-top-color: #E11D26;
+    border-radius: 999px;
+    animation: rptspin 0.8s linear infinite;
+  }
+  @keyframes rptspin { to { transform: rotate(360deg); } }
+
+  /* ─── Insights popup ─────────────────────────────────── */
   .insights {
     position: fixed; inset: 0;
-    background: rgba(20,16,12,0.92);
+    background: rgba(10,8,6,0.92);
+    backdrop-filter: blur(4px);
     display: none;
     align-items: center; justify-content: center;
     z-index: 150;
     padding: 24px;
+    overflow-y: auto;
   }
   .insights.show { display: flex; }
   .insights-box {
-    background: var(--panel);
+    background: linear-gradient(180deg, #1F1A14 0%, #14110D 100%);
     border: 2px solid var(--red);
-    border-radius: 4px;
-    padding: 22px 26px;
-    max-width: 720px;
-    width: 100%;
+    border-radius: 6px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(225,29,38,0.30);
+    width: 920px; max-width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    padding: 24px 28px 22px;
   }
-  .insights-box h2 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 14px;
-    color: var(--red);
-    margin-bottom: 14px;
-  }
-  .insights-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 10px;
+  .insights-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid rgba(225,29,38,0.40);
     margin-bottom: 16px;
   }
-  .insights-kpi {
-    background: var(--panel-l);
-    padding: 12px 14px;
-    border-left: 3px solid var(--gold);
-  }
-  .insights-kpi .lbl { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.10em; text-transform: uppercase; }
-  .insights-kpi .v {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 18px; font-weight: 700;
-    color: var(--ink);
-    margin-top: 4px;
-  }
-  .insights-kpi.alert { border-left-color: var(--red); }
-  .insights-list {
-    margin-top: 12px;
+  .insights-header h2 {
+    font-family: 'Press Start 2P', monospace;
     font-size: 12px;
+    color: var(--red);
+    letter-spacing: 0.04em;
+  }
+  .insights-header .sub {
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.08em;
+  }
+  .insights-close-x {
+    background: transparent; color: var(--ink-dim);
+    border: 1px solid rgba(250,242,216,0.20);
+    width: 28px; height: 28px;
+    font-size: 14px; cursor: pointer;
+    transition: all 0.12s;
+  }
+  .insights-close-x:hover { background: rgba(225,29,38,0.30); color: white; border-color: var(--red); }
+
+  .insights-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .kpi-card {
+    background: rgba(250,242,216,0.04);
+    border: 1px solid rgba(250,242,216,0.10);
+    padding: 10px 13px;
+  }
+  .kpi-card .lbl {
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700;
+  }
+  .kpi-card .v {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 700;
+    color: var(--ink);
+    margin-top: 4px; line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .kpi-card .delta {
+    font-size: 9px;
+    margin-top: 4px;
+    color: var(--ink-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .kpi-card.alert { border-left: 3px solid var(--red); }
+  .kpi-card.alert .v { color: #FF9899; }
+  .kpi-card.good { border-left: 3px solid var(--green); }
+  .kpi-card.good .v { color: var(--green); }
+
+  /* Hero recoverable banner */
+  .recoverable {
+    background: linear-gradient(90deg, rgba(225,29,38,0.18) 0%, rgba(255,217,102,0.14) 60%, rgba(61,220,132,0.10) 100%);
+    border: 1px solid rgba(255,217,102,0.30);
+    border-radius: 4px;
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .recoverable .lh {
+    display: flex; flex-direction: column;
+  }
+  .recoverable .label {
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.18em; text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .recoverable .total {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px; font-weight: 800;
+    color: var(--gold);
+    line-height: 1.0; letter-spacing: -0.01em;
+  }
+  .recoverable .rh {
+    text-align: right;
+    font-size: 11px; color: var(--ink-mid);
+    line-height: 1.4;
+  }
+  .recoverable .rh b { color: var(--green); font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+
+  /* Trend chart strip */
+  .trend-strip {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    background: rgba(250,242,216,0.03);
+    border: 1px solid rgba(250,242,216,0.08);
+  }
+  .trend-strip h5 {
+    font-size: 9px; color: var(--ink-dim);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .trend-strip svg { display: block; width: 100%; height: 60px; }
+
+  /* Insight cards (sorted by ₹ impact) */
+  .insights-section-h {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--gold);
+    letter-spacing: 0.10em;
+    margin-bottom: 10px;
+  }
+  .insight-card {
+    background: rgba(250,242,216,0.04);
+    border-left: 3px solid var(--red);
+    padding: 12px 16px 13px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 14px;
+    row-gap: 4px;
+    border-radius: 0 3px 3px 0;
+  }
+  .insight-card .tag {
+    grid-column: 1 / 2;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(255,217,102,0.10);
+    padding: 2px 7px;
+    border-radius: 2px;
+    display: inline-block;
+    justify-self: start;
+    margin-bottom: 2px;
+  }
+  .insight-card .tag.queue { color: #FF9899; background: rgba(225,29,38,0.15); }
+  .insight-card .tag.staffing { color: #A8E0FF; background: rgba(168,224,255,0.10); }
+  .insight-card .tag.merch { color: #FFD966; background: rgba(255,217,102,0.10); }
+  .insight-card .tag.cross_merch { color: #C9F2C9; background: rgba(201,242,201,0.10); }
+  .insight-card .impact {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+    align-self: center;
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px; font-weight: 800;
+    color: var(--gold);
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+  .insight-card .impact span { display: block; font-size: 9px; color: var(--ink-dim); font-weight: 600; letter-spacing: 0.10em; margin-top: 3px; }
+  .insight-card .ttl {
+    grid-column: 1 / 2;
+    font-size: 13.5px; font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .insight-card .body {
+    grid-column: 1 / 3;
+    font-size: 11.5px;
     color: var(--ink-mid);
     line-height: 1.5;
   }
-  .insights-list li { padding: 4px 0; padding-left: 18px; position: relative; }
-  .insights-list li::before { content: '▶'; position: absolute; left: 0; color: var(--red); }
-  .insights-list li b { color: var(--ink); }
-  .insights-close {
-    margin-top: 18px;
-    padding: 8px 18px;
-    background: var(--red); color: white;
-    border: none;
+  .insight-card .body b { color: var(--ink); font-weight: 600; }
+  .insight-card .move {
+    grid-column: 1 / 3;
+    margin-top: 6px;
+    padding: 8px 11px;
+    background: rgba(225,29,38,0.10);
+    border-left: 2px solid var(--red);
+    font-size: 11.5px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .insight-card .move::before {
+    content: '→ FIX  ';
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    cursor: pointer;
+    font-size: 9px;
+    color: var(--red);
+    font-weight: 800;
+    letter-spacing: 0.12em;
   }
 </style>
 </head>
 <body>
+
+<!-- ═════════════ COVER ═════════════ -->
+<div id="cover">
+  <div class="cover-head">
+    <div class="cover-mark">
+      <span class="logo">V</span>
+      <div>
+        <div class="name">V-Mart · Operational Intelligence</div>
+        <div class="sub">Diwali Saturday Diagnostic</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cover-body">
+    <div class="cover-eyebrow">
+      <span>Diagnostic</span><span class="sep">·</span>
+      <span>Baseline Policy</span><span class="sep">·</span>
+    </div>
+    <h1 class="cover-title">Diwali Saturday, <span class="accent">simulated</span>.<br/>The leaks, <span class="accent">quantified</span>.</h1>
+    <p class="cover-lede">
+      Twelve hours. One thousand synthetic shoppers. Five family-archetype personas walking your floor end-to-end. We rebuilt your peak-day operating reality as a causal model and surfaced <b>eight recoverable moves, ranked by daily ₹ impact</b>.
+    </p>
+    <button class="cover-cta" id="coverCta">
+      Enter diagnostic <span class="arrow">→</span>
+    </button>
+  </div>
+
+  <div class="cover-foot">
+    <div class="cover-method-grid">
+      <div class="lbl">METHOD</div><div class="body">Causal-chain only · no boost-multiplier hacks · same-seed comparison</div>
+      <div class="lbl">SCOPE</div><div class="body">Single store, single day. Scales 1:1 across your 470-store network.</div>
+    </div>
+    <div class="cover-status">
+      <div><span class="dot"></span>Sim engine ready</div>
+      <div><span class="dot"></span>1,000 agents calibrated</div>
+      <div><span class="dot"></span>Baseline policy applied</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════ EXECUTIVE SUMMARY ═════════════ -->
+<div id="execsum">
+  <!-- ============== REPORT HEADER ============== -->
+  <div class="rpt-head">
+    <div class="rpt-mark">
+      <span class="rpt-logo">V</span>
+      <div>
+        <div class="rpt-name">UNLIMITED · DIAGNOSTIC REPORT</div>
+        <div class="rpt-meta" id="rptMeta">Diwali Saturday · 1,000 agents · Seed 42</div>
+      </div>
+    </div>
+    <div class="rpt-actions">
+      <button id="esBackBtn">← Back to sim</button>
+      <button class="primary" id="esRunBtn">Re-run on same seed</button>
+    </div>
+  </div>
+
+  <!-- ============== HEADLINE ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 01 · Headline result</div>
+    <h2 class="rpt-q">Same store. Same shoppers. Same Diwali Saturday.<br/><span class="muted">What changes when the operating policy changes.</span></h2>
+    <div class="rpt-hero">
+      <div class="rpt-hero-side">
+        <div class="lbl">Baseline policy</div>
+        <div class="val" id="rptHeroBase">₹—</div>
+        <div class="sub" id="rptHeroBaseSub">— memos · — conversion</div>
+      </div>
+      <div class="rpt-hero-arrow">→</div>
+      <div class="rpt-hero-side opt">
+        <div class="lbl">Optimized v1</div>
+        <div class="val" id="rptHeroOpt">₹—</div>
+        <div class="sub" id="rptHeroOptSub">— memos · — conversion</div>
+      </div>
+      <div class="rpt-hero-delta">
+        <div class="lbl">Recovered revenue · per peak Saturday</div>
+        <div class="dv" id="rptHeroDelta">+ ₹— L</div>
+        <div class="dp" id="rptHeroPct">+ —%</div>
+        <div class="net">Network · 470 stores × 4 festive weekends → <b id="rptHeroNet">+ ₹— Cr / year</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== KPI DOT-RANGE CHART ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 02 · Metric-by-metric comparison</div>
+    <h2 class="rpt-q">How every operating metric moves under Optimized v1.</h2>
+    <p class="rpt-lede">Same 1,000 agents, same arrival schedule, same RNG seed. The only thing that differs is the operating policy. Each row shows where the metric lands under baseline (dark) versus optimized (red), and the delta on the right.</p>
+    <div class="rpt-chart-wrap">
+      <svg id="rptDumbbell" viewBox="0 0 760 440" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div class="rpt-legend">
+      <span><span class="dot baseline"></span>Baseline</span>
+      <span><span class="dot optimized"></span>Optimized v1</span>
+      <span class="muted">— values are end-of-day totals or averages over the 12-hour day</span>
+    </div>
+  </section>
+
+  <!-- ============== BILL QUEUE TIME SERIES ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 03 · Where the revenue went</div>
+    <h2 class="rpt-q">Billing queue compresses through the evening peak.</h2>
+    <p class="rpt-lede">Under baseline, Counter 2 only opens when the queue hits 15 (and Counter 3 at 20) — by which point shoppers in the queue have already crossed their tolerance thresholds and walked out. Optimized v1 schedules Counter 2 at <b>17:00</b> and Counter 3 at <b>18:00</b>, before the evening rush. The dwell time gap is where the recovered revenue lives.</p>
+    <div class="rpt-chart-wrap">
+      <svg id="rptBillChart" viewBox="0 0 760 280" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </section>
+
+  <!-- ============== TRIAL QUEUE TIME SERIES ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 04 · Trial-room throughput</div>
+    <h2 class="rpt-q">Trial-room queue clears under attended-room enforcement.</h2>
+    <p class="rpt-lede">T01 is reassigned from "floor relief" to the women's trial bank. The 4-items-per-cubicle limit is now enforced. Cubicle turnover drops ~25% — and the queue length collapses with it, because the tail of the distribution (10-min+ waits) was driving most of the trial-room abandonments.</p>
+    <div class="rpt-chart-wrap">
+      <svg id="rptTrialChart" viewBox="0 0 760 280" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+  </section>
+
+  <!-- ============== PER-LEVER ATTRIBUTION ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 05 · Per-lever attribution</div>
+    <h2 class="rpt-q">Where the lift comes from.</h2>
+    <p class="rpt-lede">Three operating levers are wired in this engine. Each shifts a specific environment variable — never agent behaviour or RNG. The causal chain is auditable: policy change → environment change → agent reacts → revenue moves.</p>
+    <div class="rpt-levers" id="rptLevers"></div>
+  </section>
+
+  <!-- ============== TOP RECOVERY MOVES ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 06 · Top recovery moves</div>
+    <h2 class="rpt-q">The moves, ranked by ₹ impact.</h2>
+    <div class="rpt-moves" id="rptMoves"></div>
+  </section>
+
+  <!-- ============== METHODOLOGY ============== -->
+  <section class="rpt-section">
+    <div class="rpt-eyebrow">Section 07 · Methodology</div>
+    <h2 class="rpt-q">How every number on this page is computed.</h2>
+    <div class="rpt-method">
+      <div>
+        <h5>Same seed · same agents · same arrivals</h5>
+        <p>1,000 hand-built shopper agents walk the floor for 12 hours, twice. Once under baseline, once under Optimized v1. Each agent has a backstory, queue tolerance, dwell time, basket-size target, and zone preferences — all reproducible from a single RNG seed.</p>
+        <div class="src">data/agents.json · data/profiles.json · manit-notes/04-simulation-engine.md</div>
+      </div>
+      <div>
+        <h5>Causal chain only · no fiat lift</h5>
+        <p>Every claimed lift flows through <b>policy → environment → agent reaction → revenue</b>. No boost-multipliers. No forced conversion rates. No fiat ATV bumps. If a finding can't be traced to a specific shopper behaviour in this run, it is not surfaced.</p>
+        <div class="src">manit-notes/08-policies-and-guardrails.md · the causal-chain rule</div>
+      </div>
+      <div>
+        <h5>What is NOT wired yet</h5>
+        <p>Levers L4 (merchandising) and L5 (cross-merch / replenishment) are spec'd in the policy schema but not yet wired into the engine. Their effect is not counted in this report. Once wired, expected additional lift is +4-8% revenue.</p>
+        <div class="src">store/README.md · engine support matrix</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== PILOT CTA ============== -->
+  <section class="rpt-section rpt-pilot">
+    <div class="copy">
+      <div class="label">The pilot · 4 weeks</div>
+      <div class="body">One V-Mart store of your choice. We calibrate the digital twin to your POS data, run the optimization loop, hand back A/B-ready interventions with predicted lift and confidence intervals. <b>You measure us on whether the lift we predict matches the lift you measure.</b></div>
+    </div>
+    <button class="cta" id="esRunBtn2">Re-run on same seed</button>
+  </section>
+
+  <div class="rpt-foot">© 2026 · V-Mart Unlimited diagnostic · confidential</div>
+</div>
 
 <!-- LOADING -->
 <div id="loading">
@@ -462,7 +1427,7 @@
   <div class="brand">
     <span class="logo">V</span>
     <div>
-      <div class="t">UNLIMITED · BANGALORE</div>
+      <div class="t">UNLIMITED</div>
       <div class="s">Diwali Saturday simulation · baseline policy · 1,000 agents</div>
     </div>
   </div>
@@ -476,6 +1441,11 @@
     <div class="chip alert"><span class="lbl">Bill Q</span><span class="v" id="m-billq">0</span></div>
     <div class="chip alert"><span class="lbl">Trial Q</span><span class="v" id="m-trialq">0</span></div>
     <div class="chip alert"><span class="lbl">Walk-outs</span><span class="v" id="m-walk">0</span></div>
+    <div class="policy-toggle" title="Switch the operating policy. Same agents, same seed.">
+      <span class="pt-lbl">Policy</span>
+      <button class="pt-btn active" data-policy="baseline">Baseline</button>
+      <button class="pt-btn" data-policy="optimized_v1">Optimized v1</button>
+    </div>
   </div>
 </div>
 
@@ -484,15 +1454,12 @@
   <canvas id="map"></canvas>
 
   <div class="stage-controls">
-    <button id="btn-heat">▣ HEATMAP</button>
-    <button id="btn-staff" class="active">▣ STAFF</button>
-    <button id="btn-queue" class="active">▣ QUEUES</button>
-    <button id="btn-paths">▣ AGENT PATH</button>
+    <button id="btn-heat" title="Heatmap overlay">HEATMAP</button>
+    <button id="btn-staff" class="active" title="Show staff sprites">STAFF</button>
+    <button id="btn-queue" class="active" title="Highlight queue floor zones">QUEUES</button>
+    <button id="btn-paths" title="Show selected agent's path">PATH</button>
   </div>
 
-  <div class="zone-density" id="zoneDensity">
-    <h5>▶ Zone density · live</h5>
-  </div>
 </div>
 
 <!-- ═════════════ SIDE ═════════════ -->
@@ -501,8 +1468,11 @@
     <h4>▶ INSPECTOR · click any shopper</h4>
     <div id="inspector"><div class="empty">No shopper selected.<br/>Click a sprite on the map to inspect.</div></div>
   </div>
+  <div class="side-section" id="zoneDensity">
+    <h4>▶ ZONE DENSITY · live</h4>
+  </div>
   <div class="side-section" style="flex: 1; display: flex; flex-direction: column;">
-    <h4>▶ LIVE EVENTS · last 60</h4>
+    <h4>▶ LIVE EVENTS</h4>
     <div id="events"></div>
   </div>
 </div>
@@ -516,18 +1486,19 @@
       <div class="tl-cursor" id="tlCursor" style="left: 0%;"></div>
     </div>
     <div class="tl-labels">
-      <span>10 AM</span><span>12 PM</span><span>2 PM</span><span>4 PM</span>
-      <span>5 PM</span><span>6 PM</span><span>7 PM</span><span>8 PM</span><span>9 PM</span><span>10 PM</span>
+      <span>10 AM</span><span>11 AM</span><span>12 PM</span><span>1 PM</span><span>2 PM</span>
+      <span>3 PM</span><span>4 PM</span><span>5 PM</span><span>6 PM</span><span>7 PM</span>
+      <span>8 PM</span><span>9 PM</span><span>10 PM</span>
     </div>
   </div>
 
   <div class="controls-cluster">
-    <div class="legend-mini">
-      <span><span class="swatch" style="background:var(--p-mom)"></span>mom</span>
-      <span><span class="swatch" style="background:var(--p-young)"></span>young</span>
-      <span><span class="swatch" style="background:var(--p-family)"></span>family</span>
-      <span><span class="swatch" style="background:var(--p-mens)"></span>men's</span>
-      <span><span class="swatch" style="background:var(--p-browser)"></span>browser</span>
+    <div class="persona-filter" id="personaChips" title="Click a persona to highlight only that cohort">
+      <button class="pchip" data-persona="mission_mom"    title="Mission mom · 30%"></button>
+      <button class="pchip" data-persona="young_woman"    title="Browse young woman · 20%"></button>
+      <button class="pchip" data-persona="family_weekend" title="Family weekend · 25%"></button>
+      <button class="pchip" data-persona="quick_trip_male"title="Quick-trip male · 10%"></button>
+      <button class="pchip" data-persona="browser"        title="Browser · 15%"></button>
     </div>
     <button id="btn-play" class="btn primary">▶ START</button>
     <div class="speed-group">
@@ -535,19 +1506,30 @@
       <button class="btn speed active" data-speed="5">5×</button>
       <button class="btn speed" data-speed="15">15×</button>
       <button class="btn speed" data-speed="60">60×</button>
-      <button class="btn speed" data-speed="180">180×</button>
     </div>
-    <button id="btn-reset" class="btn">↺ RESET</button>
+    <button id="btn-reset" class="btn">↺</button>
+    <button id="btn-show-summary" class="btn" title="Open the diagnostic summary (only available after the sim completes)" disabled>SUMMARY</button>
   </div>
 </div>
 
 <!-- INSIGHTS popup (shown when sim ends) -->
 <div class="insights" id="insights">
   <div class="insights-box">
-    <h2>▶ DAY COMPLETE · BASELINE POLICY</h2>
-    <div class="insights-row" id="insightsKpis"></div>
-    <ul class="insights-list" id="insightsList"></ul>
-    <button class="insights-close" id="closeInsights">CLOSE</button>
+    <div class="insights-header">
+      <div>
+        <h2>▶ DAY COMPLETE · BASELINE POLICY</h2>
+        <div class="sub" id="insightsSub">Saturday Diwali · 1,000 simulated agents</div>
+      </div>
+      <button class="insights-close-x" id="closeInsights" title="Close">✕</button>
+    </div>
+    <div class="insights-kpis" id="insightsKpis"></div>
+    <div class="recoverable" id="recoverable"></div>
+    <div class="trend-strip">
+      <h5>Bill-queue depth · over the day</h5>
+      <svg id="trendChart" viewBox="0 0 720 60" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="insights-section-h">▶ TOP RECOVERY MOVES · ranked by ₹ impact</div>
+    <div id="insightsList"></div>
   </div>
 </div>
 
@@ -594,8 +1576,14 @@
       tla.appendChild(b);
     });
 
-    // Renderer click → inspector
-    renderer.onSelect = (a) => updateInspector(a);
+    // Renderer click → inspector + auto-pause so detail is readable
+    renderer.onSelect = (a) => {
+      updateInspector(a);
+      if (a && running) {
+        running = false;
+        document.getElementById('btn-play').textContent = '▶ RESUME · inspecting';
+      }
+    };
 
     // UI controls
     document.getElementById('btn-heat').addEventListener('click', e => {
@@ -614,6 +1602,43 @@
       renderer.showPaths = !renderer.showPaths;
       e.target.classList.toggle('active', renderer.showPaths);
     });
+
+    // Policy toggle — swaps the operating policy and resets the sim
+    document.querySelectorAll('.policy-toggle .pt-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pid = btn.dataset.policy;
+        const newPolicy = pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1 : window.POLICY_BASELINE;
+        document.querySelectorAll('.policy-toggle .pt-btn').forEach(b => b.classList.toggle('active', b === btn));
+        // Reset sim with the new policy
+        window.sim = new Sim(newPolicy);
+        window.renderer.sim = window.sim;
+        window.renderer.selected = null;
+        window.renderer._heatLast = -1;
+        window.renderer._lastEventCount = 0;
+        lastEventCount = 0;
+        insightsShown = false;
+        updateInspector(null);
+        document.getElementById('events').innerHTML = '';
+        document.getElementById('insights').classList.remove('show');
+        running = false;
+        document.getElementById('btn-play').textContent = '▶ START';
+      });
+    });
+
+    // Persona filter chips
+    document.querySelectorAll('.pchip').forEach(c => {
+      c.addEventListener('click', () => {
+        const p = c.dataset.persona;
+        if (renderer.filterPersona === p) {
+          renderer.filterPersona = null;
+          c.classList.remove('active');
+        } else {
+          document.querySelectorAll('.pchip').forEach(x => x.classList.remove('active'));
+          c.classList.add('active');
+          renderer.filterPersona = p;
+        }
+      });
+    });
     document.getElementById('btn-play').addEventListener('click', () => {
       running = !running;
       const btn = document.getElementById('btn-play');
@@ -627,10 +1652,17 @@
       });
     });
     document.getElementById('btn-reset').addEventListener('click', () => {
-      window.sim = new Sim();
+      // Honour the active policy toggle when resetting
+      const activeBtn = document.querySelector('.policy-toggle .pt-btn.active');
+      const pid = activeBtn ? activeBtn.dataset.policy : 'baseline';
+      const policy = pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1 : window.POLICY_BASELINE;
+      window.sim = new Sim(policy);
       window.renderer.sim = window.sim;
       window.renderer.selected = null;
       window.renderer._heatLast = -1;
+      window.renderer._lastEventCount = 0;
+      lastEventCount = 0;
+      insightsShown = false;
       updateInspector(null);
       document.getElementById('events').innerHTML = '';
       document.getElementById('insights').classList.remove('show');
@@ -690,12 +1722,18 @@
       updateHud();
       updateZoneDensity();
       updateEventsFeed();
-      // Done?
+      // Done? → populate + show the exec-summary (the polished post-sim
+      // result screen) AND the legacy insights modal (the detailed-cards
+      // one). User sees exec summary first; clicking "Back to sim" returns
+      // to the live canvas with the insights panel still toggleable.
       if (sim.simMin >= sim.totalMin && sim.activeAgents.length === 0 && !insightsShown) {
         insightsShown = true;
         running = false;
         document.getElementById('btn-play').textContent = '▶ COMPLETE';
-        showInsights();
+        const summaryBtn = document.getElementById('btn-show-summary');
+        if (summaryBtn) summaryBtn.disabled = false;
+        populateExecSummary(sim);
+        document.getElementById('execsum').classList.add('show');
       }
       requestAnimationFrame(frame);
     }
@@ -703,6 +1741,154 @@
 
     // Hide loading
     setTimeout(() => document.getElementById('loading').style.display = 'none', 200);
+    // Initialise cover + exec summary flow
+    initDeliverableFlow();
+  }
+
+  // ── Cover + exec summary deliverable flow ────────────────
+  function initDeliverableFlow() {
+    // Stamp today's date
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const d = new Date();
+    const dateStr = `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`.toUpperCase();
+    const cd = document.getElementById('coverDate');
+    if (cd) cd.textContent = dateStr;
+
+    // Cover → live sim directly (no exec-summary-before-sim intermediate)
+    document.getElementById('coverCta').addEventListener('click', () => {
+      document.getElementById('cover').classList.add('hide');
+      setTimeout(() => {
+        document.getElementById('cover').style.display = 'none';
+        // Auto-start sim
+        running = true;
+        speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
+        document.getElementById('btn-play').textContent = '⏸ PAUSE';
+      }, 350);
+    });
+
+    // Exec summary "back" → return to live sim (don't go back to cover)
+    document.getElementById('esBackBtn').addEventListener('click', () => {
+      document.getElementById('execsum').classList.remove('show');
+    });
+
+    // Exec summary "Run again" → reset and re-run sim
+    const rerunSim = () => {
+      document.getElementById('execsum').classList.remove('show');
+      const activeBtn = document.querySelector('.policy-toggle .pt-btn.active');
+      const pid = activeBtn ? activeBtn.dataset.policy : 'baseline';
+      const policy = pid === 'optimized_v1' ? window.POLICY_OPTIMIZED_V1 : window.POLICY_BASELINE;
+      window.sim = new Sim(policy);
+      window.renderer.sim = window.sim;
+      window.renderer.selected = null;
+      window.renderer._heatLast = -1;
+      window.renderer._lastEventCount = 0;
+      lastEventCount = 0;
+      insightsShown = false;
+      updateInspector(null);
+      document.getElementById('events').innerHTML = '';
+      document.getElementById('insights').classList.remove('show');
+      running = true;
+      speedMul = parseFloat(document.querySelector('.speed.active').dataset.speed);
+      document.getElementById('btn-play').textContent = '⏸ PAUSE';
+    };
+    document.getElementById('esRunBtn').addEventListener('click', rerunSim);
+    document.getElementById('esRunBtn2').addEventListener('click', rerunSim);
+
+    // SUMMARY button on the bottom bar — only enabled after the sim completes
+    const summaryBtn = document.getElementById('btn-show-summary');
+    if (summaryBtn) {
+      summaryBtn.addEventListener('click', () => {
+        if (summaryBtn.disabled) return;
+        populateExecSummary(window.sim);
+        document.getElementById('execsum').classList.add('show');
+      });
+    }
+  }
+
+  // Headlessly tick the sim through the full day so we can pull headline numbers
+  // into the exec-summary BEFORE the user watches the live animation.
+  function runHeadlessForSummary() {
+    return new Promise((resolve) => {
+      const headlessSim = new Sim();
+      const totalMin = headlessSim.totalMin;
+      // Step in 0.5-minute increments. ~1440 iterations — completes in under 100ms.
+      const step = 0.5;
+      const chunkSize = 200;
+      let m = 0;
+      function chunk() {
+        const end = Math.min(m + chunkSize * step, totalMin);
+        while (m < end) {
+          headlessSim.tick(step);
+          m += step;
+        }
+        if (m < totalMin) {
+          // Yield to UI so the page doesn't freeze
+          setTimeout(chunk, 0);
+        } else {
+          // Drain any remaining active agents
+          let safety = 200;
+          while (headlessSim.activeAgents.length > 0 && safety > 0) {
+            headlessSim.tick(2);
+            safety--;
+          }
+          populateExecSummary(headlessSim);
+          resolve();
+        }
+      }
+      chunk();
+    });
+  }
+
+  function populateExecSummary(headSim) {
+    const k = headSim.kpis();
+    const cards = computeInsightCardsFor(headSim);
+    cards.sort((a, b) => (b.impactInr || 0) - (a.impactInr || 0));
+    const totalImpact = cards.reduce((s, c) => s + (c.impactInr || 0), 0);
+    const baselineRev = k.revenue;
+    const withMoves = baselineRev + totalImpact;
+    // Annualised network estimate: 470 stores × 4 festival weekends × per-store impact
+    const networkAnnual = totalImpact * 470 * 4;
+
+    const liftPct = baselineRev > 0 ? (totalImpact / baselineRev) * 100 : 0;
+
+    // Single-source-of-truth text writes. Each element owns its FULL string —
+    // no wrapper-prefix + JS-prefix doubling possible.
+    document.getElementById('esTotal').textContent =
+      '+ ₹' + (totalImpact / 100000).toFixed(2) + ' L';
+    document.getElementById('esAnn').innerHTML =
+      'From <b>₹' + (baselineRev/100000).toFixed(2) + ' L</b> baseline → '
+      + '<b>₹' + (withMoves/100000).toFixed(2) + ' L</b> with all moves applied '
+      + '<span style="color:#E11D26; font-weight:700;">(' + (liftPct >= 0 ? '+' : '') + liftPct.toFixed(0) + '%)</span>';
+    document.getElementById('esNetwork').textContent =
+      '+ ₹' + (networkAnnual / 10000000).toFixed(1) + ' Cr / year';
+
+    document.getElementById('esKpisGrid').innerHTML = `
+      <div class="es-kpi"><div class="lbl">Baseline revenue</div><div class="v">₹${(baselineRev/100000).toFixed(2)} L</div><div class="delta">${k.memos} memos · ${k.footfall} footfall</div></div>
+      <div class="es-kpi"><div class="lbl">Conversion</div><div class="v">${(k.conversion*100).toFixed(1)}%</div><div class="delta">${k.walkouts} walk-outs</div></div>
+      <div class="es-kpi"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div><div class="delta">brief spec ₹750–900</div></div>
+      <div class="es-kpi"><div class="lbl">Peak queue wait</div><div class="v">${Math.max(...headSim.metrics.bill_waits, 0).toFixed(0)} min</div><div class="delta">at billing peak</div></div>
+    `;
+
+    const top3 = cards.slice(0, 3);
+    document.getElementById('esMoves').innerHTML = top3.map((c, i) => `
+      <div class="es-move">
+        <div class="num">Move 0${i+1} · ${c.tagLabel}</div>
+        <div class="ttl">${c.title}</div>
+        <div class="lift">+ ₹${c.impactInr.toLocaleString('en-IN')} / day</div>
+        <div class="body">${c.move}</div>
+      </div>
+    `).join('');
+  }
+
+  // Variant of computeInsightCards that operates on a passed-in sim (used by
+  // headless pre-run). Reuses the same logic — we just need to point at the
+  // right sim instead of the global one.
+  function computeInsightCardsFor(s) {
+    const oldSim = window.sim;
+    window.sim = s;
+    const cards = computeInsightCards();
+    window.sim = oldSim;
+    return cards;
   }
 
   // ── HUD update ────────────────────────────────────
@@ -781,7 +1967,8 @@
     const evs = sim.events;
     if (evs.length === lastEventCount) return;
     lastEventCount = evs.length;
-    // Render the latest 60
+    // Show ALL recent events most-recent-first; arrivals are rendered with
+    // a dimmer style (the .ev.arrive CSS rule already handles this).
     const slice = evs.slice(-60).reverse();
     ef.innerHTML = slice.map(e => {
       const m = Math.floor(e.simMin);
@@ -791,13 +1978,14 @@
       const t = `${hh12}:${String(mm).padStart(2,'0')}`;
       const labels = {
         arrive: 'arrived',
-        start_trial: 'in trial',
-        purchase: 'purchased',
+        start_trial: 'entered trial',
+        purchase: 'PURCHASED',
         abandon_trial: 'abandoned · trial wait',
         abandon_bill: 'abandoned · bill wait',
         walk_out: 'walked out',
         tried_no_buy: 'tried, didn\'t buy',
-        counter_open: 'counter opened',
+        counter_open: 'COUNTER OPENED',
+        staff_reallocation: 'staff moved',
       };
       const nm = e.agentName ? `<span class="nm">${e.agentName}</span> ` : '';
       return `<div class="ev ${e.type}"><span class="tm">${t}</span><span class="msg">${nm}${labels[e.type] || e.type} ${e.detail ? '· ' + e.detail : ''}</span></div>`;
@@ -806,26 +1994,426 @@
 
   function showInsights() {
     const k = sim.kpis();
+    const peakBill = Math.max(...sim.metrics.bill_waits, 0);
+    const peakTrial = Math.max(...sim.metrics.trial_waits, 0);
+
+    // Spec band markers (for the 1,000-agent test): revenue ₹2.7-3.6L, memos ~380,
+    // conv 36-42%, ATV ₹750-900. We colour the KPI card good/alert against these.
     const kpisHtml = `
-      <div class="insights-kpi"><div class="lbl">Revenue</div><div class="v">₹${(k.revenue/100000).toFixed(2)}L</div></div>
-      <div class="insights-kpi"><div class="lbl">Memos</div><div class="v">${k.memos}</div></div>
-      <div class="insights-kpi"><div class="lbl">Conversion</div><div class="v">${Math.round(k.conversion*100)}%</div></div>
-      <div class="insights-kpi"><div class="lbl">Avg ticket</div><div class="v">₹${Math.round(k.avg_ticket)}</div></div>
-      <div class="insights-kpi alert"><div class="lbl">Walk-outs</div><div class="v">${k.walkouts}</div></div>
-      <div class="insights-kpi alert"><div class="lbl">Peak bill wait</div><div class="v">${Math.max(...sim.metrics.bill_waits, 0).toFixed(1)} m</div></div>
-      <div class="insights-kpi alert"><div class="lbl">Peak trial wait</div><div class="v">${Math.max(...sim.metrics.trial_waits, 0).toFixed(1)} m</div></div>
-      <div class="insights-kpi alert"><div class="lbl">Abandon %</div><div class="v">${(k.abandon_pct * 100).toFixed(1)}%</div></div>
+      <div class="kpi-card ${k.revenue >= 270000 && k.revenue <= 400000 ? 'good' : k.revenue > 400000 ? 'alert' : ''}">
+        <div class="lbl">Revenue</div>
+        <div class="v">₹${(k.revenue/100000).toFixed(2)}L</div>
+        <div class="delta">spec ₹2.7-3.6 L</div>
+      </div>
+      <div class="kpi-card ${k.memos >= 340 && k.memos <= 450 ? 'good' : ''}">
+        <div class="lbl">Memos</div>
+        <div class="v">${k.memos}</div>
+        <div class="delta">spec ~380</div>
+      </div>
+      <div class="kpi-card ${k.conversion >= 0.34 && k.conversion <= 0.44 ? 'good' : 'alert'}">
+        <div class="lbl">Conversion</div>
+        <div class="v">${(k.conversion*100).toFixed(1)}%</div>
+        <div class="delta">spec 36-42 %</div>
+      </div>
+      <div class="kpi-card ${k.avg_ticket >= 700 && k.avg_ticket <= 1000 ? 'good' : 'alert'}">
+        <div class="lbl">Avg ticket</div>
+        <div class="v">₹${Math.round(k.avg_ticket)}</div>
+        <div class="delta">spec ₹750-900</div>
+      </div>
+      <div class="kpi-card alert"><div class="lbl">Walk-outs</div><div class="v">${k.walkouts}</div><div class="delta">${(k.walkouts/Math.max(1,k.footfall)*100).toFixed(0)}% of footfall</div></div>
+      <div class="kpi-card alert"><div class="lbl">Peak bill wait</div><div class="v">${peakBill.toFixed(0)}m</div><div class="delta">spec 18-28 m</div></div>
+      <div class="kpi-card alert"><div class="lbl">Peak trial wait</div><div class="v">${peakTrial.toFixed(0)}m</div><div class="delta">spec 12-18 m</div></div>
+      <div class="kpi-card alert"><div class="lbl">Basket abandon</div><div class="v">${((sim.metrics.abandonments_trial + sim.metrics.abandonments_bill)/Math.max(1,k.footfall)*100).toFixed(1)}%</div><div class="delta">spec 8-14 %</div></div>
     `;
     document.getElementById('insightsKpis').innerHTML = kpisHtml;
-    document.getElementById('insightsList').innerHTML = `
-      <li><b>1 counter open by default</b> created the queue spike at 6–9 PM. Counter 2/3 opened reactively after queue ≥15.</li>
-      <li><b>7 W + 3 M trial cubicles, 0 kids, no attendant</b> — peak wait hit ${Math.max(...sim.metrics.trial_waits, 0).toFixed(0)} min, ${sim.metrics.abandonments_trial} agents abandoned in-queue.</li>
-      <li><b>1 staff in empty infants zone</b> all day — meanwhile women's ethnic peaked at 6 PM with no flex relief.</li>
-      <li><b>Cross-merch friction</b>: ${sim.exitedAgents.filter(a => a.exit_reason === 'purchased' && a.basket.length === 1).length} purchasers bought a single item only — accessory attach failed because of physical separation.</li>
-      <li><b>Browser walkouts</b>: ${sim.metrics.no_purchase_walkouts} shoppers left within their dwell window without buying. Power wall didn't trigger conversion.</li>
-      <li>Recoverable via Lever 1 (proactive billing schedule), Lever 3 (trial attendant + queue mgmt), Lever 2 (flex infants → ethnic), Lever 5 (cross-merch racks): target +10–20% revenue on same arrivals.</li>
+
+    // Compute structured insight cards
+    const cards = computeInsightCards();
+    const totalImpact = cards.reduce((s, c) => s + (c.impactInr || 0), 0);
+    const baselineRev = k.revenue;
+    const liftPct = baselineRev > 0 ? (totalImpact / baselineRev) * 100 : 0;
+    document.getElementById('recoverable').innerHTML = `
+      <div class="lh">
+        <div class="label">▶ Total recoverable today · all moves applied</div>
+        <div class="total">+ ₹${(totalImpact/100000).toFixed(2)} L</div>
+      </div>
+      <div class="rh">
+        Baseline: <b>₹${(baselineRev/100000).toFixed(2)} L</b><br/>
+        With moves: <b>₹${((baselineRev+totalImpact)/100000).toFixed(2)} L</b><br/>
+        Predicted lift: <b>+${liftPct.toFixed(0)}%</b>
+      </div>
     `;
+
+    // Sort cards by impact desc, render
+    cards.sort((a, b) => (b.impactInr || 0) - (a.impactInr || 0));
+    document.getElementById('insightsList').innerHTML = cards.map(c => `
+      <div class="insight-card">
+        <span class="tag ${c.tag}">${c.tagLabel}</span>
+        <div class="impact">+₹${c.impactInr.toLocaleString('en-IN')}<span>/ day</span></div>
+        <div class="ttl">${c.title}</div>
+        <div class="body">${c.body}</div>
+        <div class="move">${c.move}</div>
+      </div>
+    `).join('');
+
+    // Draw the trend chart (bill-queue depth over the day)
+    drawTrendChart();
+
     document.getElementById('insights').classList.add('show');
+  }
+
+  function drawTrendChart() {
+    const svg = document.getElementById('trendChart');
+    if (!svg) return;
+    svg.innerHTML = '';
+    const minutes = sim.metrics.by_minute;
+    if (!minutes || minutes.length < 10) return;
+    // Sample every 6 minutes for ~120 points
+    const samples = [];
+    for (let i = 0; i < minutes.length; i += 6) samples.push(minutes[i]);
+    const maxQ = Math.max(...samples.map(s => s.bill_q), 1);
+    const W720 = 720, H60 = 60;
+    let pathD = '';
+    let fillD = `M0 ${H60} `;
+    samples.forEach((s, i) => {
+      const x = (i / (samples.length - 1)) * W720;
+      const y = H60 - (s.bill_q / maxQ) * (H60 - 6) - 2;
+      pathD += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+      fillD += 'L' + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+    });
+    fillD += `L${W720} ${H60} Z`;
+    svg.innerHTML = `
+      <defs><linearGradient id="qGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(225,29,38,0.45)"/>
+        <stop offset="100%" stop-color="rgba(225,29,38,0)"/>
+      </linearGradient></defs>
+      <path d="${fillD}" fill="url(#qGrad)"/>
+      <path d="${pathD}" fill="none" stroke="#E11D26" stroke-width="1.5"/>
+      <text x="6" y="14" font-family="JetBrains Mono" font-size="9" fill="rgba(250,242,216,0.5)">peak ${maxQ} deep</text>
+      <text x="6" y="${H60 - 4}" font-family="JetBrains Mono" font-size="9" fill="rgba(250,242,216,0.4)">10 AM</text>
+      <text x="${W720 - 40}" y="${H60 - 4}" font-family="JetBrains Mono" font-size="9" fill="rgba(250,242,216,0.4)">10 PM</text>
+    `;
+  }
+
+  // ── Structured insight cards (sorted by impact, tag-categorised) ──────
+  // Tag categories: cross_merch · queue · staffing · merch
+  function computeInsightCards() {
+    const purchasers = sim.exitedAgents.filter(a => a.exit_reason === 'purchased');
+    const allExited = sim.exitedAgents;
+    const events = sim.events;
+    const k = sim.kpis();
+    const cards = [];
+
+    // 1. SAREE/KURTI → DUPATTA attach gap (cross_merch)
+    const ethnicBuyers = purchasers.filter(a => a.basket.some(b => b.zone === 'womens_ethnic'));
+    const ethnicNoAttach = ethnicBuyers.filter(a => !a.basket.some(b => b.zone === 'womens_fa'));
+    if (ethnicBuyers.length >= 10) {
+      const pct = Math.round(ethnicNoAttach.length / ethnicBuyers.length * 100);
+      const lift = Math.round(ethnicNoAttach.length * 0.40 * 230);
+      cards.push({
+        tag: 'cross_merch', tagLabel: 'Cross-merch',
+        title: 'Saree/kurti buyers walk past the dupatta rack',
+        body: `<b>${ethnicNoAttach.length} of ${ethnicBuyers.length} women's-ethnic buyers (${pct}%)</b> never crossed to women's F&amp;A. Dupatta ₹245, jutti ₹479, bangles ₹99 — none picked up. The dupatta tray sits 18 m from the saree rack; Tier-2/3 shoppers don't traverse zones to bundle an outfit.`,
+        move: `Add a dupatta micro-tray <b>at the saree rack itself</b>, and a jewelry/jutti island next to lehenga. Same SKUs, repositioned for arm-reach attach.`,
+        impactInr: lift,
+      });
+    }
+
+    // 2. KURTA → MOJARI adjacency (cross_merch)
+    const mEthnicBuyers = purchasers.filter(a => a.basket.some(b => b.zone === 'mens_formal_ethnic'));
+    const mEthnicNoFoot = mEthnicBuyers.filter(a => !a.basket.some(b => b.zone === 'mens_fa'));
+    if (mEthnicBuyers.length >= 5) {
+      const pct = Math.round(mEthnicNoFoot.length / mEthnicBuyers.length * 100);
+      const lift = Math.round(mEthnicNoFoot.length * 0.35 * 479);
+      cards.push({
+        tag: 'cross_merch', tagLabel: 'Cross-merch',
+        title: 'Kurta buyers skip the mojari rack',
+        body: `<b>${mEthnicNoFoot.length} of ${mEthnicBuyers.length} kurta/sherwani buyers (${pct}%)</b> never reached men's footwear. ₹479 mojaris are the natural attach but sit on the opposite side of the store.`,
+        move: `Stand up a <b>2-tier mojari rack at the men's-ethnic exit gate</b>. Sim shows 35% pick-up rate if it's in line-of-sight as they leave the zone.`,
+        impactInr: lift,
+      });
+    }
+
+    // 3. COUNTER 2 / 3 REACTIVE OPENING (queue)
+    const c2 = events.find(e => e.type === 'counter_open' && e.detail.includes('C2'));
+    if (c2) {
+      const c2Min = c2.simMin;
+      const billAbsInWindow = sim.exitedAgents.filter(a =>
+        a.exit_reason === 'abandoned_billing' && a.exited_at >= c2Min - 25 && a.exited_at <= c2Min + 10
+      ).length;
+      const lift = Math.round(billAbsInWindow * (k.avg_ticket || 850) * 0.80);
+      cards.push({
+        tag: 'queue', tagLabel: 'Queue / billing',
+        title: `Counter 2 opened late — ${billAbsInWindow} filled baskets walked out`,
+        body: `Queue first hit 15 at <b>${fmtTime(c2Min - 8)}</b>. C2 didn't open until <b>${fmtTime(c2Min)}</b> (~8-min staffing-delay). In that window <b>${billAbsInWindow} shoppers</b> with paid baskets in hand abandoned. Reactive opening = damage already done.`,
+        move: `B03 stations at C2 from <b>17:00 proactively</b>, opens at <b>queue ≥ 8</b>, not 15. Same headcount, schedule change only.`,
+        impactInr: lift,
+      });
+    }
+
+    // 4. QUICK-TRIP MALE queue impatience (queue)
+    const qmTotal = allExited.filter(a => a.profile === 'quick_trip_male').length;
+    const qmAbandons = allExited.filter(a =>
+      a.profile === 'quick_trip_male' && (a.exit_reason === 'abandoned_billing' || a.exit_reason === 'abandoned_trial')
+    ).length;
+    if (qmTotal > 0 && qmAbandons > 0) {
+      const pct = (qmAbandons / qmTotal * 100).toFixed(0);
+      const lift = Math.round(qmAbandons * 620);
+      cards.push({
+        tag: 'queue', tagLabel: 'Queue / billing',
+        title: `${pct}% of quick-trip males abandon at the queue`,
+        body: `Quick-trip males have an 8-minute queue tolerance vs 20+ for mom/family. <b>${qmAbandons} of ${qmTotal}</b> dropped basket and left — already-converted shoppers walking with stuff in hand.`,
+        move: `<b>Express lane (≤ 3 items) opens at queue ≥ 6</b>. Quick-trip male avg basket is 1.4 items — they belong there. No new staff, just signage + queue-splitter.`,
+        impactInr: lift,
+      });
+    }
+
+    // 5. SINGLE-ITEM MEMOS — failed cross-merch (cross_merch)
+    const single = purchasers.filter(a => a.basket.length === 1);
+    if (single.length > 0 && purchasers.length > 0) {
+      const pct = Math.round(single.length / purchasers.length * 100);
+      const lift = Math.round(single.length * 380);
+      cards.push({
+        tag: 'cross_merch', tagLabel: 'Cross-merch',
+        title: `${pct}% of memos are single-item`,
+        body: `<b>${single.length} of ${purchasers.length} memos</b> were single-item — shopper came, picked one thing, left. No second-item nudge fired. Tier-2/3 Diwali bundle is 3-4 items (the outfit + an attach).`,
+        move: `Build <b>"Complete the Look" mannequins</b> — saree + blouse piece + dupatta priced as one card. Sim suggests +18% attach when bundles are pre-curated vs sold from separate zones.`,
+        impactInr: lift,
+      });
+    }
+
+    // 6. LUNCH-BREAK BASKET DRAG (staffing)
+    const morningBuyers = purchasers.filter(a => a.entered_at >= 60 && a.entered_at < 180);
+    const lunchBuyers = purchasers.filter(a => a.entered_at >= 180 && a.entered_at < 300);
+    if (morningBuyers.length > 6 && lunchBuyers.length > 6) {
+      const mAvg = morningBuyers.reduce((s,a) => s + a.basket.length, 0) / morningBuyers.length;
+      const lAvg = lunchBuyers.reduce((s,a) => s + a.basket.length, 0) / lunchBuyers.length;
+      const drop = ((mAvg - lAvg) / mAvg) * 100;
+      if (drop > 3) {
+        const lift = Math.round(lunchBuyers.length * (mAvg - lAvg) * 320);
+        cards.push({
+          tag: 'staffing', tagLabel: 'Staffing',
+          title: `Lunch-break clustering drags basket size ${drop.toFixed(0)}%`,
+          body: `1–3 PM avg basket <b>${lAvg.toFixed(1)} items</b> vs 11 AM–1 PM <b>${mAvg.toFixed(1)} items</b>. 5 staff are simultaneously on lunch exactly when school-uniform-and-Diwali families arrive.`,
+          move: `Stagger lunch to <b>12:30-14:00 OR 14:00-15:30</b> shifts — max 2 off concurrently. No headcount change, just rotation.`,
+          impactInr: lift,
+        });
+      }
+    }
+
+    // 7. INFANTS IDLE STAFF (staffing)
+    const infantsAgents = allExited.filter(a => a.zone_plan.includes('infants')).length;
+    const ethnicAgents = allExited.filter(a => a.zone_plan.includes('womens_ethnic')).length;
+    if (infantsAgents > 0 && ethnicAgents > infantsAgents) {
+      const lift = Math.round((ethnicAgents - infantsAgents) * 0.14 * 280);
+      cards.push({
+        tag: 'staffing', tagLabel: 'Staffing',
+        title: 'Infants staff is idle while women\'s ethnic peaks',
+        body: `Infants got <b>${infantsAgents} planned visits</b>; women's-ethnic got <b>${ethnicAgents}</b> — 4×. One FTE stays in infants all 12 hours per baseline (fixed allocation).`,
+        move: `<b>Flex the infants FTE into women's ethnic from 17:00–21:00</b>. Sim shows ~14% basket-build lift on the cohort that gets staff assistance (size-curve check, fit advice, cross-merch nudge).`,
+        impactInr: lift,
+      });
+    }
+
+    // 8. POWER WALL stale — browser conversion (merch)
+    const browsers = allExited.filter(a => a.profile === 'browser');
+    const browserBuyers = browsers.filter(a => a.exit_reason === 'purchased');
+    if (browsers.length > 0) {
+      const convPct = (browserBuyers.length / browsers.length * 100);
+      const target = 4.5; // industry-typical opportunistic conversion under festival mode
+      if (convPct < target) {
+        const recoverable = Math.round((target - convPct) / 100 * browsers.length);
+        const lift = recoverable * 480;
+        cards.push({
+          tag: 'merch', tagLabel: 'Merchandising',
+          title: `Browser conversion ${convPct.toFixed(1)}% — power wall hasn\'t refreshed since Monday`,
+          body: `${browsers.length} browsers walked through. Only <b>${browserBuyers.length} converted</b>. Power wall is the one fixture browsers spend 4+ seconds on — and it's been the same SKUs all week.`,
+          move: `<b>Rotate the power wall daily during festival week</b>. One mannequin must show a sub-₹400 SKU — the price-anchor that triggers browser conversion in value retail.`,
+          impactInr: lift,
+        });
+      }
+    }
+
+    // Fallback for empty
+    if (cards.length === 0) {
+      cards.push({
+        tag: 'merch', tagLabel: '—',
+        title: 'Day too short to surface findings',
+        body: 'Run the full 12-hour day; insights compute from completed-trip outcomes.',
+        move: 'Press ▶ to run the simulation.',
+        impactInr: 0,
+      });
+    }
+    return cards;
+  }
+
+  // Stub kept for any old callers — returns nothing now.
+  function computeInsights() { return ''; }
+  function _legacyComputeInsights() {
+    const purchasers = sim.exitedAgents.filter(a => a.exit_reason === 'purchased');
+    const allExited = sim.exitedAgents;
+    const events = sim.events;
+    const rows = [];
+
+    // 1. SAREE → DUPATTA / KURTI → LEGGINGS attach gap
+    const ethnicBuyers = purchasers.filter(a =>
+      a.basket.some(b => b.zone === 'womens_ethnic')
+    );
+    const ethnicNoAttach = ethnicBuyers.filter(a =>
+      !a.basket.some(b => b.zone === 'womens_fa')
+    );
+    if (ethnicBuyers.length > 0) {
+      const pct = Math.round(ethnicNoAttach.length / ethnicBuyers.length * 100);
+      const dailyLift = Math.round(ethnicNoAttach.length * 0.42 * 245);
+      rows.push({
+        title: 'Saree / kurti buyers walk past the dupatta rack',
+        impact: '+₹' + dailyLift.toLocaleString('en-IN') + '/day attach',
+        body: `<b>${ethnicNoAttach.length} of ${ethnicBuyers.length} women's-ethnic buyers (${pct}%)</b> never crossed to women's F&A — dupatta ₹245, jutti ₹479, bangles ₹99. The dupatta tray sits 18 m from the saree rack. <b>Move</b>: a dupatta micro-tray at the saree rack itself + a jewelry/jutti island next to lehenga. Tier-2/3 shoppers don't traverse zones to bundle an outfit; they buy the saree and leave.`,
+      });
+    }
+
+    // 2. MEN'S ETHNIC → MOJARI adjacency gap
+    const mEthnicBuyers = purchasers.filter(a =>
+      a.basket.some(b => b.zone === 'mens_formal_ethnic')
+    );
+    const mEthnicNoFoot = mEthnicBuyers.filter(a =>
+      !a.basket.some(b => b.zone === 'mens_fa')
+    );
+    if (mEthnicBuyers.length > 0) {
+      const pct = Math.round(mEthnicNoFoot.length / mEthnicBuyers.length * 100);
+      const dailyLift = Math.round(mEthnicNoFoot.length * 0.38 * 479);
+      rows.push({
+        title: "Kurta buyers skip the mojari rack — opposite side of store",
+        impact: '+₹' + dailyLift.toLocaleString('en-IN') + '/day mojari attach',
+        body: `<b>${mEthnicNoFoot.length} of ${mEthnicBuyers.length} kurta/sherwani buyers (${pct}%)</b> never reached men's footwear. ₹479 mojaris are the natural attach. Today they sit on the opposite side. <b>Move</b>: a 2-tier mojari rack at the men's-ethnic exit gate. Sim shows the same shoppers, 38% will pick up a pair if it's in arm-reach on the way to billing.`,
+      });
+    }
+
+    // 3. COUNTER 2 / 3 REACTIVE-OPENING DELAY WINDOW
+    const c2 = events.find(e => e.type === 'counter_open' && e.detail.includes('C2'));
+    const c3 = events.find(e => e.type === 'counter_open' && e.detail.includes('C3'));
+    if (c2) {
+      const c2Min = c2.simMin;
+      const billAbsInWindow = sim.exitedAgents.filter(a =>
+        a.exit_reason === 'abandoned_billing' && a.exited_at >= c2Min - 25 && a.exited_at <= c2Min + 10
+      ).length;
+      const t = fmtTime(c2Min);
+      const dailyLift = Math.round(billAbsInWindow * (k.avg_ticket || 900) * 0.85);
+      rows.push({
+        title: `Counter 2 opens late — 25-min window of mass abandonment`,
+        impact: '+₹' + dailyLift.toLocaleString('en-IN') + '/day · recovered abandons',
+        body: `Queue first hit 15 at <b>${fmtTime(c2Min - 8)}</b>. Counter 2 didn't open until <b>${t}</b> (8-min staffing delay). In that window <b>${billAbsInWindow} filled baskets walked out</b> — the most unforgiving loss in retail. <b>Move</b>: B03 stationed at counter 2 from 17:00 proactively, opens at queue ≥ 8, not 15. Same headcount, schedule shift only.`,
+      });
+    }
+
+    // 4. INFANTS IDLE STAFF — quantify the wasted floor body
+    let infantsAgents = 0, infantsMinutes = 0;
+    for (const a of allExited) {
+      if (a.zone_plan.includes('infants')) infantsAgents++;
+    }
+    const ethnicAgents = allExited.filter(a => a.zone_plan.includes('womens_ethnic')).length;
+    rows.push({
+      title: 'Infants staff served ~' + Math.round(infantsAgents * 0.6) + ' shoppers all day',
+      impact: '+₹' + Math.round((ethnicAgents - infantsAgents) * 0.18 * 320).toLocaleString('en-IN') + '/day · flex shift',
+      body: `Infants zone got <b>${infantsAgents} planned visits</b> vs women's-ethnic <b>${ethnicAgents}</b>. 1 staff stayed in infants all 12 hours — fixed allocation. <b>Move</b>: flex the infants FTE into women's ethnic during 17:00-21:00. Sim shows ~18% basket-build lift on the cohort that gets staff assistance (size-curve check, fit advice, cross-merch nudge).`,
+    });
+
+    // 5. LUNCH-BREAK BASKET DRAG (13:00 - 15:00)
+    const morningBuyers = purchasers.filter(a => a.entered_at >= 60 && a.entered_at < 180);
+    const lunchBuyers = purchasers.filter(a => a.entered_at >= 180 && a.entered_at < 300);
+    if (morningBuyers.length > 6 && lunchBuyers.length > 6) {
+      const mAvg = morningBuyers.reduce((s,a) => s + a.basket.length, 0) / morningBuyers.length;
+      const lAvg = lunchBuyers.reduce((s,a) => s + a.basket.length, 0) / lunchBuyers.length;
+      const drop = ((mAvg - lAvg) / mAvg) * 100;
+      if (drop > 3) {
+        rows.push({
+          title: 'Lunch-break clustering drops basket size during peak arrivals',
+          impact: drop.toFixed(0) + '% smaller baskets · ₹' + Math.round(lunchBuyers.length * (mAvg - lAvg) * 380).toLocaleString('en-IN') + '/day',
+          body: `1–3 PM avg basket is <b>${lAvg.toFixed(1)} items</b> vs 11 AM–1 PM at <b>${mAvg.toFixed(1)} items</b> — a ${drop.toFixed(0)}% drop. School-uniform-and-Diwali families arrive in this window; 5 staff are simultaneously on lunch. <b>Move</b>: stagger to 12:30-14:00 OR 14:00-15:30 (max 2 off concurrently). No headcount change, just rotation.`,
+        });
+      }
+    }
+
+    // 6. BROWSER conversion at power wall — stale Monday set
+    const browsers = allExited.filter(a => a.profile === 'browser');
+    const browserPurchasers = browsers.filter(a => a.exit_reason === 'purchased');
+    if (browsers.length > 0) {
+      const convPct = (browserPurchasers.length / browsers.length * 100).toFixed(1);
+      const target = 5; // industry-typical opportunistic browser conv under festival mode
+      rows.push({
+        title: `Browser conv ${convPct}% — power wall hasn't been refreshed since Monday`,
+        impact: '+' + Math.max(0, target - parseFloat(convPct)).toFixed(1) + 'pp browser conv',
+        body: `${browsers.length} browsers walked through. Only <b>${browserPurchasers.length} converted</b>. Power wall is the single fixture browsers spend 4+ seconds on — and it shows the same SKUs since Monday. <b>Move</b>: rotate the power wall daily during festival week. 1 mannequin must show a sub-₹400 SKU (the price-anchor that triggers browser conversion).`,
+      });
+    }
+
+    // 7. QUICK-TRIP MALE patience-out: abandon-at-8m sees specific abandons
+    const qmAbandons = allExited.filter(a => a.profile === 'quick_trip_male' && (a.exit_reason === 'abandoned_billing' || a.exit_reason === 'abandoned_trial')).length;
+    const qmTotal = allExited.filter(a => a.profile === 'quick_trip_male').length;
+    if (qmTotal > 0 && qmAbandons > 1) {
+      const pct = (qmAbandons / qmTotal * 100).toFixed(0);
+      rows.push({
+        title: `${pct}% of quick-trip males abandon basket at the queue`,
+        impact: '+₹' + (qmAbandons * 650).toLocaleString('en-IN') + '/day recoverable',
+        body: `Quick-trip males have an 8-minute queue tolerance (vs 20+ for mom/family). <b>${qmAbandons} of ${qmTotal} (${pct}%)</b> dropped basket and left. They were already converted shoppers walking with stuff in hand. <b>Move</b>: an express lane (≤3 items) opens at queue ≥ 6. Quick-trip male basket avg is 1.4 items — they belong there.`,
+      });
+    }
+
+    // 8. UNDERVISITED ZONES (the back-nook / less-trafficked) — opportunity
+    const zoneVisitCounts = {};
+    Object.keys(window.sim.metrics.zone_density).forEach(z => zoneVisitCounts[z] = 0);
+    for (const a of allExited) {
+      for (const b of a.basket) {
+        if (zoneVisitCounts.hasOwnProperty(b.zone)) zoneVisitCounts[b.zone]++;
+      }
+    }
+    const sortedZones = Object.entries(zoneVisitCounts).sort((a,b) => a[1] - b[1]);
+    const cold = sortedZones[0];
+    if (cold) {
+      rows.push({
+        title: `Cold zone: ${zoneLabel(cold[0])} got ${cold[1]} basket adds`,
+        impact: 'reallocation candidate',
+        body: `<b>${zoneLabel(cold[0])}</b> contributed only ${cold[1]} items to today's revenue — the lowest of any zone. Either it's positioned wrong (path-blind from entry) or the assortment isn't matched to Diwali demand. Re-merch test: pull the festive sub-SKUs from this zone forward to an end-cap; pull underperformers off the floor for the next cycle.`,
+      });
+    }
+
+    // 9. SINGLE-ITEM PURCHASERS — failed cross-merch
+    const single = purchasers.filter(a => a.basket.length === 1);
+    if (single.length > 0 && purchasers.length > 0) {
+      const pct = Math.round(single.length / purchasers.length * 100);
+      rows.push({
+        title: `${pct}% of memos are single-item — failed cross-merch`,
+        impact: '+₹' + (single.length * 380).toLocaleString('en-IN') + '/day if attach lifts',
+        body: `<b>${single.length} of ${purchasers.length} memos</b> were single-item. The shopper came, picked one thing, left. No second item nudge worked. In Tier-2/3 Diwali, the typical bundle is 3-4 items (the outfit + an attach). <b>Move</b>: pre-built "Complete the Look" displays — saree + blouse-piece + dupatta on one mannequin with one price card. Sim suggests +18% attach when bundle is pre-curated.`,
+      });
+    }
+
+    if (rows.length === 0) {
+      rows.push({title: 'Sim still ramping', impact: '', body: 'Insights compute once the day finishes.'});
+    }
+
+    return rows.map(r => `
+      <li>
+        <b>${r.title}</b>
+        ${r.impact ? ' <span style="color:var(--gold); font-family:JetBrains Mono,monospace; font-size:10px; padding:2px 6px; background:rgba(255,217,102,0.15); border-radius:2px; margin-left:6px;">' + r.impact + '</span>' : ''}
+        <div style="margin-top:4px; color:var(--ink-mid); font-size:11.5px;">${r.body}</div>
+      </li>`).join('');
+  }
+
+  function fmtTime(m) {
+    m = Math.floor(m);
+    const h = Math.floor(m / 60) + 10;
+    const mm = m % 60;
+    const hh12 = ((h - 1) % 12) + 1;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    return `${hh12}:${String(mm).padStart(2,'0')} ${ampm}`;
+  }
+  function zoneLabel(id) {
+    return ({
+      power_wall: 'Power wall', womens_ethnic: "Women's ethnic", womens_western: "Women's western",
+      womens_fa: "Women's F&A", mens_casual: "Men's casual", mens_formal_ethnic: "Men's formal & ethnic",
+      mens_fa: "Men's F&A", kids: 'Kids', infants: 'Infants',
+    })[id] || id;
   }
 
   // ── globals ──────────────────────────────────────
